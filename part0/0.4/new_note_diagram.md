@@ -7,7 +7,7 @@ sequenceDiagram
     
     activate server
     Note left of server: The server processes form data and store note in an in-memory array
-    server->>browser: URL Redirect with status 302 to https://studies.cs.helsinki.fi/exampleapp/notes
+    server-->>browser: URL Redirect with status 302 to https://studies.cs.helsinki.fi/exampleapp/notes
     deactivate server
     
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
