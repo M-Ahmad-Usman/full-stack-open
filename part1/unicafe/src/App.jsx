@@ -4,6 +4,7 @@ const Statistics = props => {
 
 	const { good, neutral, bad } = props;
 
+
 	const FEEDBACK_SCORES = {
 		GOOD: 1,
 		NEUTRAL: 0,
@@ -12,15 +13,31 @@ const Statistics = props => {
 
 	const totalFeedbacks = good + neutral + bad;
 
+	if (totalFeedbacks === 0) {
+		return (
+			<>
+				<h2>Statistics</h2>
+
+				<p>No Feedback Given</p>
+			</>
+		)
+	}
+
 	const all = totalFeedbacks;
 	const average = (good * FEEDBACK_SCORES.GOOD + bad * FEEDBACK_SCORES.BAD) / totalFeedbacks;
 	const positive = (good * FEEDBACK_SCORES.GOOD / totalFeedbacks) * 100;
 
 	return (
 		<>
+			<h2>Statistics</h2>
+
+			<p>Good: {good}</p>
+			<p>Neutral: {neutral}</p>
+			<p>Bad: {bad}</p>
+
 			<p>All: {all}</p>
-			<p>Average: { Number.isNaN(average)? 0: average }</p>
-			<p>Positive: { Number.isNaN(positive)? 0: positive }%</p>
+			<p>Average: {average}</p>
+			<p>Positive: {positive}%</p>
 		</>
 	)
 }
@@ -38,12 +55,6 @@ const App = () => {
 			<button onClick={() => setGood(good + 1)}>Good</button>
 			<button onClick={() => setNeutral(neutral + 1)}>Neutral</button>
 			<button onClick={() => setBad(bad + 1)}>Bad</button>
-
-			<h2>Statistics</h2>
-
-			<p>Good: {good}</p>
-			<p>Neutral: {neutral}</p>
-			<p>Bad: {bad}</p>
 
 			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
