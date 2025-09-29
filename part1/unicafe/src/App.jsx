@@ -1,5 +1,18 @@
 import { useState } from 'react'
 
+const Statistics = props => {
+
+	const { all, average, positive } = props;
+
+	return (
+		<>
+			<p>All: {all}</p>
+			<p>Average: { Number.isNaN(average)? 0: average }</p>
+			<p>Positive: { Number.isNaN(positive)? 0: positive }%</p>
+		</>
+	)
+}
+
 const App = () => {
 	// save clicks of each button to its own state
 	const [good, setGood] = useState(0)
@@ -26,9 +39,11 @@ const App = () => {
 			<p>Neutral: {neutral}</p>
 			<p>Bad: {bad}</p>
 
-			<p>All: {good + neutral + bad}</p>
-			<p>Average: {(good * FEEDBACK_VALUES.GOOD + bad * FEEDBACK_VALUES.BAD) / (good + neutral + bad)}</p>
-			<p>Positive: {(good * FEEDBACK_VALUES.GOOD / (good + neutral + bad)) * 100} %</p>
+			<Statistics 
+				all={good + neutral + bad} 
+				average={(good * FEEDBACK_VALUES.GOOD + bad * FEEDBACK_VALUES.BAD) / (good + neutral + bad)}
+				positive={(good * FEEDBACK_VALUES.GOOD / (good + neutral + bad)) * 100}
+			/>
 		</div>
 	)
 }
