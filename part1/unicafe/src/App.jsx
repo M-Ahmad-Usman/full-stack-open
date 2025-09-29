@@ -4,7 +4,6 @@ const Statistics = props => {
 
 	const { good, neutral, bad } = props;
 
-
 	const FEEDBACK_SCORES = {
 		GOOD: 1,
 		NEUTRAL: 0,
@@ -42,19 +41,29 @@ const Statistics = props => {
 	)
 }
 
+const Button = props => {
+	const { submitHandler, text } = props;
+	
+	return <button onClick={submitHandler}> {text} </button>
+}
+
 const App = () => {
 	// save clicks of each button to its own state
 	const [good, setGood] = useState(0)
 	const [neutral, setNeutral] = useState(0)
 	const [bad, setBad] = useState(0)
 
+	const updateGood = () => setGood(good + 1)
+	const updateNeutral = () => setNeutral(neutral + 1)
+	const updateBad = () => setBad(bad + 1)
+
 	return (
 		<div>
 			<h1>Give Feedback</h1>
 
-			<button onClick={() => setGood(good + 1)}>Good</button>
-			<button onClick={() => setNeutral(neutral + 1)}>Neutral</button>
-			<button onClick={() => setBad(bad + 1)}>Bad</button>
+			<Button submitHandler = { updateGood } text="Good"/>
+			<Button submitHandler = { updateNeutral } text="Neutral"/>
+			<Button submitHandler = { updateBad } text="Back"/>
 
 			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
