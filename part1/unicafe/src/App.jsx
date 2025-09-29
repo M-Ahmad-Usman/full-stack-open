@@ -4,7 +4,14 @@ const StatisticLine = props => {
 
 	const { text, value } = props;
 
-	return <p> {text}: {value} {text === "Positive" && "%"} </p>
+	return (
+		<>
+			<tr>
+				<td>{text}:</td>
+				<td> {value} {text === "Positive" && "%"} </td>
+			</tr>
+		</>
+	)
 }
 
 const Statistics = props => {
@@ -37,13 +44,20 @@ const Statistics = props => {
 		<>
 			<h2>Statistics</h2>
 
-			<StatisticLine text="Good" value={good} />
-			<StatisticLine text="Neutral" value={neutral} />
-			<StatisticLine text="Bad" value={bad} />
+			<table>
+				<tbody>
 
-			<StatisticLine text="All" value={all} />
-			<StatisticLine text="Average" value={average} />
-			<StatisticLine text="Positive" value={positive} />
+					<StatisticLine text="Good" value={good} />
+					<StatisticLine text="Neutral" value={neutral} />
+					<StatisticLine text="Bad" value={bad} />
+
+					<StatisticLine text="All" value={all} />
+					<StatisticLine text="Average" value={average} />
+					<StatisticLine text="Positive" value={positive} />
+
+				</tbody>
+			</table>
+
 
 		</>
 	)
@@ -51,7 +65,7 @@ const Statistics = props => {
 
 const Button = props => {
 	const { submitHandler, text } = props;
-	
+
 	return <button onClick={submitHandler}> {text} </button>
 }
 
@@ -69,9 +83,9 @@ const App = () => {
 		<div>
 			<h1>Give Feedback</h1>
 
-			<Button submitHandler = { updateGood } text="Good"/>
-			<Button submitHandler = { updateNeutral } text="Neutral"/>
-			<Button submitHandler = { updateBad } text="Back"/>
+			<Button submitHandler={updateGood} text="Good" />
+			<Button submitHandler={updateNeutral} text="Neutral" />
+			<Button submitHandler={updateBad} text="Back" />
 
 			<Statistics good={good} neutral={neutral} bad={bad} />
 		</div>
