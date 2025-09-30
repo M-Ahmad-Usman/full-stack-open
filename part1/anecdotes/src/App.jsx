@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const App = () => {
 
+  // Sample Anecdotes
   const data = [
     { anecdote: 'If it hurts, do it more often.', votes: 0 },
     { anecdote: 'Adding manpower to a late software project makes it later!', votes: 0 },
@@ -13,11 +14,13 @@ const App = () => {
     { anecdote: 'The only way to go fast, is to go well.', votes: 0 }
   ]
 
+  // Sets next Anecdote randomly
   function setNextAnecdote() {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
     setSelected(randomIndex);
   }
 
+  // Updates votes of 'selected' anecdote and maintain of mostUpdatedAnecdote state
   function updateVotes() {
 
     const copy = [...anecdotes];
