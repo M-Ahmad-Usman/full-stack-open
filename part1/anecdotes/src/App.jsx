@@ -19,28 +19,19 @@ const App = () => {
   }
 
   function updateVotes() {
-    const copy = [...anecdotes];
 
+    const copy = [...anecdotes];
     copy[selected].votes++;
     setAnecdotes(copy);
-  }
 
-  function getMostVoted() {
-    let mostVoted = 0;
-    let greatestVote = 0;
+    if (copy[selected].votes > mostVotedAnecdote.votes)
+      setMostVotedAnecdote(copy[selected]);
 
-    anecdotes.forEach((anecdote, index) => {
-      if (anecdote.votes > greatestVote) {
-        mostVoted = index;
-        greatestVote = anecdote.votes;
-      }
-    });
-
-    return mostVoted;
   }
 
   const [selected, setSelected] = useState(0)
   const [anecdotes, setAnecdotes] = useState(data);
+  const [mostVotedAnecdote, setMostVotedAnecdote] = useState(anecdotes[0])
 
   return (
     <div>
@@ -51,8 +42,9 @@ const App = () => {
       <button onClick={setNextAnecdote}>Next Anecdote</button>
 
       <h2>Anecdote with most votes</h2>
-      <p>{anecdotes[getMostVoted()].anecdote}</p>
-      <p>Has {anecdotes[getMostVoted()].votes} votes</p>
+
+      <p>{mostVotedAnecdote.anecdote}</p>
+      <p>Has {mostVotedAnecdote.votes} votes</p>
     </div>
   )
 }
