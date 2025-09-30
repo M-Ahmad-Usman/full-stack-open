@@ -5,12 +5,10 @@ const StatisticLine = props => {
 	const { text, value } = props;
 
 	return (
-		<>
-			<tr>
-				<td>{text}:</td>
-				<td> {value} {text === "Positive" && "%"} </td>
-			</tr>
-		</>
+		<tr>
+			<td>{text}:</td>
+			<td> {value} {text === "Positive" && "%"} </td>
+		</tr>
 	)
 }
 
@@ -30,7 +28,6 @@ const Statistics = props => {
 		return (
 			<>
 				<h2>Statistics</h2>
-
 				<p>No Feedback Given</p>
 			</>
 		)
@@ -57,8 +54,6 @@ const Statistics = props => {
 
 				</tbody>
 			</table>
-
-
 		</>
 	)
 }
