@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 const App = () => {
+
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -12,11 +13,17 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
 
+  function changeAnecdote() {
+    const index = Math.floor(Math.random() * anecdotes.length);
+    setSelected(index);
+  }
+
   const [selected, setSelected] = useState(0)
 
   return (
     <div>
-      {anecdotes[selected]}
+      <p>{anecdotes[selected]}</p>
+      <button onClick={changeAnecdote}>Next Anecdote</button>
     </div>
   )
 }
