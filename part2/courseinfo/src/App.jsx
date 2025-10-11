@@ -17,14 +17,19 @@ const Content = (props) => {
 
 	const { parts } = props;
 
-	return parts.map(part => <Part key={part.id} name={part.name} exercises={part.exercises}></Part>)
+	return parts
+		.map(
+			({ id, name, exercises }) =>
+				<Part key={id} name={name} exercises={exercises}></Part>
+		)
 }
 
 const Total = (props) => {
 
 	const { parts } = props;
+	const totalExercises = parts.reduce((accum, curr) => accum + curr.exercises, 0);
 
-	return <p><b>total of {parts.reduce((accum, curr) => accum + curr.exercises, 0)} exercises </b> </p>
+	return <p><b>total of {totalExercises} exercises </b></p>
 }
 
 const Course = (props) => {
