@@ -1,59 +1,70 @@
 
 const Header = (props) => {
-	return <h1>{props.course}</h1>
+
+	const { course } = props
+
+	return <h1>{course}</h1>
 }
 
 const Part = (props) => {
-	return <p>{props.name} {props.exercises}</p>
+
+	const { name, exercises } = props
+
+	return <p>{name} {exercises}</p>
 }
 
 const Content = (props) => {
 
-	const [part1, part2, part3] = props.parts;
+	const { parts } = props;
 
-	return (
-		<div>
-			<Part name={part1.name} exercises={part1.exercises} />
-			<Part name={part2.name} exercises={part2.exercises} />
-			<Part name={part3.name} exercises={part3.exercises} />
-		</div>
-	)
+	return parts.map(part => <Part key={part.id} name={part.name} exercises={part.exercises}></Part>)
 }
 
 const Total = (props) => {
 
-	const [part1, part2, part3] = props.parts;
+	const { parts } = props;
 
-	return <p>Number of exercises {part1.exercises + part2.exercises + part3.exercises}</p>
+	return <p>Number of exercises {parts.reduce((accum, curr) => accum + curr.exercises, 0)}</p>
+}
+
+const Course = (props) => {
+	const { course } = props
+
+	return (
+		<>
+			<Header course={course.name} />
+			<Content parts={course.parts} />
+			<Total parts={course.parts} />
+		</>
+	)
+
 }
 
 const App = () => {
 
 	const course = {
+		id: 1,
 		name: 'Half Stack application development',
 		parts: [
 			{
 				name: 'Fundamentals of React',
-				exercises: 10
+				exercises: 10,
+				id: 1
 			},
 			{
 				name: 'Using props to pass data',
-				exercises: 7
+				exercises: 7,
+				id: 2
 			},
 			{
 				name: 'State of a component',
-				exercises: 14
+				exercises: 14,
+				id: 3
 			}
 		]
 	}
 
-	return (
-		<div>
-			<Header course={course.name} />
-			<Content parts={course.parts} />
-			<Total parts={course.parts} />
-		</div>
-	)
+	return <Course course={course} />
 }
 
 export default App
