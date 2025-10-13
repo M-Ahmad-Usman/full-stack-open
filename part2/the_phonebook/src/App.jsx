@@ -13,7 +13,13 @@ const App = () => {
 
 		if (newName.trim() === '') return;
 
-		setPersons(persons.concat({ name: newName }));
+		// If person with submitted name already exists
+		if (persons.find(person => person.name === newName) !== undefined) {
+			alert(`${newName} is already added to the phonebook.`)
+			return;
+		}
+
+		setPersons(persons.concat({ name: newName.trim() }));
 		setNewName("");
 	}
 
