@@ -28,16 +28,16 @@ const App = () => {
     setNewNote(event.target.value)
   }
 
-  const addNote = (event) => {
+  const handleSubmit = event => {
     event.preventDefault()
 
-    const noteObject = {
+    const note = {
       content: newNote,
       important: Math.random() < 0.5,
       id: String(notes.length + 1),
     }
 
-    setNotes(notes.concat(noteObject))
+    setNotes(notes.concat(note))
     setNewNote('')
   }
 
@@ -61,7 +61,7 @@ const App = () => {
         )}
       </ul>
 
-      <form onSubmit={addNote}>
+      <form onSubmit={handleSubmit}>
         <input value={newNote} onChange={handleNoteChange} />
         <button type="submit">save</button>
       </form>
