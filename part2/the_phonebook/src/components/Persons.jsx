@@ -1,11 +1,19 @@
 
 const Persons = props => {
 
-    const { persons, searchText } = props
+    const { persons, searchText, deletePerson } = props
 
     const renderedPersons = persons
         .filter(person => person.name.toLowerCase().includes(searchText.toLowerCase()))
-        .map(person => <span key={person.number}>{person.name} {person.number}<br /></span>)
+        .map(person => {
+
+            return (
+                <div key={person.id}>
+                    <span>{person.name} {person.number}</span>
+                    <button onClick={() => deletePerson(person.id)}>Delete</button>
+                </div>
+            )
+        })
 
     return renderedPersons
 }

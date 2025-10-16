@@ -26,7 +26,7 @@ const App = () => {
 				})
 	}, [])
 
-	function handleSubmit(event) {
+	function addPerson(event) {
 		event.preventDefault()
 
 		if (newName.trim() === '') {
@@ -69,6 +69,14 @@ const App = () => {
 			})
 	}
 
+	function deletePerson(id) {
+		const deletePersonId = id;
+
+		personService
+			.deletePerson(deletePersonId)
+			.then(deletedPerson => setPersons(persons.filter(person => person.id !== deletedPerson.id)))
+	}
+
 	return (
 
 		<div>
@@ -84,13 +92,14 @@ const App = () => {
 				setNewName={setNewName}
 				newNumber={newNumber}
 				setNewNumber={setNewNumber}
-				handleSubmit={handleSubmit}
+				handleSubmit={addPerson}
 			/>
 
 			<h2>Numbers</h2>
 			<Persons
 				persons={persons}
 				searchText={searchText}
+				deletePerson={deletePerson}
 			/>
 			...
 		</div>
