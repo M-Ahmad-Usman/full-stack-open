@@ -10,9 +10,10 @@ const App = () => {
   const [showAll, setShowAll] = useState(true)
 
   useEffect(() => {
+
     noteService
       .getAll()
-      .then(response => setNotes(response.data));
+      .then(initialData => setNotes(initialData))
   }, [])
 
   console.log('render', notes.length, 'notes')
@@ -26,7 +27,7 @@ const App = () => {
 
     noteService
       .update(id, changedNote)
-      .then(response => setNotes(notes.map(note => note.id === id ? response.data : note)))
+      .then(updatedNote => setNotes(notes.map(note => note.id === id ? updatedNote : note)))
   }
 
   const addNote = event => {
@@ -39,8 +40,8 @@ const App = () => {
 
     noteService
       .create(note)
-      .then(response => {
-        setNotes(notes.concat(response.data))
+      .then(newNote => {
+        setNotes(notes.concat(newNote))
         setNewNote('')
       })
   }
