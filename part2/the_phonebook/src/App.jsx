@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+
+import personService from "./services/persons"
 
 import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
@@ -15,9 +16,9 @@ const App = () => {
 	const [searchText, setSearchText] = useState('')
 
 	useEffect(() => {
-		axios
-			.get('http://localhost:3001/persons')
-			.then(response => setPersons(response.data))
+		personService
+			.getAllPersons()
+			.then(persons => setPersons(persons), error => alert(error.message))
 	}, [])
 
 	function handleSubmit(event) {
@@ -51,9 +52,13 @@ const App = () => {
 			number: newNumber.trim()
 		}
 
-		setPersons(persons.concat(newPerson))
-		setNewName('')
-		setNewNumber('')
+		personService
+			.createPerson(newPerson)
+			.then(newPerson => {
+				setPersons(persons.concat(newPerson))
+				setNewName('')
+				setNewNumber('')
+			})
 	}
 
 	return (
