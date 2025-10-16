@@ -29,10 +29,6 @@ const App = () => {
       .then(response => setNotes(notes.map(note => note.id === id ? response.data : note)))
   }
 
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
-  }
-
   const addNote = event => {
     event.preventDefault()
 
@@ -74,7 +70,7 @@ const App = () => {
       </ul>
 
       <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
+        <input value={newNote} onChange={e => setNewNote(e.target.value)} />
         <button type="submit">save</button>
       </form>
     </div>
