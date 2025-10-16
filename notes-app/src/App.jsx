@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import Note from './components/Note'
 
+import noteService from './services/notes'
 
 const App = () => {
 
@@ -9,50 +9,44 @@ const App = () => {
   const [newNote, setNewNote] = useState('a new note...')
   const [showAll, setShowAll] = useState(true)
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/notes')
-      .then(response => {
-        console.log('promise fulfilled')
-        setNotes(response.data)
-      })
-  }
-
-  useEffect(hook, [])
+  useEffect(() => {
+    noteService
+      .getAll()
+      .then(response => setNotes(response.data));
+  }, [])
 
   console.log('render', notes.length, 'notes')
 
   const toggleImportanceOf = id => {
 
-    const url = `http://localhost:3001/notes/${id}`
     const note = notes.find(n => n.id === id)
 
     // Create a new shallow copy
     const changedNote = { ...note, important: !note.important }
 
-    axios.put(url, changedNote)
-      .then(response => {
-        setNotes(notes.map(note => note.id === id ? response.data : note))
-      })
+    noteService
+      .update(id, changedNote)
+      .then(response => setNotes(notes.map(note => note.id === id ? response.data : note)))
   }
 
   const handleNoteChange = (event) => {
-    console.log(event.target.value)
     setNewNote(event.target.value)
   }
 
-  const handleSubmit = event => {
+  const addNote = event => {
     event.preventDefault()
 
     const note = {
       content: newNote,
       important: Math.random() < 0.5,
-      id: String(notes.length + 1),
     }
 
-    setNotes(notes.concat(note))
-    setNewNote('')
+    noteService
+      .create(note)
+      .then(response => {
+        setNotes(notes.concat(response.data))
+        setNewNote('')
+      })
   }
 
   const notesToShow = showAll
@@ -79,7 +73,7 @@ const App = () => {
         )}
       </ul>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={addNote}>
         <input value={newNote} onChange={handleNoteChange} />
         <button type="submit">save</button>
       </form>
