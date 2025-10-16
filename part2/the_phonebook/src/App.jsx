@@ -18,7 +18,12 @@ const App = () => {
 	useEffect(() => {
 		personService
 			.getAllPersons()
-			.then(persons => setPersons(persons), error => alert(error.message))
+			.then(
+				persons => setPersons(persons)
+				, error => {
+					alert(error.message)
+					console.error(error.message)
+				})
 	}, [])
 
 	function handleSubmit(event) {
@@ -58,6 +63,9 @@ const App = () => {
 				setPersons(persons.concat(newPerson))
 				setNewName('')
 				setNewNumber('')
+			}, error => {
+				alert(error.message)
+				console.error(error.message)
 			})
 	}
 
