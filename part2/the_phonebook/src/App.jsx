@@ -39,13 +39,6 @@ const App = () => {
 			return
 		}
 
-		// If person with submitted number already exists
-		const existingPerson = persons.find(person => person.number === newNumber);
-		if (existingPerson !== undefined) {
-			alert(`${newNumber} is already added to the phonebook with name ${existingPerson.name}.`)
-			return
-		}
-
 		// If the number contains invalid characters: allow only digits and hyphens
 		if (/^[0-9\s-]+$/.test(newNumber) === false) {
 			alert('Only digits (0-9) and "-" are allowed for number.')
@@ -55,6 +48,24 @@ const App = () => {
 		const newPerson = {
 			name: newName.trim(),
 			number: newNumber.trim()
+		}
+
+		// If a person with submitted name already exists
+		const personWithExistingName = persons.find(person => person.name === newPerson.name);
+		if (personWithExistingName !== undefined) {
+
+			const doOverwrite = confirm(`${personWithExistingName.name} is already added to the phonebook, replace the old number with new one?`)
+
+			if (doOverwrite) {
+				personService
+					.updatePerson({...personWithExistingName, number: newPerson.number})
+					.then(updatedPerson => setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person)))
+			}
+			else {
+				setNewName('')
+			}
+			
+			return
 		}
 
 		personService
