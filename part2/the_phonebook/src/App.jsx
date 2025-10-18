@@ -5,6 +5,7 @@ import personService from "./services/persons"
 import Filter from "./components/Filter"
 import PersonForm from "./components/PersonForm"
 import Persons from "./components/Persons"
+import Notification from "./components/Notification"
 
 const App = () => {
 
@@ -14,6 +15,8 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState('')
 
 	const [searchText, setSearchText] = useState('')
+
+	const [notificationMsg, setNotificationMsg] = useState('')
 
 	useEffect(() => {
 		personService
@@ -59,7 +62,12 @@ const App = () => {
 			if (doOverwrite) {
 				personService
 					.updatePerson({...personWithExistingName, number: newPerson.number})
-					.then(updatedPerson => setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person)))
+					.then(updatedPerson => {
+						setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
+						setNotificationMsg(`${updatedPerson.name}'s number has been updated`)
+
+						setTimeout(() => setNotificationMsg(''), 2000)
+					})
 			}
 			else {
 				setNewName('')
@@ -74,6 +82,10 @@ const App = () => {
 				setPersons(persons.concat(newPerson))
 				setNewName('')
 				setNewNumber('')
+				setNotificationMsg(`${newPerson.name} has been added to the phonebook.`)
+
+				setTimeout(() => setNotificationMsg(''), 2000)
+
 			}, error => {
 				alert(error.message)
 				console.error(error.message)
@@ -85,13 +97,20 @@ const App = () => {
 
 		personService
 			.deletePerson(deletePersonId)
-			.then(deletedPerson => setPersons(persons.filter(person => person.id !== deletedPerson.id)))
+			.then(deletedPerson => {
+				setPersons(persons.filter(person => person.id !== deletedPerson.id))
+				setNotificationMsg(`${deletedPerson.name} has been deleted from the phonebook`)
+				setTimeout(() => setNotificationMsg(''), 2000)
+			})
 	}
 
 	return (
 
 		<div>
 			<h2>Phonebook</h2>
+
+			<Notification message={notificationMsg}/>
+
 			<Filter
 				searchText={searchText}
 				setSearchText={setSearchText}
