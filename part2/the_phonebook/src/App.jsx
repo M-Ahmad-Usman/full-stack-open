@@ -86,7 +86,7 @@ const App = () => {
 				setNewName('')
 				setNewNumber('')
 
-				showNotification(`${newPerson.name} has been added to the phonebook.`, 2000)``
+				showNotification(`${newPerson.name} has been added to the phonebook.`, 2000)
 
 			}, error => {
 				alert(error.message)
@@ -103,6 +103,7 @@ const App = () => {
 				setPersons(persons.filter(person => person.id !== deletedPerson.id))
 				showNotification(`${deletedPerson.name} has been deleted from the phonebook`, 2000)
 			})
+			.catch(() => showNotification(`This person has already been deleted from the server`, 2000))
 	}
 
 	return (
