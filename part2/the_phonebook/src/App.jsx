@@ -29,6 +29,11 @@ const App = () => {
 				})
 	}, [])
 
+	function showNotification(message, time) {
+		setNotificationMsg(message)
+		setTimeout(() => setNotificationMsg(''), 2000)
+	}
+
 	function addPerson(event) {
 		event.preventDefault()
 
@@ -64,9 +69,7 @@ const App = () => {
 					.updatePerson({...personWithExistingName, number: newPerson.number})
 					.then(updatedPerson => {
 						setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
-						setNotificationMsg(`${updatedPerson.name}'s number has been updated`)
-
-						setTimeout(() => setNotificationMsg(''), 2000)
+						showNotification(`${updatedPerson.name}'s number has been updated`, 2000)
 					})
 			}
 			else {
@@ -82,9 +85,8 @@ const App = () => {
 				setPersons(persons.concat(newPerson))
 				setNewName('')
 				setNewNumber('')
-				setNotificationMsg(`${newPerson.name} has been added to the phonebook.`)
 
-				setTimeout(() => setNotificationMsg(''), 2000)
+				showNotification(`${newPerson.name} has been added to the phonebook.`, 2000)``
 
 			}, error => {
 				alert(error.message)
@@ -99,8 +101,7 @@ const App = () => {
 			.deletePerson(deletePersonId)
 			.then(deletedPerson => {
 				setPersons(persons.filter(person => person.id !== deletedPerson.id))
-				setNotificationMsg(`${deletedPerson.name} has been deleted from the phonebook`)
-				setTimeout(() => setNotificationMsg(''), 2000)
+				showNotification(`${deletedPerson.name} has been deleted from the phonebook`, 2000)
 			})
 	}
 
