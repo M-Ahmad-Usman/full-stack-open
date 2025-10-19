@@ -1,5 +1,5 @@
 {
-  "name": "notes-app-backend",
+  "name": "server",
   "version": "1.0.0",
   "description": "A simple backend which will communicate with the frontend of notes application.",
   "main": "index.js",
@@ -8,5 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "M-Ahmad-Usman",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
