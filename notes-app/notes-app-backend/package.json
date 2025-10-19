@@ -1,0 +1,12 @@
+{
+  "name": "notes-app-backend",
+  "version": "1.0.0",
+  "description": "A simple backend which will communicate with the frontend of notes application.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "M-Ahmad-Usman",
+  "license": "ISC"
+}
