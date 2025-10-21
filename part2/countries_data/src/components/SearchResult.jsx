@@ -1,4 +1,7 @@
 
+// Component
+import Country from "./Country"
+
 const SearchResult = props => {
 
 	const { searchResult } = props
@@ -19,23 +22,7 @@ const SearchResult = props => {
 
 	// If there is only one match
 	const [country] = searchResult;
-
-	return (
-		<>
-			<h1>{country.name.common}</h1>
-
-			<p>Capital: {country.capital}</p>
-			<p>Area: {country.area}</p>
-
-			<h2>Languages</h2>
-			<ul>
-				{Object.entries(country.languages)
-					.map(([key, value]) => <li key={key}>{value}</li>)}
-			</ul>
-
-			<img src={country.flags.png} alt={country.flags.alt} />
-		</>
-	)
+	return <Country country={country}/>
 }
 
 export default SearchResult
