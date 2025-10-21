@@ -19,14 +19,6 @@ const SearchResult = props => {
 
 	// If there is only one match
 	const [country] = searchResult;
-	// Store markup to show languages list
-	let renderedLanguages = [];
-	
-	for (const key in country.languages) {
-		if (!Object.hasOwn(country.languages, key)) continue;
-		const language = country.languages[key];
-		renderedLanguages.push(<li key={key}>{language}</li>)
-	}
 
 	return (
 		<>
@@ -37,8 +29,8 @@ const SearchResult = props => {
 
 			<h2>Languages</h2>
 			<ul>
-				{renderedLanguages}
-				{/* {Object.values(country.languages).map(language => <li key={language}>{language}</li>)} */}
+				{Object.entries(country.languages)
+					.map(([key, value]) => <li key={key}>{value}</li>)}
 			</ul>
 
 			<img src={country.flags.png} alt={country.flags.alt} />
