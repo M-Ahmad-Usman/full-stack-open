@@ -40,9 +40,6 @@ function App() {
 
   }, [searchText])
 
-  
-  if (!countries) return <p>Loading</p>
-
   return (
 
     <>
