@@ -25,7 +25,10 @@ function App() {
   // Show searched Data
   useEffect(() => {
 
-    if (searchText.trim() === "") return
+    if (searchText.trim() === "") {
+      setSearchResult('')
+      return
+    }
 
     const matchedCountries =
       countries.filter(country => {
