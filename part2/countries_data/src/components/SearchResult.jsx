@@ -4,7 +4,7 @@ import Country from "./Country"
 
 const SearchResult = props => {
 
-	const { searchResult } = props
+	const { searchResult, setSearchResult } = props
 
 	if (!searchResult) return null
 
@@ -18,7 +18,14 @@ const SearchResult = props => {
 
 	// If results are fewer than 10 but more than 1
 	else if (searchResult.length < 11 && searchResult.length > 1)
-		return searchResult.map(country => <li key={country.tld}>{country.name.common}</li>)
+		return searchResult.map(country => {
+			return (
+				<li key={country.tld}>
+					{country.name.common}
+					<button onClick={() => setSearchResult([country])}>Show</button>
+				</li>
+			)
+	})
 
 	// If there is only one match
 	const [country] = searchResult;

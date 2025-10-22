@@ -53,6 +53,7 @@ function App() {
 
       <SearchResult 
         searchResult={searchResult}
+        setSearchResult={setSearchResult}
       />      
     </>
   )
