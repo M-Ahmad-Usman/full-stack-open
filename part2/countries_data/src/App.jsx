@@ -1,11 +1,11 @@
 
 // React
 import { useState, useEffect } from 'react'
-// Libraries
-import axios from 'axios'
 // Components
 import SearchCountry from './components/SearchCountry'
 import SearchResult from './components/SearchResult'
+// Services
+import countryService from './services/countries'
 
 function App() {
 
@@ -16,9 +16,9 @@ function App() {
 
   // Load data at first render
   useEffect(() => {
-    axios
-      .get("https://studies.cs.helsinki.fi/restcountries/api/all")
-      .then(res => setCountries(res.data))
+    countryService
+      .getAllCountries()
+      .then(data => setCountries(data))
       .catch(err => console.error(err.message))
   }, [])
 
