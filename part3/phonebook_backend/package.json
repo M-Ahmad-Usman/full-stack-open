@@ -1,0 +1,11 @@
+{
+  "name": "phonebook_backend",
+  "version": "1.0.0",
+  "description": "A simple backend build using Node.js and express which will communicate with the frontend part of the_phonebook project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "M-Ahmad-Usman",
+  "license": "ISC"
+}
