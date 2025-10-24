@@ -83,8 +83,18 @@ app.post('/api/persons', (request, response) => {
 
     const { name, number } = request.body
 
-    if (!name || !number) return response.status(400).json({
-        error: "Person's name and number are required"
+    if (!name) return response.status(400).json({
+        error: "Person's name is required"
+    })
+
+    if (!number) return response.status(400).json({
+        error: "Person's number is required"
+    })
+
+    const alreadyExists = persons.find(person => person.name === name)
+
+    if (alreadyExists) return response.status(400).json({
+        error: `Person ${alreadyExists.name} already exists in the phonebook`
     })
 
     const newPerson = {
