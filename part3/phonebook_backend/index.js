@@ -1,4 +1,5 @@
 
+const morgan = require('morgan')
 const express = require('express')
 const app = express()
 
@@ -30,6 +31,9 @@ function getRandomNumber(min = persons.length, max = 10000) {
 }
 
 app.use(express.json())
+
+// setup the logger
+app.use(morgan('tiny'))
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
