@@ -4,8 +4,13 @@
   "description": "A simple backend build using Node.js and express which will communicate with the frontend part of the_phonebook project.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "node --watch index.js"
   },
   "author": "M-Ahmad-Usman",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
