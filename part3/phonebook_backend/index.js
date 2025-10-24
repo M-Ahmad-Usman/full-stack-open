@@ -36,7 +36,7 @@ app.get('/api/persons', (request, response) => {
 app.get('/info', (request, response) => {
     const phonebookLength = persons.length
 
-    const markup = 
+    const markup =
         `<p>Phonebook has info of ${phonebookLength} people</p>
         <p>${new Date().toString()}</p>`
 
@@ -51,6 +51,19 @@ app.get('/api/persons/:id', (request, response) => {
     if (!person) return response.status(404).end()
 
     return response.json(person)
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    const personId = request.params.id
+
+    const personIndex = persons.findIndex(person => person.id === personId)
+
+    if (personIndex === -1) return response.status(404).end()
+
+    persons.splice(personIndex, 1)
+
+    return response.status(204).end()
+    
 })
 
 const PORT = 3001
