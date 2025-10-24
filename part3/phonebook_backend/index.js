@@ -2,7 +2,7 @@
 const express = require('express')
 const app = express()
 
-const notes = [
+const persons = [
     {
         "id": "1",
         "name": "Arto Hellas",
@@ -30,11 +30,11 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(notes)
+    response.json(persons)
 })
 
 app.get('/info', (request, response) => {
-    const phonebookLength = notes.length
+    const phonebookLength = persons.length
 
     const markup = 
         `<p>Phonebook has info of ${phonebookLength} people</p>
