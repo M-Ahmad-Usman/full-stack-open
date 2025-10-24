@@ -98,7 +98,7 @@ app.post('/api/persons', (request, response) => {
     })
 
     const newPerson = {
-        id: getRandomNumber(),
+        id: getRandomNumber().toString(),
         name,
         number
     }
