@@ -15,7 +15,6 @@ const getCityWeather = (countryName) => {
 }
 
 const getIconURL = (iconCode) => {
-    console.log(iconCode)
     return `${baseIconURL}/${iconCode}@2x.png`
 }
 
