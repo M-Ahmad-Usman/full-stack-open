@@ -32,8 +32,29 @@ function getRandomNumber(min = persons.length, max = 10000) {
 
 app.use(express.json())
 
-// setup the logger
-app.use(morgan('tiny'))
+// Custom body token to log body
+morgan.token('body', (req, res) => {
+    return JSON.stringify(req.body)
+})
+
+app.use(
+    morgan(function (tokens, req, res) {
+
+        const tokensArray = [
+            tokens.method(req, res),
+            tokens.url(req, res),
+            tokens.status(req, res),
+            tokens.res(req, res, 'content-length'), '-',
+            tokens['response-time'](req, res), 'ms',   
+        ]
+
+        // Log body only if method is POST
+        if (req.method === "POST") tokensArray.push(tokens.body(req, res))
+
+        // Return formated string of predefined tokens
+        return tokensArray.join(' ')
+    })
+)
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
