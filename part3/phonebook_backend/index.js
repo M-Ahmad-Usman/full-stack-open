@@ -25,6 +25,12 @@ const persons = [
     }
 ]
 
+function getRandomNumber(min = persons.length, max = 10000) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+app.use(express.json())
+
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
 })
@@ -63,7 +69,33 @@ app.delete('/api/persons/:id', (request, response) => {
     persons.splice(personIndex, 1)
 
     return response.status(204).end()
-    
+
+})
+
+app.post('/api/persons', (request, response) => {
+
+    const contentTypeHeader = request.get('Content-Type')
+
+    if (contentTypeHeader !== 'application/json')
+        return response.status(400).json({
+            error: 'Person data is expected in JSON format'
+        })
+
+    const { name, number } = request.body
+
+    if (!name || !number) return response.status(400).json({
+        error: "Person's name and number are required"
+    })
+
+    const newPerson = {
+        id: getRandomNumber(),
+        name,
+        number
+    }
+
+    persons.push(newPerson)
+
+    return response.json(newPerson)
 })
 
 const PORT = 3001
