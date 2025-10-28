@@ -10,7 +10,7 @@ const Persons = props => {
             return (
                 <div key={person.id}>
                     <span>{person.name} {person.number}</span>
-                    <button onClick={() => deletePerson(person.id)}>Delete</button>
+                    <button onClick={() => deletePerson(person)}>Delete</button>
                 </div>
             )
         })
