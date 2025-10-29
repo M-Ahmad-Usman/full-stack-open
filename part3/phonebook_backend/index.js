@@ -99,7 +99,7 @@ app.post('/api/persons', (request, response) => {
     })
 
     Person
-        .exists({ number: number })
+        .exists({ name: name })
         .then(existingPersonId => {
 
             if (existingPersonId) return response.status(400).json({
@@ -115,6 +115,41 @@ app.post('/api/persons', (request, response) => {
         })
 
 
+})
+
+app.put('/api/persons/:id', (request, response) => {
+
+    const { number } = request.body
+
+    if (!number) {
+        return response.status(400).json({
+            error: 'Phone number is required to update the resource'
+        })
+    }
+
+    const personId = request.params.id
+
+    Person
+        .findByIdAndUpdate(
+            personId,
+            { number: number },
+            { new: true, runValidators: true, context: 'query' }
+        )
+        .then(updatedPerson => {
+            if (updatedPerson) {
+                response.json(updatedPerson)
+            } else {
+                response.status(404).json({
+                    error: 'Person not found with the specified id'
+                })
+            }
+        })
+        .catch(err => {
+            console.error(err)
+            response.status(400).json({
+                error: err.message
+            })
+        })
 })
 
 const PORT = process.env.PORT || 3001
