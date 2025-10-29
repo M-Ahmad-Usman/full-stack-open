@@ -19,6 +19,9 @@ const noteSchema = new mongoose.Schema({
     important: Boolean,
 })
 
+// In the returned object
+// Change _id property to id and convert it into string from object. 
+// Delete _id and __v properties
 noteSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
