@@ -21,6 +21,17 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model('Note', noteSchema)
 
+// In the returned object
+// Change _id property to id and convert it into string from object. 
+// Delete _id and __v properties
+noteSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
+    }
+})
+
 let notes = [
     {
         id: "1",
@@ -52,11 +63,11 @@ app.use(requestLogger)
 app.use(express.static('dist'))
 
 app.get('/api/notes', (request, response) => {
-    
+
     Note
-    .find({})
-    .then(notes => response.json(notes))
-    
+        .find({})
+        .then(notes => response.json(notes))
+
 })
 
 app.get('/api/notes/:id', (request, response) => {
