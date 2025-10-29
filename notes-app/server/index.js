@@ -50,8 +50,15 @@ app.get('/api/notes/:id', (request, response) => {
     Note
         .findById(id)
         .then(note => {
-        response.json(note)
-    })
+            if (note) response.json(note)
+            else response.status(404).end()
+        })
+        .catch(err => {
+            console.log(err)
+            response
+                .status(400)
+                .send({error: 'malformatted id'})
+        })
 })
 
 app.delete('/api/notes/:id', (request, response) => {
