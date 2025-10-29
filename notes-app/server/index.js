@@ -2,6 +2,25 @@
 const express = require('express')
 const app = express()
 
+const mongoose = require('mongoose')
+
+const password = process.argv[2]
+console.log(password)
+const urlEncodedPassword = encodeURIComponent(password);
+
+const url = `mongodb+srv://ahmad_admin:${urlEncodedPassword}@full-stack-open-cluster.brcbh9o.mongodb.net/noteApp?retryWrites=true&w=majority&appName=Full-Stack-Open-Cluster`;
+
+mongoose.set('strictQuery', false)
+
+mongoose.connect(url)
+
+const noteSchema = new mongoose.Schema({
+    content: String,
+    important: Boolean,
+})
+
+const Note = mongoose.model('Note', noteSchema)
+
 let notes = [
     {
         id: "1",
@@ -33,7 +52,11 @@ app.use(requestLogger)
 app.use(express.static('dist'))
 
 app.get('/api/notes', (request, response) => {
-    response.json(notes)
+    
+    Note
+    .find({})
+    .then(notes => response.json(notes))
+    
 })
 
 app.get('/api/notes/:id', (request, response) => {
