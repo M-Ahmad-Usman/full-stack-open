@@ -1,34 +1,10 @@
 
 const morgan = require('morgan')
+require('dotenv').config()
 const express = require('express')
 const app = express()
 
-const persons = [
-    {
-        "id": "1",
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": "2",
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": "3",
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": "4",
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-]
-
-function getRandomNumber(min = persons.length, max = 10000) {
-    return Math.floor(Math.random() * (max - min + 1)) + min
-}
+const Person = require('./models/person')
 
 app.use(express.json())
 
@@ -45,7 +21,7 @@ app.use(
             tokens.url(req, res),
             tokens.status(req, res),
             tokens.res(req, res, 'content-length'), '-',
-            tokens['response-time'](req, res), 'ms',   
+            tokens['response-time'](req, res), 'ms',
         ]
 
         // Log body only if method is POST
@@ -57,44 +33,53 @@ app.use(
 )
 app.use(express.static('dist'))
 
-app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
-})
-
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+
+    Person
+        .find({})
+        .then(people => response.json(people))
+        .catch(err => response.status(401).json({
+            error: err.message,
+            message: 'Something went wrong'
+        }))
 })
 
 app.get('/info', (request, response) => {
-    const phonebookLength = persons.length
 
-    const markup =
-        `<p>Phonebook has info of ${phonebookLength} people</p>
-        <p>${new Date().toString()}</p>`
+    Person.countDocuments({})
+        .then(length => {
+            const markup =
+                `<p>Phonebook has info of ${length} people</p>
+            <p>${new Date().toString()}</p>`
 
-    response.send(markup)
+            response.send(markup)
+        })
+        .catch(err => response.status(401).json({
+            error: err.message,
+            message: 'Something went wrong'
+        }))
 })
 
 app.get('/api/persons/:id', (request, response) => {
     const personId = request.params.id
 
-    const person = persons.find(person => person.id === personId)
-
-    if (!person) return response.status(404).end()
-
-    return response.json(person)
+    Person
+        .findById(personId)
+        .then(person => response.json(person))
+        .catch(err => response.status(404).json({
+            error: err.message,
+            message: 'No person found with specified id'
+        }))
 })
 
 app.delete('/api/persons/:id', (request, response) => {
+
     const personId = request.params.id
 
-    const personIndex = persons.findIndex(person => person.id === personId)
-
-    if (personIndex === -1) return response.status(404).end()
-
-    persons.splice(personIndex, 1)
-
-    return response.status(204).end()
+    Person
+        .findByIdAndDelete(personId)
+        .then(deletedPerson => response.status(204).end())
+        .catch(err => response.status(204).end())
 
 })
 
@@ -109,29 +94,27 @@ app.post('/api/persons', (request, response) => {
 
     const { name, number } = request.body
 
-    if (!name) return response.status(400).json({
-        error: "Person's name is required"
+    if (!name || !number) return response.status(400).json({
+        error: "Person's name and number are required"
     })
 
-    if (!number) return response.status(400).json({
-        error: "Person's number is required"
-    })
+    Person
+        .exists({ number: number })
+        .then(existingPersonId => {
 
-    const alreadyExists = persons.find(person => person.name === name)
+            if (existingPersonId) return response.status(400).json({
+                error: `Person ${name} already exists in the phonebook`
+            })
 
-    if (alreadyExists) return response.status(400).json({
-        error: `Person ${alreadyExists.name} already exists in the phonebook`
-    })
+            const newPerson = new Person({
+                name,
+                number,
+            })
 
-    const newPerson = {
-        id: getRandomNumber().toString(),
-        name,
-        number
-    }
+            newPerson.save().then(newPerson => response.json(newPerson))
+        })
 
-    persons.push(newPerson)
 
-    return response.json(newPerson)
 })
 
 const PORT = process.env.PORT || 3001
