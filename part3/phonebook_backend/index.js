@@ -33,18 +33,15 @@ app.use(
 )
 app.use(express.static('dist'))
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
 
     Person
         .find({})
         .then(people => response.json(people))
-        .catch(err => response.status(401).json({
-            error: err.message,
-            message: 'Something went wrong'
-        }))
+        .catch(next)
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', (request, response, next) => {
 
     Person.countDocuments({})
         .then(length => {
@@ -54,36 +51,30 @@ app.get('/info', (request, response) => {
 
             response.send(markup)
         })
-        .catch(err => response.status(401).json({
-            error: err.message,
-            message: 'Something went wrong'
-        }))
+        .catch(next)
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     const personId = request.params.id
 
     Person
         .findById(personId)
         .then(person => response.json(person))
-        .catch(err => response.status(404).json({
-            error: err.message,
-            message: 'No person found with specified id'
-        }))
+        .catch(next)
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
 
     const personId = request.params.id
 
     Person
         .findByIdAndDelete(personId)
         .then(deletedPerson => response.status(204).end())
-        .catch(err => response.status(204).end())
+        .catch(next)
 
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
 
     const contentTypeHeader = request.get('Content-Type')
 
@@ -113,11 +104,12 @@ app.post('/api/persons', (request, response) => {
 
             newPerson.save().then(newPerson => response.json(newPerson))
         })
+        .catch(next)
 
 
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
 
     const { number } = request.body
 
@@ -144,13 +136,21 @@ app.put('/api/persons/:id', (request, response) => {
                 })
             }
         })
-        .catch(err => {
-            console.error(err)
-            response.status(400).json({
-                error: err.message
-            })
-        })
+        .catch(next)
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    next(error)
+}
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
