@@ -25,7 +25,7 @@ app.use(
         ]
 
         // Log body only if method is POST
-        if (req.method === "POST") tokensArray.push(tokens.body(req, res))
+        if (req.method === "POST" || req.method === "PUT") tokensArray.push(tokens.body(req, res))
 
         // Return formated string of predefined tokens
         return tokensArray.join(' ')
