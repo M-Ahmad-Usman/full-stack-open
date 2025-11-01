@@ -88,20 +88,25 @@ app.post('/api/persons', (request, response, next) => {
 
     Person.exists({ name: name })
         .then(existingPersonId => {
-            if (existingPersonId) return response.status(400).json({
-                error: `Person ${name} already exists in the phonebook`
-            })
+            if (existingPersonId !== null) {
+                return response.status(400).json({
+                    error: `Person ${name} already exists in the phonebook`
+                })
+            }
+            else {
+                const newPerson = new Person({
+                    name,
+                    number,
+                })
+
+                newPerson.save()
+                    .then(newPerson => response.json(newPerson))
+                    .catch(next)
+            }
         })
         .catch(next)
 
-    const newPerson = new Person({
-        name,
-        number,
-    })
 
-    newPerson.save()
-        .then(newPerson => response.json(newPerson))
-        .catch(next)
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
