@@ -37,21 +37,17 @@ const App = () => {
 		setTimeout(() => setNotificationMsg(''), time)
 	}
 
-	function addPerson(event) {
-		event.preventDefault()
-
+	function validateNewPersonData() {
 		setIsError(true)
 
 		if (newName.trim() === '') {
 			showNotification("Person's name is required", 2000)
 			return
 		}
-
 		if (newNumber.trim() === '') {
 			showNotification(`Phone Number is required for ${newName}`)
 			return
 		}
-
 		// If the number contains invalid characters: allow only digits and hyphens
 		if (/^[0-9\s-]+$/.test(newNumber) === false) {
 			showNotification('Only digits (0-9) and "-" are allowed for number.')
@@ -60,28 +56,43 @@ const App = () => {
 
 		setIsError(false)
 
+	}
+
+	function updatePerson(oldPerson, newPerson) {
+		personService.updatePerson({ ...oldPerson, number: newPerson.number })
+			.then(updatedPerson => {
+				setIsError(false)
+				setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
+				showNotification(`${updatedPerson.name}'s number has been updated`, 2000)
+			})
+			.catch(err => {
+				setIsError(true)
+				showNotification(err.message, 5000)
+			})
+	}
+
+	function addPerson(event) {
+		event.preventDefault()
+
+		validateNewPersonData()
+
+		if (isError) return
+
 		const newPerson = {
 			name: newName.trim(),
 			number: newNumber.trim()
 		}
 
 		// If a person with submitted name already exists
-		const personWithExistingName = persons.find(person => person.name === newPerson.name);
-		if (personWithExistingName !== undefined) {
+		const personWithSameName = persons.find(person => person.name === newPerson.name);
+		if (personWithSameName !== undefined) {
 
-			const doOverwrite = confirm(`${personWithExistingName.name} is already added to the phonebook, replace the old number with new one?`)
+			const doOverwrite = confirm(`${personWithSameName.name} is already added to the phonebook, replace the old number with new one?`)
 
-			if (doOverwrite) {
-				personService
-					.updatePerson({ ...personWithExistingName, number: newPerson.number })
-					.then(updatedPerson => {
-						setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
-						showNotification(`${updatedPerson.name}'s number has been updated`, 2000)
-					})
-			}
-			else {
+			if (doOverwrite) 
+				updatePerson(personWithSameName, newPerson)
+			else 
 				setNewName('')
-			}
 
 			return
 		}
