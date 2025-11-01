@@ -18,18 +18,21 @@ const App = () => {
 
 	const [notificationMsg, setNotificationMsg] = useState('')
 
+	const [isError, setIsError] = useState(false)
+
 	useEffect(() => {
-		personService
-			.getAllPersons()
-			.then(
-				persons => setPersons(persons)
-				, error => {
-					alert(error.message)
-					console.error(error.message)
-				})
+		personService.getAllPersons()
+			.then(persons => {
+				setPersons(persons)
+				setIsError(false)
+			})
+			.catch(err => {
+				setNotificationMsg(err.message, 5000)
+				setIsError(true)
+			})
 	}, [])
 
-	function showNotification(message, time=2000) {
+	function showNotification(message, time = 2000) {
 		setNotificationMsg(message)
 		setTimeout(() => setNotificationMsg(''), time)
 	}
@@ -37,21 +40,25 @@ const App = () => {
 	function addPerson(event) {
 		event.preventDefault()
 
+		setIsError(true)
+
 		if (newName.trim() === '') {
-			alert("Person's name is required!")
+			showNotification("Person's name is required", 2000)
 			return
 		}
 
 		if (newNumber.trim() === '') {
-			alert(`Phone Number is required for ${newName}`)
+			showNotification(`Phone Number is required for ${newName}`)
 			return
 		}
 
 		// If the number contains invalid characters: allow only digits and hyphens
 		if (/^[0-9\s-]+$/.test(newNumber) === false) {
-			alert('Only digits (0-9) and "-" are allowed for number.')
+			showNotification('Only digits (0-9) and "-" are allowed for number.')
 			return
 		}
+
+		setIsError(false)
 
 		const newPerson = {
 			name: newName.trim(),
@@ -66,7 +73,7 @@ const App = () => {
 
 			if (doOverwrite) {
 				personService
-					.updatePerson({...personWithExistingName, number: newPerson.number})
+					.updatePerson({ ...personWithExistingName, number: newPerson.number })
 					.then(updatedPerson => {
 						setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))
 						showNotification(`${updatedPerson.name}'s number has been updated`, 2000)
@@ -75,22 +82,23 @@ const App = () => {
 			else {
 				setNewName('')
 			}
-			
+
 			return
 		}
 
-		personService
-			.createPerson(newPerson)
+		personService.createPerson(newPerson)
 			.then(newPerson => {
+				setIsError(false)
 				setPersons(persons.concat(newPerson))
 				setNewName('')
 				setNewNumber('')
 
 				showNotification(`${newPerson.name} has been added to the phonebook.`, 2000)
 
-			}, error => {
-				alert(error.message)
-				console.error(error.message)
+			})
+			.catch(err => {
+				showNotification(err.message, 5000)
+				setIsError(true)
 			})
 	}
 
@@ -100,10 +108,14 @@ const App = () => {
 		personService
 			.deletePerson(deletePersonId)
 			.then(deletedPerson => {
+				setIsError(false)
 				setPersons(persons.filter(person => person.id !== deletedPerson.id))
 				showNotification(`${deletedPerson.name} has been deleted from the phonebook`, 2000)
 			})
-			.catch(() => showNotification(`This person has already been deleted from the server`, 2000))
+			.catch(() => {
+				setIsError(true)
+				showNotification(`This person has already been deleted from the server`, 2000)
+			})
 	}
 
 	return (
@@ -111,7 +123,7 @@ const App = () => {
 		<div>
 			<h2>Phonebook</h2>
 
-			<Notification message={notificationMsg}/>
+			<Notification message={notificationMsg} isError={isError} />
 
 			<Filter
 				searchText={searchText}
