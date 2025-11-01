@@ -35,8 +35,7 @@ app.use(express.static('dist'))
 
 app.get('/api/persons', (request, response, next) => {
 
-    Person
-        .find({})
+    Person.find({})
         .then(people => response.json(people))
         .catch(next)
 })
@@ -57,8 +56,7 @@ app.get('/info', (request, response, next) => {
 app.get('/api/persons/:id', (request, response, next) => {
     const personId = request.params.id
 
-    Person
-        .findById(personId)
+    Person.findById(personId)
         .then(person => response.json(person))
         .catch(next)
 })
@@ -67,8 +65,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
     const personId = request.params.id
 
-    Person
-        .findByIdAndDelete(personId)
+    Person.findByIdAndDelete(personId)
         .then(deletedPerson => response.status(204).end())
         .catch(next)
 
@@ -89,8 +86,7 @@ app.post('/api/persons', (request, response, next) => {
         error: "Person's name and number are required"
     })
 
-    Person
-        .exists({ name: name })
+    Person.exists({ name: name })
         .then(existingPersonId => {
 
             if (existingPersonId) return response.status(400).json({
@@ -121,12 +117,11 @@ app.put('/api/persons/:id', (request, response, next) => {
 
     const personId = request.params.id
 
-    Person
-        .findByIdAndUpdate(
-            personId,
-            { number: number },
-            { new: true, runValidators: true, context: 'query' }
-        )
+    Person.findByIdAndUpdate(
+        personId,
+        { number: number },
+        { new: true, runValidators: true, context: 'query' }
+    )
         .then(updatedPerson => {
             if (updatedPerson) {
                 response.json(updatedPerson)
