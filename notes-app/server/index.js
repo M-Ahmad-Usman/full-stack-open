@@ -17,11 +17,11 @@ app.use(express.json())
 app.use(requestLogger)
 app.use(express.static('dist'))
 
-app.get('/api/notes', (request, response) => {
+app.get('/api/notes', (request, response, next) => {
 
-    Note
-        .find({})
+    Note.find({})
         .then(notes => response.json(notes))
+        .catch(next)
 
 })
 
@@ -35,7 +35,7 @@ app.get('/api/notes/:id', (request, response, next) => {
             if (note) response.json(note)
             else response.status(404).end()
         })
-        .catch(err => next(err))
+        .catch(next)
 })
 
 app.delete('/api/notes/:id', (request, response, next) => {
@@ -44,10 +44,10 @@ app.delete('/api/notes/:id', (request, response, next) => {
         .then(result => {
             response.status(204).end()
         })
-        .catch(error => next(error))
+        .catch(next)
 })
 
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', (request, response, next) => {
     const body = request.body
 
     if (!body.content) {
@@ -66,6 +66,7 @@ app.post('/api/notes', (request, response) => {
         .then(savedNote => {
             response.json(savedNote)
         })
+        .catch(next)
 })
 
 app.put('/api/notes/:id', (request, response, next) => {
@@ -84,7 +85,7 @@ app.put('/api/notes/:id', (request, response, next) => {
                 response.json(updatedNote)
             })
         })
-        .catch(error => next(error))
+        .catch(next)
 })
 
 const unknownEndpoint = (request, response) => {
