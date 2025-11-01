@@ -29,9 +29,9 @@ const App = () => {
 				})
 	}, [])
 
-	function showNotification(message, time) {
+	function showNotification(message, time=2000) {
 		setNotificationMsg(message)
-		setTimeout(() => setNotificationMsg(''), 2000)
+		setTimeout(() => setNotificationMsg(''), time)
 	}
 
 	function addPerson(event) {
