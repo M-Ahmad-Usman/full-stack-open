@@ -27,7 +27,7 @@ const App = () => {
 				setIsError(false)
 			})
 			.catch(err => {
-				showNotification(err.message, 5000)
+				showNotification(err.response.data.error, 5000)
 				setIsError(true)
 			})
 	}, [])
@@ -67,7 +67,7 @@ const App = () => {
 			})
 			.catch(err => {
 				setIsError(true)
-				showNotification(err.message, 5000)
+				showNotification(err.response.data.error, 5000)
 			})
 	}
 
@@ -108,7 +108,7 @@ const App = () => {
 
 			})
 			.catch(err => {
-				showNotification(err.message, 5000)
+				showNotification(err.response.data.error, 5000)
 				setIsError(true)
 			})
 	}
