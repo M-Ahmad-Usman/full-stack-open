@@ -88,21 +88,20 @@ app.post('/api/persons', (request, response, next) => {
 
     Person.exists({ name: name })
         .then(existingPersonId => {
-
             if (existingPersonId) return response.status(400).json({
                 error: `Person ${name} already exists in the phonebook`
             })
-
-            const newPerson = new Person({
-                name,
-                number,
-            })
-
-            newPerson.save().then(newPerson => response.json(newPerson))
         })
         .catch(next)
 
+    const newPerson = new Person({
+        name,
+        number,
+    })
 
+    newPerson.save()
+        .then(newPerson => response.json(newPerson))
+        .catch(next)
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -135,10 +134,13 @@ app.put('/api/persons/:id', (request, response, next) => {
 })
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
+    console.log("Printing Error", error.name)
 
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    }
+    else if (error.name === 'ValidationError') {
+        return response.status(400).send({ error: error.message })
     }
 
     next(error)
