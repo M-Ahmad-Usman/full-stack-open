@@ -27,7 +27,7 @@ const App = () => {
 				setIsError(false)
 			})
 			.catch(err => {
-				setNotificationMsg(err.message, 5000)
+				showNotification(err.message, 5000)
 				setIsError(true)
 			})
 	}, [])
