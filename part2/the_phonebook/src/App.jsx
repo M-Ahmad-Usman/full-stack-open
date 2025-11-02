@@ -38,23 +38,22 @@ const App = () => {
 	}
 
 	function validateNewPersonData() {
-		setIsError(true)
 
-		if (newName.trim() === '') {
-			showNotification("Person's name is required", 2000)
-			return
+		if (newName.trim() === '' || newName.trim().length < 3) {
+			showNotification("Person's name is required and must be atleast 3 characters long", 4000)
+			return true
 		}
 		if (newNumber.trim() === '') {
-			showNotification(`Phone Number is required for ${newName}`)
-			return
+			showNotification(`Phone Number is required for ${newName}`, 4000)
+			return true
 		}
 		// If the number contains invalid characters: allow only digits and hyphens
-		if (/^[0-9\s-]+$/.test(newNumber) === false) {
-			showNotification('Only digits (0-9) and "-" are allowed for number.')
-			return
+		if (/^\d{2,3}-\d{5,}$/.test(newNumber) === false) {
+			showNotification('Only digits (0-9) and "-" are allowed for number. Example formats are 09-1234556 and 040-22334455', 4000)
+			return true
 		}
 
-		setIsError(false)
+		return false
 
 	}
 
@@ -74,9 +73,12 @@ const App = () => {
 	function addPerson(event) {
 		event.preventDefault()
 
-		validateNewPersonData()
+		if (validateNewPersonData()) {
+			setIsError(true)
+			return
+		}
 
-		if (isError) return
+		setIsError(false)
 
 		const newPerson = {
 			name: newName.trim(),
