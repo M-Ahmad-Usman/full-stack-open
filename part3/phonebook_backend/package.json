@@ -8,7 +8,8 @@
     "start": "node index.js",
     "build:ui": "rm -rf dist && cd ../../part2/the_phonebook && npm run build && cp -r dist ../../part3/phonebook_backend",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push origin main",
-    "dev": "node --watch index.js"
+    "dev": "node --watch index.js",
+    "lint": "eslint ."
   },
   "author": "M-Ahmad-Usman",
   "license": "ISC",
