@@ -8,6 +8,7 @@
     "dev": "node --watch index.js",
     "build:ui": "rm -rf dist && cd ../client && npm run build && cp -r dist ../server",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push origin practice",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "M-Ahmad-Usman",
