@@ -13,8 +13,8 @@ const blogSchema = mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema)
 
-const mongoUrl = 'mongodb://192.168.1.5:27017/bloglist' 
-mongoose.connect(mongoUrl, { family: 4 }).then(() => console.log("MongoDB connected"), (e) => console.log("Error: ", e))
+const mongoUrl = 'mongodb://192.168.1.5:27017/bloglist'
+mongoose.connect(mongoUrl, { family: 4 }).then(() => console.log('MongoDB connected'), (e) => console.log('Error: ', e))
 
 app.use(express.json())
 
@@ -26,13 +26,13 @@ app.get('/api/blogs', (request, response) => {
 
 app.post('/api/blogs', (request, response) => {
 
-  const { title, author, url } = request.body;
+  const { title, author, url } = request.body
 
-  if (!title) return response.status(400).json({error: "Blog's title is required"})
-  if (!author) return response.status(400).json({error: "Author is required"})
-  if (!url) return response.status(400).json({error: "Blog's url is required"})
+  if (!title) return response.status(400).json({ error: `Blog's title is required` })
+  if (!author) return response.status(400).json({ error: 'Author is required' })
+  if (!url) return response.status(400).json({ error: `Blog's url is required` })
 
-  const blog = new Blog({title, author, url, likes: 0})
+  const blog = new Blog({ title, author, url, likes: 0 })
 
   blog.save().then((result) => {
     response.status(201).json(result)
