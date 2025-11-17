@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "node --watch index.js",
+    "dev": "node --env-file=.env --watch index.js",
     "lint": "eslint ."
   },
   "dependencies": {
