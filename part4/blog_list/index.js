@@ -1,19 +1,11 @@
 
 const express = require('express')
+const Blog = require('./models/blog')
 const mongoose = require('mongoose')
 
 const app = express()
 
-const blogSchema = mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-})
-
-const Blog = mongoose.model('Blog', blogSchema)
-
-const mongoUrl = 'mongodb://192.168.1.5:27017/bloglist'
+const mongoUrl = 'mongodb://192.168.1.3:27017/bloglist'
 mongoose.connect(mongoUrl, { family: 4 }).then(() => console.log('MongoDB connected'), (e) => console.log('Error: ', e))
 
 app.use(express.json())
