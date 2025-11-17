@@ -3,12 +3,19 @@ const express = require('express')
 const Blog = require('./models/blog')
 const mongoose = require('mongoose')
 const config = require('./utils/config')
+const morgan = require('./utils/logger')
+const logger = require('./utils/logger')
 
 const app = express()
 
-mongoose.connect(config.MONGODB_URI, { family: 4 }).then(() => console.log('MongoDB connected'), (e) => console.log('Error: ', e))
-
 app.use(express.json())
+app.use(morgan(logger.morganFormatFunction))
+
+logger.info('Trying to connect to MongoDB...')
+
+mongoose.connect(config.MONGODB_URI, { family: 4 })
+  .then( () => logger.info('Connected to MongoDB') )
+  .catch( e => logger.error(`Error Connecting to MongoDB: ${e}`) )
 
 app.get('/api/blogs', (request, response) => {
   Blog.find({}).then((blogs) => {
@@ -32,5 +39,5 @@ app.post('/api/blogs', (request, response) => {
 })
 
 app.listen(config.PORT, () => {
-  console.log(`Server running on port ${config.PORT}`)
+  logger.info(`Server running on port ${config.PORT}`)
 })
