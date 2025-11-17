@@ -2,11 +2,11 @@
 const express = require('express')
 const Blog = require('./models/blog')
 const mongoose = require('mongoose')
+const config = require('./utils/config')
 
 const app = express()
 
-const mongoUrl = 'mongodb://192.168.1.3:27017/bloglist'
-mongoose.connect(mongoUrl, { family: 4 }).then(() => console.log('MongoDB connected'), (e) => console.log('Error: ', e))
+mongoose.connect(config.MONGODB_URI, { family: 4 }).then(() => console.log('MongoDB connected'), (e) => console.log('Error: ', e))
 
 app.use(express.json())
 
@@ -31,7 +31,6 @@ app.post('/api/blogs', (request, response) => {
   })
 })
 
-const PORT = 3003
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+app.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`)
 })
