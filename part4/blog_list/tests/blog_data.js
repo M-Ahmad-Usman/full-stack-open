@@ -1,5 +1,5 @@
 
-const emptyBlogList = []
+const listWithNoBlog = []
 const listWithOneBlog = [
   {
     _id: '5a422aa71b54a676234d17f8',
@@ -61,6 +61,6 @@ const listWithMultipleBlogs = [
   }
 ]
 
-const data = { emptyBlogList, listWithOneBlog, listWithMultipleBlogs }
+const data = { listWithNoBlog, listWithOneBlog, listWithMultipleBlogs }
 
 module.exports = data
