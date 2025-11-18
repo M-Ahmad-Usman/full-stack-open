@@ -37,7 +37,7 @@ describe('Total Likes', () => {
 
 describe('Favorite blog', () => {
 
-  test('when list has no blog. an error is thrown', () => {
+  test('when list has no blog equals to null', () => {
     const emptyBlogList = blogData.emptyBlogList
 
     assert.deepStrictEqual(listHelper.favoriteBlog(emptyBlogList), null)
