@@ -57,3 +57,32 @@ describe('Favorite blog', () => {
     assert.deepStrictEqual(favoriteBlog, FAVORITE_BLOG)
   })
 })
+
+describe('Most Blogs', () => {
+
+  test('when list has not blogs equals to null', () => {
+    const emptyBlogList = blogData.emptyBlogList
+
+    assert.deepStrictEqual(listHelper.mostBlogs(emptyBlogList), null)
+  })
+
+  test('when list has one blog equals to the author of that blog with number of blogs to 1', () => {
+    const listWithOneBlog = blogData.listWithOneBlog
+    const AUTHOR_WITH_MOST_BLOGS = {
+      author: listWithOneBlog[0].author,
+      blogs: 1
+    }
+
+    assert.deepStrictEqual(listHelper.mostBlogs(listWithOneBlog), AUTHOR_WITH_MOST_BLOGS)
+  })
+
+  test('when list has many blogs equals to the author with most blogs', () => {
+    const listWithMultipleBlogs = blogData.listWithMultipleBlogs
+    const AUTHOR_WITH_MOST_BLOGS = {
+      author: 'Robert C. Martin',
+      blogs: 3
+    }
+
+    assert.deepStrictEqual(listHelper.mostBlogs(listWithMultipleBlogs), AUTHOR_WITH_MOST_BLOGS)
+  })
+})
