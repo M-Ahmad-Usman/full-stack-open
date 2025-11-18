@@ -34,3 +34,26 @@ describe('Total Likes', () => {
     assert.strictEqual(totalLikes, TOTAL_LIKES)
   })
 })
+
+describe('Favorite blog', () => {
+
+  test('when list has no blog. an error is thrown', () => {
+    const emptyBlogList = blogData.emptyBlogList
+
+    assert.throws(() => listHelper.favoriteBlog(emptyBlogList))
+  })
+
+  test('when list has one blog equals to that blog', () => {
+    const favoriteBlog = listHelper.favoriteBlog(blogData.listWithOneBlog)
+    const FAVORITE_BLOG = blogData.listWithOneBlog[0]
+
+    assert.deepStrictEqual(favoriteBlog, FAVORITE_BLOG)
+  })
+
+  test('when list has many blogs equals to the blog having most likes', () => {
+    const favoriteBlog = listHelper.favoriteBlog(blogData.listWithMultipleBlogs)
+    const FAVORITE_BLOG = blogData.listWithMultipleBlogs[2]
+
+    assert.deepStrictEqual(favoriteBlog, FAVORITE_BLOG)
+  })
+})
