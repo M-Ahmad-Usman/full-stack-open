@@ -5,6 +5,12 @@ const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 const blogData = require('./blog_data')
 
+test('dummy returns one', () => {
+
+  const result = listHelper.dummy(blogData.emptyBlogList)
+  assert.strictEqual(result, 1)
+})
+
 describe('Total Likes', () => {
 
   test('of empty list is zero', () => {
