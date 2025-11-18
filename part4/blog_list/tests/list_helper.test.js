@@ -40,7 +40,7 @@ describe('Favorite blog', () => {
   test('when list has no blog. an error is thrown', () => {
     const emptyBlogList = blogData.emptyBlogList
 
-    assert.throws(() => listHelper.favoriteBlog(emptyBlogList))
+    assert.deepStrictEqual(listHelper.favoriteBlog(emptyBlogList), null)
   })
 
   test('when list has one blog equals to that blog', () => {

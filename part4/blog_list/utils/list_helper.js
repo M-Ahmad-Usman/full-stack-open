@@ -15,10 +15,12 @@ const totalLikes = (blogs) => {
 }
 
 const favoriteBlog = (blogs) => {
-  if (!Array.isArray(blogs) || blogs.length === 0)
+  if (!Array.isArray(blogs))
     throw new Error('An array of blogs is expected.')
 
-  if (blogs.length === 1)
+  if (blogs.length === 0)
+    return null
+  else if (blogs.length === 1)
     return blogs[0]
 
   const reducer = (favorite, current) => current.likes > favorite.likes ? current: favorite
