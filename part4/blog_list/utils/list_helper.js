@@ -14,6 +14,18 @@ const totalLikes = (blogs) => {
   return blogs.reduce(reducer, 0)
 }
 
-const helperFunctions = { dummy, totalLikes }
+const favoriteBlog = (blogs) => {
+  if (!Array.isArray(blogs) || blogs.length === 0)
+    throw new Error('An array of blogs is expected.')
+
+  if (blogs.length === 1)
+    return blogs[0]
+
+  const reducer = (favorite, current) => current.likes > favorite.likes ? current: favorite
+
+  return blogs.reduce(reducer)
+}
+
+const helperFunctions = { dummy, totalLikes, favoriteBlog }
 
 module.exports = helperFunctions
