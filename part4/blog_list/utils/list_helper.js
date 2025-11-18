@@ -68,11 +68,52 @@ const mostBlogs = (blogs) => {
   return { author: authorWithMostBlogs, blogs: numberOfBlogs }
 }
 
+const mostLikes = (blogs) => {
+  if (!Array.isArray(blogs))
+    throw new Error('An array of blogs is expected.')
+
+  if (blogs.length === 0)
+    return null
+
+  // Reduces blogs array to the following object
+  // { authorName: numberOfLikes, ... }
+  // Here authorName and numberOfLikes both are values from a blog object of blogs array
+  const reducer1 = (accum, curr) => {
+
+    if (Object.hasOwn(accum, curr.author))
+      accum[curr.author] += curr.likes
+    else
+      accum[curr.author] = curr.likes
+
+    return accum
+  }
+  const authors = blogs.reduce(reducer1, {})
+
+  // Returns the [author, likes] block with highest value of likes
+  const reducer2 = (curr, next) => {
+
+    // curr = [author, likes]
+    // next = [author, likes]
+
+    const likesOfCurrAuthor = curr[1]
+    const likesOfNextAuthor = next[1]
+
+    if (likesOfCurrAuthor < likesOfNextAuthor)
+      curr = next
+
+    return curr
+  }
+  const [authorWithMostLikes, numberOfLikes] = Object.entries(authors).reduce(reducer2)
+
+  return { author: authorWithMostLikes, likes: numberOfLikes }
+}
+
 const helperFunctions = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
 
 module.exports = helperFunctions
