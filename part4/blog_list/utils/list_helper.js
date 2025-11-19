@@ -31,81 +31,45 @@ const favoriteBlog = (blogs) => {
 const mostBlogs = (blogs) => {
   if (!Array.isArray(blogs))
     throw new Error('An array of blogs is expected.')
-
   if (blogs.length === 0)
     return null
 
-  // Reduces blogs array to the following object
-  // { authorName: numberOfBlogs, ... }
-  // Here authorName and numberOfBlogs both are values from a blog object of blogs array
-  const reducer1 = (accum, curr) => {
+  const counts = {}
+  let maxAuthor = null
+  let maxCount = 0
 
-    if (Object.hasOwn(accum, curr.author))
-      accum[curr.author]++
-    else
-      accum[curr.author] = 1
-
-    return accum
+  for (const blog of blogs) {
+    counts[blog.author] = (counts[blog.author] || 0) + 1
+    if (counts[blog.author] > maxCount) {
+      maxCount = counts[blog.author]
+      maxAuthor = blog.author
+    }
   }
-  const authors = blogs.reduce(reducer1, {})
 
-  // Returns the [author, blogs] block with highest value of blogs
-  const reducer2 = (curr, next) => {
-
-    // curr = [author, blogs]
-    // next = [author, blogs]
-
-    const blogsOfCurrAuthor = curr[1]
-    const blogsOfNextAuthor = next[1]
-
-    if (blogsOfCurrAuthor < blogsOfNextAuthor)
-      curr = next
-
-    return curr
-  }
-  const [authorWithMostBlogs, numberOfBlogs] = Object.entries(authors).reduce(reducer2)
-
-  return { author: authorWithMostBlogs, blogs: numberOfBlogs }
+  return { author: maxAuthor, blogs: maxCount }
 }
 
 const mostLikes = (blogs) => {
   if (!Array.isArray(blogs))
     throw new Error('An array of blogs is expected.')
-
   if (blogs.length === 0)
     return null
 
-  // Reduces blogs array to the following object
-  // { authorName: numberOfLikes, ... }
-  // Here authorName and numberOfLikes both are values from a blog object of blogs array
-  const reducer1 = (accum, curr) => {
+  const likes = {}
+  let maxAuthor = null
+  let maxLikes = 0
 
-    if (Object.hasOwn(accum, curr.author))
-      accum[curr.author] += curr.likes
-    else
-      accum[curr.author] = curr.likes
+  for (const blog of blogs) {
 
-    return accum
+    likes[blog.author] = (likes[blog.author] || 0) + blog.likes
+
+    if (likes[blog.author] > maxLikes) {
+      maxLikes = likes[blog.author]
+      maxAuthor = blog.author
+    }
   }
-  const authors = blogs.reduce(reducer1, {})
 
-  // Returns the [author, likes] block with highest value of likes
-  const reducer2 = (curr, next) => {
-
-    // curr = [author, likes]
-    // next = [author, likes]
-
-    const likesOfCurrAuthor = curr[1]
-    const likesOfNextAuthor = next[1]
-
-    if (likesOfCurrAuthor < likesOfNextAuthor)
-      curr = next
-
-    return curr
-  }
-  const [authorWithMostLikes, numberOfLikes] = Object.entries(authors).reduce(reducer2)
-
-  return { author: authorWithMostLikes, likes: numberOfLikes }
+  return { author: maxAuthor, likes: maxLikes }
 }
 
 const helperFunctions = {
