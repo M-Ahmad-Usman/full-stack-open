@@ -28,6 +28,9 @@ const favoriteBlog = (blogs) => {
   return blogs.reduce(reducer)
 }
 
+// Returns an object with following properties:
+// author: The author having most blogs
+// blogs: Number of blogs
 const mostBlogs = (blogs) => {
   if (!Array.isArray(blogs))
     throw new Error('An array of blogs is expected.')
@@ -49,6 +52,9 @@ const mostBlogs = (blogs) => {
   return { author: maxAuthor, blogs: maxCount }
 }
 
+// Returns an object with following properties:
+// author: The author having most likse
+// likes: Number of likes
 const mostLikes = (blogs) => {
   if (!Array.isArray(blogs))
     throw new Error('An array of blogs is expected.')
