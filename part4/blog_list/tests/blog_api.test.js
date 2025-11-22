@@ -35,6 +35,15 @@ test('blogs are returned as json', async () => {
   assert.deepStrictEqual(blogs, blogList)
 })
 
+test('blogs have id property instead of _id', async () => {
+  const { body: blogs } = await api.get('/api/blogs')
+
+  // Check existence of id property
+  assert(Object.hasOwn(blogs[0], 'id'))
+  // Check absence of _id property
+  assert(!Object.hasOwn(blogs[0], '_id'))
+})
+
 // After everything is done we have to close the mongoDB collection
 // otherwise the program will not terminte
 after(() => {
