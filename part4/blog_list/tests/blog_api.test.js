@@ -30,9 +30,9 @@ test('blogs are returned as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  const notes = res.body.map(removeId)
+  const blogs = res.body.map(removeId)
 
-  assert.deepStrictEqual(notes, blogList)
+  assert.deepStrictEqual(blogs, blogList)
 })
 
 // After everything is done we have to close the mongoDB collection
