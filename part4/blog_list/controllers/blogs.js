@@ -22,4 +22,16 @@ blogRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
+blogRouter.get('/:id', async (request, response) => {
+  const id  = request.params.id
+
+  const resultantBlog = await Blog.findOne({ _id: id })
+
+  if (!resultantBlog) response.status(204).json({
+    message: 'No blog available with given id'
+  })
+
+  response.json(resultantBlog)
+})
+
 module.exports = blogRouter
