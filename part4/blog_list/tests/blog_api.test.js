@@ -44,6 +44,19 @@ test('blogs have id property instead of _id', async () => {
   assert(!Object.hasOwn(blogs[0], '_id'))
 })
 
+test('a valid blog can be added', async () => {
+  const newBlog = blogData.listWithOneBlog[0]
+
+  await api.post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const { body: blogs } = await api.get('/api/blogs')
+
+  assert.deepEqual(blogs.length, blogList.length + 1)
+})
+
 // After everything is done we have to close the mongoDB collection
 // otherwise the program will not terminte
 after(() => {
