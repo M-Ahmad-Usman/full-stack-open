@@ -11,15 +11,12 @@ const blogData = require('./blog_data')
 
 const api = supertest(app)
 
-const formatDocument = document => {
-  delete document.__v
-  delete document._id
+const removeId = document => {
+  delete document.id
   return document
 }
 
-// Remove _id and __v properties
 const blogList = blogData.listWithMultipleBlogs
-  .map(formatDocument)
 
 // Persist DB state.
 // Every test will get the same state of DB
@@ -33,7 +30,7 @@ test('blogs are returned as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  const notes = res.body.map(formatDocument)
+  const notes = res.body.map(removeId)
 
   assert.deepStrictEqual(notes, blogList)
 })
