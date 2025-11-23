@@ -42,6 +42,31 @@ describe('when there is initially some notes saved', () => {
     assert(!Object.hasOwn(blogs[0], '_id'))
   })
 
+  describe('viewing a specific blog', () => {
+
+    test('succeeds with status 200 if valid id', async () => {
+      const blogsInDB = await helper.blogsInDB()
+
+      const blogToFind = blogsInDB[0]
+      const validId = blogToFind.id
+
+      const { body: blogFromDB } = await api.get(`/api/blogs/${validId}`).expect(200)
+
+      assert.deepStrictEqual(blogFromDB, blogToFind)
+    })
+
+    test(`fails with status 404 if blog doesn't exist on valid id`, async () => {
+      await api.get(`/api/blogs/${helper.nonExistingId()}`)
+        .expect(404)
+    })
+
+    test('fails with status 400 on malformated id', async () => {
+      const malformatedId = '2342384'
+      await api.get(`/api/blogs/${malformatedId}`)
+        .expect(400)
+    })
+  })
+
   describe('addition of new blog', () => {
 
     test('succeeds with a valid data', async () => {
