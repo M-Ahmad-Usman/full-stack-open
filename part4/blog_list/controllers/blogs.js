@@ -27,7 +27,7 @@ blogRouter.get('/:id', async (request, response) => {
 
   const resultantBlog = await Blog.findOne({ _id: id })
 
-  if (!resultantBlog) response.status(404).json({
+  if (!resultantBlog) return response.status(404).json({
     error: 'No blog available with given id'
   })
 
@@ -39,7 +39,7 @@ blogRouter.delete('/:id', async (request, response) => {
 
   const deletedBlog = await Blog.findByIdAndDelete(id)
 
-  if (!deletedBlog) response.status(404).json({ error: 'No blog available with given id' })
+  if (!deletedBlog) return response.status(404).json({ error: 'No blog available with given id' })
 
   response.status(204).json(deletedBlog)
 })
