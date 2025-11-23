@@ -141,6 +141,63 @@ describe('when there is initially some notes saved', () => {
         .expect(400)
     })
   })
+
+  describe('updation of a blog', () => {
+
+    test('succeeds with 200 on valid data', async () => {
+      const blogs = await helper.blogsInDB()
+      const blogToUpdate = blogs[0]
+
+      blogToUpdate.title = 'Updated Title'
+      blogToUpdate.author = 'Update author'
+      blogToUpdate.url = 'Update url'
+      blogToUpdate.likes = blogToUpdate.likes + 1
+
+      const { body: updatedBlog } = await api.put(`/api/blogs/${blogToUpdate.id}`)
+        .send(blogToUpdate)
+        .expect(200)
+
+      assert.deepStrictEqual(updatedBlog, blogToUpdate)
+    })
+
+    test('fails with 400 on no data', async () => {
+      const blogs = await helper.blogsInDB()
+      const blogToUpdate = blogs[0]
+
+      blogToUpdate.title = 'Updated title'
+
+      await api.put(`/api/blogs/${blogToUpdate.id}`)
+        .expect(400)
+    })
+
+    test('fails with 400 on invalid data', async () => {
+
+      const blogs = await helper.blogsInDB()
+      const blogToUpdate = blogs[0]
+
+      // likes must be number
+      blogToUpdate.likes = 'sdf'
+
+      await api.put(`/api/blogs/${blogToUpdate.id}`)
+        .send(blogToUpdate)
+        .expect(400)
+
+    })
+
+    test('fails with 404 on non existing id', async () => {
+
+      const blogs = await helper.blogsInDB()
+      const blogToUpdate = blogs[0]
+
+      blogToUpdate.title = 'Update title'
+
+      await api.put(`/api/blogs/${helper.nonExistingId()}`)
+        .send(blogToUpdate)
+        .expect(404)
+
+    })
+
+  })
 })
 
 // After everything is done we have to close the mongoDB collection
