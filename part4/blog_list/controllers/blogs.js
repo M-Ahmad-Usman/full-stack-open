@@ -23,7 +23,7 @@ blogRouter.post('/', async (request, response) => {
 })
 
 blogRouter.get('/:id', async (request, response) => {
-  const id  = request.params.id
+  const id = request.params.id
 
   const resultantBlog = await Blog.findOne({ _id: id })
 
@@ -42,6 +42,30 @@ blogRouter.delete('/:id', async (request, response) => {
   if (!deletedBlog) return response.status(404).json({ error: 'No blog available with given id' })
 
   response.status(204).end()
+})
+
+blogRouter.put('/:id', async (request, response) => {
+  const id = request.params.id
+
+  if (!request.body) return response.status(400)
+    .json({
+      error: 'Atleast one valid value is required for a field.'
+    })
+
+  const { title, author, url, likes } = request.body
+
+  const blog = await Blog.findById(id)
+
+  if (!blog) return response.status(404).json({ error: 'No blog available with given id' })
+
+  blog.title = title.trim() || blog.title
+  blog.author = author.trim() || blog.author
+  blog.url = url.trim() || blog.url
+  blog.likes = likes || blog.likes
+
+  await blog.save()
+
+  response.json(blog)
 })
 
 module.exports = blogRouter
