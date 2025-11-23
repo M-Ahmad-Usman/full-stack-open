@@ -47,14 +47,17 @@ test('blogs have id property instead of _id', async () => {
 test('a valid blog can be added', async () => {
   const newBlog = blogData.listWithOneBlog[0]
 
-  await api.post('/api/blogs')
+  const { body: savedBlog } = await api.post('/api/blogs')
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
   const { body: blogs } = await api.get('/api/blogs')
 
+  // Check if blog has been added or not
   assert.deepEqual(blogs.length, blogList.length + 1)
+  // Verify the contents of blogs
+  assert.deepStrictEqual(removeId(savedBlog), newBlog)
 })
 
 // After everything is done we have to close the mongoDB collection
