@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('assert')
 const supertest = require('supertest')
 
@@ -14,75 +14,81 @@ const api = supertest(app)
 
 const blogList = blogData.listWithMultipleBlogs
 
-// Persist DB state.
-// Every test will get the same state of DB
-beforeEach(async () => {
-  await Blog.deleteMany({})
-  await Blog.insertMany(blogList)
-})
+describe('when there is initially some notes saved', () => {
 
-test('blogs are returned as json', async () => {
-  const res = await api.get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+  // Persist DB state.
+  // Every test will get the same state of DB
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+    await Blog.insertMany(blogList)
+  })
 
-  const blogs = res.body.map(blog => helper.removeProperty(blog, 'id'))
+  test('all blogs are returned as json', async () => {
+    const res = await api.get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  assert.deepStrictEqual(blogs, blogList)
-})
+    const blogs = res.body.map(blog => helper.removeProperty(blog, 'id'))
 
-test('blogs have id property instead of _id', async () => {
-  const { body: blogs } = await api.get('/api/blogs')
+    assert.deepStrictEqual(blogs, blogList)
+  })
 
-  // Check existence of id property
-  assert(Object.hasOwn(blogs[0], 'id'))
-  // Check absence of _id property
-  assert(!Object.hasOwn(blogs[0], '_id'))
-})
+  test('blogs have id property instead of _id', async () => {
+    const { body: blogs } = await api.get('/api/blogs')
 
-test('a valid blog can be added', async () => {
-  const newBlog = blogData.listWithOneBlog[0]
+    // Check existence of id property
+    assert(Object.hasOwn(blogs[0], 'id'))
+    // Check absence of _id property
+    assert(!Object.hasOwn(blogs[0], '_id'))
+  })
 
-  const { body: savedBlog } = await api.post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  describe('addition of new blog', () => {
 
-  const { body: blogs } = await api.get('/api/blogs')
+    test('succeeds with a valid data', async () => {
+      const newBlog = blogData.listWithOneBlog[0]
 
-  // Check if blog has been added or not
-  assert.deepEqual(blogs.length, blogList.length + 1)
-  // Verify the contents of blogs
-  assert.deepStrictEqual(helper.removeProperty(savedBlog, 'id'), newBlog)
-})
+      const { body: savedBlog } = await api.post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
-test('an invalid blog cannot be added', async () => {
-  const blog = blogData.listWithOneBlog[0]
+      const { body: blogs } = await api.get('/api/blogs')
 
-  const postOperationsWithInvalidData = [
+      // Check if blog has been added or not
+      assert.deepEqual(blogs.length, blogList.length + 1)
+      // Verify the contents of blogs
+      assert.deepStrictEqual(helper.removeProperty(savedBlog, 'id'), newBlog)
+    })
 
-    // save blog without title
-    api.post('/api/blogs')
-      .send(helper.removeProperty(blog, 'title'))
-      .expect(400),
+    test('fails with status 400 if data invalid', async () => {
+      const blog = blogData.listWithOneBlog[0]
 
-    // save blog without author
-    api.post('/api/blogs')
-      .send(helper.removeProperty(blog, 'author'))
-      .expect(400),
+      const postOperationsWithInvalidData = [
 
-    // save blog without url
-    api.post('/api/blogs')
-      .send(helper.removeProperty(blog, 'url'))
-      .expect(400)
-  ]
+        // save blog without title
+        api.post('/api/blogs')
+          .send(helper.removeProperty(blog, 'title'))
+          .expect(400),
 
-  await Promise.all(postOperationsWithInvalidData)
+        // save blog without author
+        api.post('/api/blogs')
+          .send(helper.removeProperty(blog, 'author'))
+          .expect(400),
 
-  const { body: blogs } = await api.get('/api/blogs')
+        // save blog without url
+        api.post('/api/blogs')
+          .send(helper.removeProperty(blog, 'url'))
+          .expect(400)
+      ]
 
-  assert.deepEqual(blogs.length, blogList.length)
+      await Promise.all(postOperationsWithInvalidData)
 
+      const { body: blogs } = await api.get('/api/blogs')
+
+      assert.deepEqual(blogs.length, blogList.length)
+
+    })
+  })
 })
 
 // After everything is done we have to close the mongoDB collection
