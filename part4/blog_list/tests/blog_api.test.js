@@ -56,6 +56,35 @@ test('a valid blog can be added', async () => {
   assert.deepStrictEqual(helper.removeProperty(savedBlog, 'id'), newBlog)
 })
 
+test('an invalid blog cannot be added', async () => {
+  const blog = blogData.listWithOneBlog[0]
+
+  const postOperationsWithInvalidData = [
+
+    // save blog without title
+    api.post('/api/blogs')
+      .send(helper.removeProperty(blog, 'title'))
+      .expect(400),
+
+    // save blog without author
+    api.post('/api/blogs')
+      .send(helper.removeProperty(blog, 'author'))
+      .expect(400),
+
+    // save blog without url
+    api.post('/api/blogs')
+      .send(helper.removeProperty(blog, 'url'))
+      .expect(400)
+  ]
+
+  await Promise.all(postOperationsWithInvalidData)
+
+  const { body: blogs } = await api.get('/api/blogs')
+
+  assert.deepEqual(blogs.length, blogList.length)
+
+})
+
 // After everything is done we have to close the mongoDB collection
 // otherwise the program will not terminte
 after(() => {
