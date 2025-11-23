@@ -16,7 +16,7 @@ blogRouter.post('/', async (request, response) => {
   if (!author) return response.status(400).json({ error: 'Author is required' })
   if (!url) return response.status(400).json({ error: `Blog's url is required` })
 
-  const blog = new Blog({ title, author, url, likes: 0 })
+  const blog = new Blog({ title, author, url, likes: request.body.likes || 0 })
 
   const savedBlog = await blog.save()
   response.status(201).json(savedBlog)
