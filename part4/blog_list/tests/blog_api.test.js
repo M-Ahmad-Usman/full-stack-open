@@ -44,7 +44,7 @@ describe('when there is initially some notes saved', () => {
 
   describe('viewing a specific blog', () => {
 
-    test('succeeds with status 200 if valid id', async () => {
+    test('succeeds with status 200 on valid id', async () => {
       const blogsInDB = await helper.blogsInDB()
 
       const blogToFind = blogsInDB[0]
@@ -55,7 +55,7 @@ describe('when there is initially some notes saved', () => {
       assert.deepStrictEqual(blogFromDB, blogToFind)
     })
 
-    test(`fails with status 404 if blog doesn't exist on valid id`, async () => {
+    test('fails with status 404 on non-existing id', async () => {
       await api.get(`/api/blogs/${helper.nonExistingId()}`)
         .expect(404)
     })
@@ -69,7 +69,7 @@ describe('when there is initially some notes saved', () => {
 
   describe('addition of new blog', () => {
 
-    test('succeeds with a valid data', async () => {
+    test('succeeds with status 201 on valid data', async () => {
       const newBlog = blogData.listWithOneBlog[0]
 
       const { body: savedBlog } = await api.post('/api/blogs')
@@ -85,7 +85,7 @@ describe('when there is initially some notes saved', () => {
       assert.deepStrictEqual(helper.removeProperty(savedBlog, 'id'), newBlog)
     })
 
-    test('fails with status 400 if data invalid', async () => {
+    test('fails with status 400 on invalid data', async () => {
       const blog = blogData.listWithOneBlog[0]
 
       const postOperationsWithInvalidData = [
@@ -117,7 +117,7 @@ describe('when there is initially some notes saved', () => {
 
   describe('deletion of a blog', () => {
 
-    test('succeeds with 204 on valid id', async () => {
+    test('succeeds with status 204 on valid id', async () => {
 
       const blogs = await helper.blogsInDB()
       const blogToDelete = blogs[0]
@@ -131,7 +131,7 @@ describe('when there is initially some notes saved', () => {
       assert(!ids.includes(blogToDelete.id))
     })
 
-    test('fails with 404 on non-existing id', async () => {
+    test('fails with status 404 on non-existing id', async () => {
       await api.delete(`/api/blogs/${helper.nonExistingId()}`)
         .expect(404)
     })
@@ -160,7 +160,7 @@ describe('when there is initially some notes saved', () => {
       assert.deepStrictEqual(updatedBlog, blogToUpdate)
     })
 
-    test('fails with 400 on no data', async () => {
+    test('fails with status 400 on no data', async () => {
       const blogs = await helper.blogsInDB()
       const blogToUpdate = blogs[0]
 
@@ -170,7 +170,7 @@ describe('when there is initially some notes saved', () => {
         .expect(400)
     })
 
-    test('fails with 400 on invalid data', async () => {
+    test('fails with status 400 on invalid data', async () => {
 
       const blogs = await helper.blogsInDB()
       const blogToUpdate = blogs[0]
@@ -184,7 +184,7 @@ describe('when there is initially some notes saved', () => {
 
     })
 
-    test('fails with 404 on non existing id', async () => {
+    test('fails with status 404 on non-existing id', async () => {
 
       const blogs = await helper.blogsInDB()
       const blogToUpdate = blogs[0]
@@ -195,6 +195,12 @@ describe('when there is initially some notes saved', () => {
         .send(blogToUpdate)
         .expect(404)
 
+    })
+
+    test.only('fails with status 400 on malformatted id', async () => {
+      await api.put('/api/blogs/4498498')
+        .send({ title: 'Ahmad' })
+        .expect(400)
     })
 
   })
