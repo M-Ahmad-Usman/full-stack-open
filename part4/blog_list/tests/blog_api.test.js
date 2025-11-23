@@ -114,6 +114,33 @@ describe('when there is initially some notes saved', () => {
 
     })
   })
+
+  describe('deletion of a blog', () => {
+
+    test('succeeds with 204 on valid id', async () => {
+
+      const blogs = await helper.blogsInDB()
+      const blogToDelete = blogs[0]
+
+      await api.delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+
+      const blogsAfterDeletion = await helper.blogsInDB()
+      const ids = blogsAfterDeletion.map(b => b.id)
+
+      assert(!ids.includes(blogToDelete.id))
+    })
+
+    test('fails with 404 on non-existing id', async () => {
+      await api.delete(`/api/blogs/${helper.nonExistingId()}`)
+        .expect(404)
+    })
+
+    test('fails with 400 on malformatted id', async () => {
+      await api.delete('/api/blogs/89498')
+        .expect(400)
+    })
+  })
 })
 
 // After everything is done we have to close the mongoDB collection
