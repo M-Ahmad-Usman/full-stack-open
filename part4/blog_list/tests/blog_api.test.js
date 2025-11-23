@@ -5,16 +5,12 @@ const supertest = require('supertest')
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
 
+const blogData = require('./blog_data')
+const helper = require('./test_helper')
+
 const app = require('../app')
 
-const blogData = require('./blog_data')
-
 const api = supertest(app)
-
-const removeId = document => {
-  delete document.id
-  return document
-}
 
 const blogList = blogData.listWithMultipleBlogs
 
@@ -30,7 +26,7 @@ test('blogs are returned as json', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  const blogs = res.body.map(removeId)
+  const blogs = res.body.map(blog => helper.removeProperty(blog, 'id'))
 
   assert.deepStrictEqual(blogs, blogList)
 })
@@ -57,7 +53,7 @@ test('a valid blog can be added', async () => {
   // Check if blog has been added or not
   assert.deepEqual(blogs.length, blogList.length + 1)
   // Verify the contents of blogs
-  assert.deepStrictEqual(removeId(savedBlog), newBlog)
+  assert.deepStrictEqual(helper.removeProperty(savedBlog, 'id'), newBlog)
 })
 
 // After everything is done we have to close the mongoDB collection
