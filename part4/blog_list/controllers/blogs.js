@@ -27,7 +27,7 @@ blogRouter.get('/:id', async (request, response) => {
 
   const resultantBlog = await Blog.findOne({ _id: id })
 
-  if (!resultantBlog) response.status(204).json({
+  if (!resultantBlog) response.status(404).json({
     message: 'No blog available with given id'
   })
 
