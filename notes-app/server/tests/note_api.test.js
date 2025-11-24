@@ -7,6 +7,7 @@ const helper = require('./test_helper')
 
 const mongoose = require('mongoose')
 const Note = require('../models/note')
+const User = require('../models/user')
 
 const app = require('../app')
 
@@ -15,8 +16,25 @@ const api = supertest(app)
 describe('when there is initially some notes saved', () => {
 
   beforeEach(async () => {
+
+    await User.deleteMany({})
     await Note.deleteMany({})
-    await Note.insertMany(helper.initialNotes)
+
+    const user = new User({
+      username: 'First User',
+      password: '12345'
+    })
+
+    await user.save()
+
+    // Add userId field in initialNotes
+    const initialNotes = helper.initialNotes
+      .map(n => {
+        n.userId = user._id
+        return n
+      })
+
+    await Note.insertMany(initialNotes)
   })
 
   test('notes are returned as json', async () => {
@@ -69,9 +87,18 @@ describe('when there is initially some notes saved', () => {
   describe('addition of a new note', () => {
 
     test('succeeds with valid data', async () => {
+
+      const user = new User({
+        username: 'some user',
+        password: '12345'
+      })
+
+      await user.save()
+
       const newNote = {
         content: 'async/await simplifies making async calls',
         important: true,
+        userId: user._id
       }
 
       await api
