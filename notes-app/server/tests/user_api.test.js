@@ -103,7 +103,7 @@ describe('when there is initially one user in db', () => {
 
   })
 
-  test.only('creation fails with 400 if length of password is less than 5', async () => {
+  test('creation fails with 400 if length of password is less than 5', async () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
