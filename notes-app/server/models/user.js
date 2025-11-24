@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     // This index willn't be applied if there are already duplicated usernames
     // Mongoose validations do not detect the index violation,
     // and instead of ValidationError they return an error of type MongoServerError.
-    unique: true // this ensures the uniquness of username
+    unique: true, // this ensures the uniquness of username
+    minLength: 4
   },
   name: String,
   passwordHash: String,
