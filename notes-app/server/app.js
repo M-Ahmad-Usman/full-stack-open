@@ -27,7 +27,7 @@ app.use(express.json())
 app.use(middleware.requestLogger)
 
 app.use('/api/notes', notesRouter)
-app.user('/api/users', userRouter)
+app.use('/api/users', userRouter)
 
 // app.use() without a path is the idiomatic Express way to handle 404s
 // because it naturally falls at the end of the middleware chain and
