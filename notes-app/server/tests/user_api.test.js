@@ -26,6 +26,16 @@ describe('when there is initially one user in db', () => {
     await user.save()
   })
 
+  test('all users are returned as json', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const { body: usersAtEnd } = await api.get('/api/users')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    assert.deepStrictEqual(usersAtStart, usersAtEnd)
+  })
+
   describe('creation of new user', async () => {
 
     test('creation succeeds with a fresh username', async () => {
