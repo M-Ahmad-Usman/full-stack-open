@@ -1,7 +1,14 @@
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
-  username: String,
+  username: {
+    type: String,
+    required: true,
+    // This index willn't be applied if there are already duplicated usernames
+    // Mongoose validations do not detect the index violation,
+    // and instead of ValidationError they return an error of type MongoServerError.
+    unique: true // this ensures the uniquness of username
+  },
   name: String,
   passwordHash: String,
   notes: [
