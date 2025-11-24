@@ -92,6 +92,25 @@ describe('when there is initially one user in db', () => {
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
 
   })
+
+  test.only('creation fails with 400 if length of password is less than 5', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      username: '12d3',
+      name: 'Something',
+      password: '1234'
+    }
+
+    const res = await api.post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    const usersAtEnd = await helper.usersInDb()
+    assert(res.body.error.includes('shorter than the minimum allowed length (5)'))
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+  })
 })
 
 after(async () => {
