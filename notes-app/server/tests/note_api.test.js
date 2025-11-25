@@ -1,148 +1,217 @@
-
 const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert')
 const supertest = require('supertest')
+const mongoose = require('mongoose')
 
 const helper = require('./test_helper')
-
-const mongoose = require('mongoose')
-const Note = require('../models/note')
-const User = require('../models/user')
-
 const app = require('../app')
 
 const api = supertest(app)
 
-describe('when there is initially some notes saved', () => {
+describe('Note API', () => {
 
   beforeEach(async () => {
+    await helper.clearDatabase()
+  })
 
-    await User.deleteMany({})
-    await Note.deleteMany({})
+  describe('GET /api/notes', () => {
 
-    const user = new User({
-      username: 'First User',
-      password: '12345'
+    test('returns notes as json', async () => {
+      await api
+        .get('/api/notes')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
     })
 
-    await user.save()
+    test('returns all notes', async () => {
+      const user = await helper.createUser({ username: 'testuser1' })
 
-    // Add userId field in initialNotes
-    const initialNotes = helper.initialNotes
-      .map(n => {
-        n.userId = user._id
-        return n
-      })
+      await helper.createNote({ content: 'First note' }, user)
+      await helper.createNote({ content: 'Second note' }, user)
 
-    await Note.insertMany(initialNotes)
+      const response = await api.get('/api/notes')
+      assert.strictEqual(response.body.length, 2)
+    })
+
+    test('returns empty array when no notes exist', async () => {
+      const response = await api.get('/api/notes')
+      assert.strictEqual(response.body.length, 0)
+    })
   })
 
-  test('notes are returned as json', async () => {
-    await api
-      .get('/api/notes')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-  })
+  describe('GET /api/notes/:id', () => {
 
-  test('all notes are returned', async () => {
-    const response = await api.get('/api/notes')
+    test('succeeds with valid id', async () => {
+      const user = await helper.createUser({ username: 'testuser2' })
+      const note = await helper.createNote({ content: 'Test note' }, user)
 
-    assert.strictEqual(response.body.length, helper.initialNotes.length)
-  })
-
-  test('a specific note is within the returned notes', async () => {
-    const response = await api.get('/api/notes')
-
-    const contents = response.body.map(e => e.content)
-    assert(contents.includes('HTML is easy'))
-  })
-
-  describe('viewing a specific note', () => {
-
-    test('succeeds with a valid id', async () => {
-      const notesAtStart = await helper.notesInDb()
-      const noteToView = notesAtStart[0]
-
-      const resultNote = await api
-        .get(`/api/notes/${noteToView.id}`)
+      const response = await api
+        .get(`/api/notes/${note.id}`)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
-      assert.deepStrictEqual(resultNote.body, noteToView)
+      assert.strictEqual(response.body.content, 'Test note')
+      assert.strictEqual(response.body.id, note.id)
     })
 
-    test('fails with statuscode 404 if note does not exist', async () => {
+    test('fails with 404 if note does not exist', async () => {
       const validNonexistingId = await helper.nonExistingId()
-
       await api.get(`/api/notes/${validNonexistingId}`).expect(404)
     })
 
-    test('fails with statuscode 400 id is invalid', async () => {
+    test('fails with 400 if id is invalid', async () => {
       const invalidId = '5a3d5da59070081a82a3445'
-
       await api.get(`/api/notes/${invalidId}`).expect(400)
     })
   })
 
-  describe('addition of a new note', () => {
+  describe('POST /api/notes', () => {
 
     test('succeeds with valid data', async () => {
-
-      const user = new User({
-        username: 'some user',
-        password: '12345'
-      })
-
-      await user.save()
+      const user = await helper.createUser({ username: 'noteCreator' })
 
       const newNote = {
         content: 'async/await simplifies making async calls',
         important: true,
-        userId: user._id
+        userId: user.id
       }
 
-      await api
+      const response = await api
         .post('/api/notes')
         .send(newNote)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
+      assert.strictEqual(response.body.content, newNote.content)
+      assert.strictEqual(response.body.important, true)
+
       const notesAtEnd = await helper.notesInDb()
-      assert.strictEqual(notesAtEnd.length, helper.initialNotes.length + 1)
+      assert.strictEqual(notesAtEnd.length, 1)
 
       const contents = notesAtEnd.map(n => n.content)
       assert(contents.includes('async/await simplifies making async calls'))
     })
 
-    test('fails with status code 400 if data invalid', async () => {
-      const newNote = { important: true }
+    test('sets important to false by default', async () => {
+      const user = await helper.createUser({ username: 'defaultUser' })
+
+      const newNote = {
+        content: 'Note without importance flag',
+        userId: user.id
+      }
+
+      const response = await api
+        .post('/api/notes')
+        .send(newNote)
+        .expect(201)
+
+      assert.strictEqual(response.body.important, false)
+    })
+
+    test('fails with 400 if content is missing', async () => {
+      const user = await helper.createUser({ username: 'badUser' })
+
+      const newNote = {
+        important: true,
+        userId: user.id
+      }
 
       await api.post('/api/notes').send(newNote).expect(400)
 
       const notesAtEnd = await helper.notesInDb()
+      assert.strictEqual(notesAtEnd.length, 0)
+    })
 
-      assert.strictEqual(notesAtEnd.length, helper.initialNotes.length)
+    test('fails with 400 if userId is missing', async () => {
+      const newNote = {
+        content: 'Note without user',
+        important: true
+      }
+
+      await api.post('/api/notes').send(newNote).expect(400)
+
+      const notesAtEnd = await helper.notesInDb()
+      assert.strictEqual(notesAtEnd.length, 0)
+    })
+
+    test('fails with 400 if userId is invalid', async () => {
+      const newNote = {
+        content: 'Note with invalid user',
+        userId: '507f1f77bcf86cd799439011'
+      }
+
+      await api.post('/api/notes').send(newNote).expect(400)
+
+      const notesAtEnd = await helper.notesInDb()
+      assert.strictEqual(notesAtEnd.length, 0)
     })
   })
 
-  describe('deletion of a note', () => {
+  describe('DELETE /api/notes/:id', () => {
 
-    test('succeeds with status code 204 if id is valid', async () => {
+    test('succeeds with 204 if id is valid', async () => {
+      const user = await helper.createUser({ username: 'deletor' })
+      const note = await helper.createNote({ content: 'To be deleted' }, user)
+
       const notesAtStart = await helper.notesInDb()
-      const noteToDelete = notesAtStart[0]
+      assert.strictEqual(notesAtStart.length, 1)
 
-      await api.delete(`/api/notes/${noteToDelete.id}`).expect(204)
+      await api.delete(`/api/notes/${note.id}`).expect(204)
 
       const notesAtEnd = await helper.notesInDb()
+      assert.strictEqual(notesAtEnd.length, 0)
 
       const contents = notesAtEnd.map(n => n.content)
-      assert(!contents.includes(noteToDelete.content))
+      assert(!contents.includes('To be deleted'))
+    })
 
-      assert.strictEqual(notesAtEnd.length, helper.initialNotes.length - 1)
+    test('succeeds with 204 even if note does not exist', async () => {
+      const validNonexistingId = await helper.nonExistingId()
+      await api.delete(`/api/notes/${validNonexistingId}`).expect(204)
+    })
+  })
+
+  describe('PUT /api/notes/:id', () => {
+
+    test('succeeds with valid data', async () => {
+      const user = await helper.createUser({ username: 'updater' })
+      const note = await helper.createNote({
+        content: 'Original content',
+        important: false
+      }, user)
+
+      const updatedData = {
+        content: 'Updated content',
+        important: true
+      }
+
+      const response = await api
+        .put(`/api/notes/${note.id}`)
+        .send(updatedData)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      assert.strictEqual(response.body.content, 'Updated content')
+      assert.strictEqual(response.body.important, true)
+    })
+
+    test('fails with 404 if note does not exist', async () => {
+      const validNonexistingId = await helper.nonExistingId()
+
+      const updatedData = {
+        content: 'Updated content',
+        important: true
+      }
+
+      await api
+        .put(`/api/notes/${validNonexistingId}`)
+        .send(updatedData)
+        .expect(404)
     })
   })
 })
 
 after(async () => {
+  await helper.clearDatabase()
   await mongoose.connection.close()
 })
