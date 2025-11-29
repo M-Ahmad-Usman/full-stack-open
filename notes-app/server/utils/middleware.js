@@ -12,6 +12,23 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
+const verifyContentType = (contentType) => {
+
+  return (request, response, next) => {
+    const requestContentType = request.get('Content-Type')
+
+    // Check if Content-Type matches or starts with expected type
+    // (handles "application/json; charset=utf-8")
+    if (!requestContentType || !requestContentType.startsWith(contentType)) {
+      return response.status(400).json({
+        error: `Content-Type must be ${contentType}`
+      })
+    }
+
+    next()
+  }
+}
+
 const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError')
@@ -35,5 +52,6 @@ const errorHandler = (error, request, response, next) => {
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  verifyContentType
 }
