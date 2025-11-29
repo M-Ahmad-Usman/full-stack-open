@@ -50,7 +50,7 @@ describe('Login API', () => {
     })
 
     test('fails with status 400 if no credentials are provided', async () => {
-      await api.post(baseEndpoint).expect(400)
+      await api.post(baseEndpoint).send({}).expect(400)
     })
 
   })
