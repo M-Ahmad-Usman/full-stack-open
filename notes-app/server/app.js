@@ -8,6 +8,7 @@ const middleware = require('./utils/middleware')
 
 const notesRouter = require('./controllers/notes')
 const userRouter = require('./controllers/users')
+const loginRouter = require('./controllers/login')
 
 const app = express()
 
@@ -28,6 +29,7 @@ app.use(middleware.requestLogger)
 
 app.use('/api/notes', notesRouter)
 app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 
 // app.use() without a path is the idiomatic Express way to handle 404s
 // because it naturally falls at the end of the middleware chain and
