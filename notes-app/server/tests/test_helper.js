@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const Note = require('../models/note')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 const initialNotes = [
   {
@@ -49,6 +50,24 @@ const createNote = async (noteData = {}, user = null) => {
   return savedNote
 }
 
+// Requires _id and username
+const generateToken = user => {
+  const { _id, username } = user
+
+  const userForToken = {
+    username,
+    id: _id
+  }
+
+  const token = jwt.sign(
+    userForToken,
+    process.env.SECRET,
+    { expiresIn: 60*60 }
+  )
+
+  return token
+}
+
 // Clear all test data from database
 const clearDatabase = async () => {
   await Note.deleteMany({})
@@ -77,6 +96,7 @@ module.exports = {
   initialNotes,
   createUser,
   createNote,
+  generateToken,
   clearDatabase,
   nonExistingId,
   notesInDb,
