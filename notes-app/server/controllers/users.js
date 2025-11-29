@@ -1,8 +1,11 @@
 const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
+const middleware = require('../utils/middleware')
 
-usersRouter.post('/', async (request, response) => {
+const verifyContentType = middleware.verifyContentType('application/json')
+
+usersRouter.post('/', verifyContentType, async (request, response) => {
   const { username, name, password } = request.body
 
   if (!password) return response.status(400).json({ error: 'Password is required and must be atleast 5 characters' })

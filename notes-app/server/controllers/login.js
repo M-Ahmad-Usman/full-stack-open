@@ -2,9 +2,18 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const loginRouter = require('express').Router()
 const User = require('../models/user')
+const middleware = require('../utils/middleware')
 
-loginRouter.post('/', async (request, response) => {
+const verifyContentType = middleware.verifyContentType('application/json')
+
+loginRouter.post('/', verifyContentType, async (request, response) => {
   const { username, password } = request.body
+
+  if (!username || !password) {
+    return response.status(400).json({
+      error: 'username and password are required'
+    })
+  }
 
   const user = await User.findOne({ username })
   const passwordCorrect = user === null
