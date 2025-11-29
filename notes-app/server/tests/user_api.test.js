@@ -179,6 +179,11 @@ describe('User API', () => {
       assert.strictEqual(usersAtEnd.length, 0)
     })
   })
+
+  test('fails with 400 if no content is send or Content-Type isn not application/json', async () => {
+    await api.post('/api/users').expect(400)
+  })
+
 })
 
 after(async () => {

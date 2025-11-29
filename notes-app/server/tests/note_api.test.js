@@ -158,6 +158,10 @@ describe('Note API', () => {
       const notesAtEnd = await helper.notesInDb()
       assert.strictEqual(notesAtEnd.length, 0)
     })
+
+    test('fails with 400 if no content is send or Content-Type isn not application/json', async () => {
+      await api.post('/api/notes').expect(400)
+    })
   })
 
   describe('DELETE /api/notes/:id', () => {
@@ -221,6 +225,11 @@ describe('Note API', () => {
         .send(updatedData)
         .expect(404)
     })
+
+    test('fails with 400 if no content is send or Content-Type isn not application/json', async () => {
+      await api.post('/api/notes').expect(400)
+    })
+
   })
 })
 

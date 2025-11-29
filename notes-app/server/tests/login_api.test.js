@@ -53,6 +53,10 @@ describe('Login API', () => {
       await api.post(baseEndpoint).send({}).expect(400)
     })
 
+    test('fails with status 400 if Content-Type is invalid or not application/json', async () => {
+      await api.post(baseEndpoint).expect(400)
+    })
+
   })
 
 })
