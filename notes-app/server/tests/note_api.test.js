@@ -70,15 +70,17 @@ describe('Note API', () => {
     test('succeeds with valid data', async () => {
       const user = await helper.createUser({ username: 'noteCreator' })
 
+      const token = helper.generateToken(user)
+
       const newNote = {
         content: 'async/await simplifies making async calls',
         important: true,
-        userId: user.id
       }
 
       const response = await api
         .post('/api/notes')
         .send(newNote)
+        .auth(token, { type: 'bearer' })
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
@@ -95,13 +97,15 @@ describe('Note API', () => {
     test('sets important to false by default', async () => {
       const user = await helper.createUser({ username: 'defaultUser' })
 
+      const token = helper.generateToken(user)
+
       const newNote = {
         content: 'Note without importance flag',
-        userId: user.id
       }
 
       const response = await api
         .post('/api/notes')
+        .auth(token, { type: 'bearer' })
         .send(newNote)
         .expect(201)
 
@@ -111,36 +115,45 @@ describe('Note API', () => {
     test('fails with 400 if content is missing', async () => {
       const user = await helper.createUser({ username: 'badUser' })
 
+      const token = helper.generateToken(user)
+
       const newNote = {
         important: true,
-        userId: user.id
       }
 
-      await api.post('/api/notes').send(newNote).expect(400)
+      await api.post('/api/notes')
+        .send(newNote)
+        .auth(token, { type: 'bearer' })
+        .expect(400)
 
       const notesAtEnd = await helper.notesInDb()
       assert.strictEqual(notesAtEnd.length, 0)
     })
 
-    test('fails with 400 if userId is missing', async () => {
+    test('fails with 401 if token is missing', async () => {
+
       const newNote = {
-        content: 'Note without user',
+        content: 'Note without token',
         important: true
       }
 
-      await api.post('/api/notes').send(newNote).expect(400)
+      await api.post('/api/notes').send(newNote).expect(401)
 
       const notesAtEnd = await helper.notesInDb()
       assert.strictEqual(notesAtEnd.length, 0)
     })
 
-    test('fails with 400 if userId is invalid', async () => {
+    test('fails with 401 if token is invalid', async () => {
       const newNote = {
         content: 'Note with invalid user',
-        userId: '507f1f77bcf86cd799439011'
       }
 
-      await api.post('/api/notes').send(newNote).expect(400)
+      const INVALID_TOKEN = 'random'
+
+      await api.post('/api/notes')
+        .send(newNote)
+        .auth(INVALID_TOKEN, { type: 'bearer' })
+        .expect(401)
 
       const notesAtEnd = await helper.notesInDb()
       assert.strictEqual(notesAtEnd.length, 0)
