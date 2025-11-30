@@ -1,24 +1,47 @@
 
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const middleware = require('../utils/middleware')
+const User = require('../models/user')
+
+const { extractTokenPayload } = middleware
 
 blogRouter.get('/', async (request, response) => {
 
   const blogs = await Blog.find({})
+    .populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', extractTokenPayload, async (request, response) => {
 
+  const { tokenPayload } = request
   const { title, author, url } = request.body
+
+  if (!tokenPayload.id)
+    return response.status(401).json({ error: 'token invalid' })
 
   if (!title) return response.status(400).json({ error: `Blog's title is required` })
   if (!author) return response.status(400).json({ error: 'Author is required' })
   if (!url) return response.status(400).json({ error: `Blog's url is required` })
 
-  const blog = new Blog({ title, author, url, likes: request.body.likes || 0 })
+  const user = await User.findById(tokenPayload.id)
+
+  if (!user)
+    return response.status(400).json({ error: 'userId missing or invalid' })
+
+  const blog = new Blog({
+    title,
+    author,
+    url,
+    likes: request.body.likes || 0,
+    user: user._id
+  })
 
   const savedBlog = await blog.save()
+  user.blogs.push(savedBlog._id)
+  await user.save()
+
   response.status(201).json(savedBlog)
 })
 
