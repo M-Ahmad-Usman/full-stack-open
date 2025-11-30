@@ -1,8 +1,30 @@
 
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// Attach token payload to request
+const extractTokenPayload = (request, response, next) => {
+  const authorizationHeader = request.get('authorization')
+
+  if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+    return response.status(400).json({ error: 'JWT access token with Bearer scheme is required to access this route.' })
+  }
+
+  // The header is "Bearer token...."
+  // Remove "Bearer " to extract token
+  const token = authorizationHeader.replace('Bearer ', '')
+  // If the token is missing or invalid
+  // then JsonWebTokenError exception will be thrown on jwt.verify
+  // This exception will be handled by the error handling middleware
+  const payload = jwt.verify(token, process.env.SECRET)
+
+  // Attach payload to request
+  request.tokenPayload = payload
+  next()
 }
 
 const errorHandler = (error, request, response, next) => {
@@ -20,6 +42,10 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const middlewares = { unknownEndpoint, errorHandler }
+const middlewares = {
+  unknownEndpoint,
+  errorHandler,
+  extractTokenPayload
+}
 
 module.exports = middlewares
