@@ -51,18 +51,25 @@ blogRouter.get('/:id', async (request, response) => {
   const resultantBlog = await Blog.findOne({ _id: id })
 
   if (!resultantBlog) return response.status(404).json({
-    error: 'No blog available with given id'
+    error: 'No blog available'
   })
 
   response.json(resultantBlog)
 })
 
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete('/:id', extractTokenPayload, async (request, response) => {
   const id = request.params.id
+  const { tokenPayload } = request
 
-  const deletedBlog = await Blog.findByIdAndDelete(id)
+  const blog = await Blog.findOne({ _id: id })
 
-  if (!deletedBlog) return response.status(404).json({ error: 'No blog available with given id' })
+  if (!blog)
+    return response.status(404).json({ error: 'No blog available' })
+
+  if (blog.user.toString() !== tokenPayload.id)
+    return response.status(403).json({ error: `You're not authorized to delete this blog` })
+
+  await blog.deleteOne()
 
   response.status(204).end()
 })
