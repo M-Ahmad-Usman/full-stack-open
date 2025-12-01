@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     // and instead of ValidationError they return an error of type MongoServerError.
     // This error is handled by the the error handling middleware.
     unique: true, // this ensures the uniquness of username
-    minLength: 4
+    minLength: 3
   },
   passwordHash: {
     type: String,
