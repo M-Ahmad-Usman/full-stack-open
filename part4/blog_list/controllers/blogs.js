@@ -22,7 +22,7 @@ blogRouter.post('/', extractTokenPayload, async (request, response) => {
     return response.status(401).json({ error: 'token invalid' })
 
   if (!title) return response.status(400).json({ error: `Blog's title is required` })
-  if (!author) return response.status(400).json({ error: 'Author is required' })
+  if (!author) return response.status(400).json({ error: `Blog's Author is required` })
   if (!url) return response.status(400).json({ error: `Blog's url is required` })
 
   const user = await User.findById(tokenPayload.id)
