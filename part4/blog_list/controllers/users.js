@@ -16,12 +16,15 @@ userRouter.post('/', async (request, response) => {
   if (!username || !password)
     return response.status(400).json({ error: 'Username and password are required' })
 
+  const PASSWORD_MIN_LENGTH = 3
+
   // The type of password must be string as bcrypt expects string
   if (typeof password !== 'string')
-    return response.status(400).json({ error: 'password must be string atleast 5 characters long' })
+    return response.status(400).json({ error: `password must be string atleast ${PASSWORD_MIN_LENGTH} characters long` })
 
-  if (password.length < 5)
-    return response.status(400).json({ error: 'Password must be atleast 5 characters long' })
+
+  if (password.length < PASSWORD_MIN_LENGTH)
+    return response.status(400).json({ error: `Password must be atleast ${PASSWORD_MIN_LENGTH} characters long` })
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
