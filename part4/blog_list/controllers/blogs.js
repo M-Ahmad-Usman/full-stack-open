@@ -18,14 +18,17 @@ blogRouter.post('/', extractTokenPayload, async (request, response) => {
   const { tokenPayload } = request
   const { title, author, url } = request.body
 
-  if (!tokenPayload.id)
+  if (!tokenPayload.userId)
     return response.status(401).json({ error: 'token invalid' })
 
-  if (!title) return response.status(400).json({ error: `Blog's title is required` })
-  if (!author) return response.status(400).json({ error: `Blog's Author is required` })
-  if (!url) return response.status(400).json({ error: `Blog's url is required` })
+  if (!title)
+    return response.status(400).json({ error: `Blog's title is required` })
+  if (!author)
+    return response.status(400).json({ error: `Blog's Author is required` })
+  if (!url)
+    return response.status(400).json({ error: `Blog's url is required` })
 
-  const user = await User.findById(tokenPayload.id)
+  const user = await User.findById(tokenPayload.userId)
 
   if (!user)
     return response.status(400).json({ error: 'userId missing or invalid' })
@@ -61,12 +64,15 @@ blogRouter.delete('/:id', extractTokenPayload, async (request, response) => {
   const id = request.params.id
   const { tokenPayload } = request
 
+  if (!tokenPayload.userId)
+    return response.status(401).json({ error: 'token invalid' })
+
   const blog = await Blog.findOne({ _id: id })
 
   if (!blog)
     return response.status(404).json({ error: 'No blog available' })
 
-  if (blog.user.toString() !== tokenPayload.id)
+  if (blog.user.toString() !== tokenPayload.userId)
     return response.status(403).json({ error: `You're not authorized to delete this blog` })
 
   await blog.deleteOne()
