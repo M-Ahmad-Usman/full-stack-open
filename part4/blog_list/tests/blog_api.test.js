@@ -350,10 +350,12 @@ describe('Blog API', () => {
 
     test(`fails with staus 415 if Content-Type isn't application/json`, async () => {
       const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
 
       const token = helper.generateValidToken(user)
 
-      const response = await api.put(baseEndpoint)
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
         .set('Content-Type', 'text/html')
         .send('<p>Hello</p>')
         .auth(token, { type: 'bearer' })
@@ -367,10 +369,12 @@ describe('Blog API', () => {
 
     test('fails with status 400 if no body is sent', async () => {
       const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
 
       const token = helper.generateValidToken(user)
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
         .auth(token, { type: 'bearer' })
         .set('Content-Type', 'application/json')
         .expect(400)
