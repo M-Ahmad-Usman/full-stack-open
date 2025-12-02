@@ -25,7 +25,7 @@ loginRouter.post('/', async (request, response) => {
 
   const userForToken = {
     username,
-    id: user._id
+    userId: user._id
   }
 
   // Token will expire in 1 hour
