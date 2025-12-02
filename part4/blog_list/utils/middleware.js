@@ -27,6 +27,18 @@ const extractTokenPayload = (request, response, next) => {
   next()
 }
 
+const verifyContentType = (contentType) => {
+
+  return (request, response, next) => {
+    const contentTypeHeader = request.get('Content-Type')
+
+    if (!contentTypeHeader || !contentTypeHeader.includes(contentType))
+      return response.status(415).json({ error: `Content-Type must be ${contentType}` })
+
+    next()
+  }
+}
+
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message)
 
@@ -51,7 +63,8 @@ const errorHandler = (error, request, response, next) => {
 const middlewares = {
   unknownEndpoint,
   errorHandler,
-  extractTokenPayload
+  extractTokenPayload,
+  verifyContentType
 }
 
 module.exports = middlewares
