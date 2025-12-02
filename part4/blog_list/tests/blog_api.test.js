@@ -51,6 +51,36 @@ describe('Blog API', () => {
 
   })
 
+  describe('GET /api/blogs/:id', () => {
+
+    test('succeeds with status 200 on valid id', async () => {
+      const initialBlog = (await helper.createBlog()).toJSON()
+      initialBlog.user = initialBlog.user.toString()
+
+      const { body: returnedBlog } = await api
+        .get(baseEndpoint + '/' + initialBlog.id)
+        .expect(200)
+
+      assert.deepStrictEqual(returnedBlog, initialBlog)
+    })
+
+    test('fails with status 404 on non-existing id', async () => {
+      await api
+        .get(baseEndpoint + '/' + helper.nonExistingId())
+        .expect(404)
+    })
+
+    test('fails with with status 400 on invalid id', async () => {
+      const response = await api
+        .get(baseEndpoint + '/' + '123')
+        .expect(400)
+
+      const error = response.body.error
+      assert(error === 'malformatted id')
+    })
+
+  })
+
 })
 
 // After everything is done we have to close the mongoDB collection
