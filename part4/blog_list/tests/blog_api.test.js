@@ -244,6 +244,99 @@ describe('Blog API', () => {
 
   })
 
+  describe('PUT /api/blogs/:id', () => {
+
+    test('fails with 401 if no authentication header', async () => {
+
+      const blog = await helper.createBlog()
+      const contentToUpdate = helper.getRandomBlog()
+
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
+        .send(contentToUpdate)
+        .expect(401)
+
+      const requiredKeywords = ['jwt', 'token', 'access token', 'required', 'bearer scheme']
+
+      const error = response.body.error.toLowerCase()
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test(`fails with status 401 if token doesn't has expected data`, async () => {
+      const blog = await helper.createBlog()
+      const contentToUpdate = helper.getRandomBlog()
+      const tokenWithInvalidPayload = helper.generateValidToken()
+
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
+        .send(contentToUpdate)
+        .auth(tokenWithInvalidPayload, { type: 'bearer' })
+        .expect(401)
+
+      const error = response.body.error.toLowerCase()
+      const requiredKeywords = ['token', 'invalid']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test('fails with status 401 if jwt token itself is invalid', async () => {
+      const blog = await helper.createBlog()
+      const contentToUpdate = helper.getRandomBlog()
+      const invalidToken = helper.generateInvalidToken()
+
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
+        .send(contentToUpdate)
+        .auth(invalidToken, { type: 'bearer' })
+        .expect(401)
+
+      const error = response.body.error.toLowerCase()
+      const requiredKeywords = ['token', 'missing', 'invalid']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test('fails with status 401 if token is expired', async () => {
+      const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
+      const contentToUpdate = helper.getRandomBlog()
+
+      const expiredToken = helper.generateValidToken(user, '1ms')
+
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
+        .send(contentToUpdate)
+        .auth(expiredToken, { type: 'bearer' })
+        .expect(401)
+
+      const error = response.body.error.toLowerCase()
+
+      assert(error.includes('expired'))
+    })
+
+    test('succeeds with status 204 on valid data and token', async () => {
+      const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
+      const contentToUpdate = helper.getRandomBlog()
+
+      const token = helper.generateValidToken(user)
+
+      const { body: returnedBlog } = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
+        .send(contentToUpdate)
+        .auth(token, { type: 'bearer' })
+        .expect(200)
+
+      helper.removeProperty(returnedBlog, 'id')
+      helper.removeProperty(returnedBlog, 'user')
+
+
+      assert.deepStrictEqual(returnedBlog, contentToUpdate)
+    })
+
+  })
+
 })
 
 // After everything is done we have to close the mongoDB collection
