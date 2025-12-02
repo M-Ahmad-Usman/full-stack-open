@@ -63,7 +63,6 @@ blogRouter.get('/:id', async (request, response) => {
 
 blogRouter.delete(
   '/:id',
-  verifyContentType,
   extractTokenPayload,
   async (request, response) => {
 
