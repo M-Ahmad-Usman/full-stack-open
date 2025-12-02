@@ -99,7 +99,7 @@ blogRouter.put(
 
     const { title, author, url, likes } = request.body
 
-    if (!title.trim() || !author.trim() || !url.trim() || !parseInt(likes)) {
+    if (!title || !author || !url || !parseInt(likes)) {
       return response.status(400).json({ error: 'Atleast one valid value is required for blog' })
     }
 
@@ -111,9 +111,9 @@ blogRouter.put(
     if (blog.user.toString() !== tokenPayload.userId)
       return response.status(403).json({ error: `You're not authorized to delete this blog` })
 
-    blog.title = title || blog.title
-    blog.author = author || blog.author
-    blog.url = url || blog.url
+    blog.title = title.trim() || blog.title
+    blog.author = author.trim() || blog.author
+    blog.url = url.trim() || blog.url
     blog.likes = parseInt(likes) || blog.likes
 
     await blog.save()
