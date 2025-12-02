@@ -145,6 +145,39 @@ describe('Blog API', () => {
       assert(error.includes('expired'))
     })
 
+    test(`fails with staus 415 if Content-Type isn't application/json`, async () => {
+      const user = await helper.createUser()
+
+      const token = helper.generateValidToken(user)
+
+      const response = await api.post(baseEndpoint)
+        .set('Content-Type', 'text/html')
+        .send('<p>Hello</p>')
+        .auth(token, { type: 'bearer' })
+        .expect(415)
+
+      const requiredKeywords = ['content-type', 'application/json']
+
+      const error = response.body.error.toLowerCase()
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test('fails with status 400 if no body is sent', async () => {
+      const user = await helper.createUser()
+
+      const token = helper.generateValidToken(user)
+
+      const response = await api.post(baseEndpoint)
+        .auth(token, { type: 'bearer' })
+        .set('Content-Type', 'application/json')
+        .expect(400)
+
+      const error = response.body.error.toLowerCase()
+      const requiredKeywords = ['title', 'author', 'url', 'required']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
     test('succeeds with status 201 on valid data and token', async () => {
       const blog = helper.getRandomBlog()
       const user = await helper.createUser()
@@ -313,6 +346,39 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
 
       assert(error.includes('expired'))
+    })
+
+    test(`fails with staus 415 if Content-Type isn't application/json`, async () => {
+      const user = await helper.createUser()
+
+      const token = helper.generateValidToken(user)
+
+      const response = await api.put(baseEndpoint)
+        .set('Content-Type', 'text/html')
+        .send('<p>Hello</p>')
+        .auth(token, { type: 'bearer' })
+        .expect(415)
+
+      const requiredKeywords = ['content-type', 'application/json']
+
+      const error = response.body.error.toLowerCase()
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test('fails with status 400 if no body is sent', async () => {
+      const user = await helper.createUser()
+
+      const token = helper.generateValidToken(user)
+
+      const response = await api.post(baseEndpoint)
+        .auth(token, { type: 'bearer' })
+        .set('Content-Type', 'application/json')
+        .expect(400)
+
+      const error = response.body.error.toLowerCase()
+      const requiredKeywords = ['value', 'required']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
     })
 
     test('succeeds with status 204 on valid data and token', async () => {
