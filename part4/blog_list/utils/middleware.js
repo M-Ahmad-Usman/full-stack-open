@@ -11,7 +11,7 @@ const extractTokenPayload = (request, response, next) => {
   const authorizationHeader = request.get('authorization')
 
   if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
-    return response.status(400).json({ error: 'JWT access token with Bearer scheme is required to access this route.' })
+    return response.status(401).json({ error: 'JWT access token with Bearer scheme is required to access this route.' })
   }
 
   // The header is "Bearer token...."
