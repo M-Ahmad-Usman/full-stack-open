@@ -111,10 +111,10 @@ blogRouter.put(
     if (blog.user.toString() !== tokenPayload.userId)
       return response.status(403).json({ error: `You're not authorized to delete this blog` })
 
-    blog.title = title.trim() || blog.title
-    blog.author = author.trim() || blog.author
-    blog.url = url.trim() || blog.url
-    blog.likes = parseInt(likes) || blog.likes
+    blog.title = title.trim() ?? blog.title
+    blog.author = author.trim() ?? blog.author
+    blog.url = url.trim() ?? blog.url
+    blog.likes = parseInt(likes) ?? blog.likes
 
     await blog.save()
 
