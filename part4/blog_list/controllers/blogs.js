@@ -80,24 +80,31 @@ blogRouter.delete('/:id', extractTokenPayload, async (request, response) => {
   response.status(204).end()
 })
 
-blogRouter.put('/:id', async (request, response) => {
+blogRouter.put('/:id', extractTokenPayload, async (request, response) => {
   const id = request.params.id
+  const { tokenPayload } = request
 
-  if (!request.body) return response.status(400)
-    .json({
-      error: 'Atleast one valid value is required for a field.'
-    })
+  if (!tokenPayload.userId)
+    return response.status(401).json({ error: 'token invalid' })
 
   const { title, author, url, likes } = request.body
 
+  if (!title.trim() || !author.trim() || !url.trim() || !parseInt(likes)) {
+    return response.status(400).json({ error: 'Atleast one valid value is required for blog' })
+  }
+
   const blog = await Blog.findById(id)
 
-  if (!blog) return response.status(404).json({ error: 'No blog available with given id' })
+  if (!blog)
+    return response.status(404).json({ error: 'No blog available with given id' })
 
-  blog.title = title.trim() || blog.title
-  blog.author = author.trim() || blog.author
-  blog.url = url.trim() || blog.url
-  blog.likes = likes || blog.likes
+  if (blog.user.toString() !== tokenPayload.userId)
+    return response.status(403).json({ error: `You're not authorized to delete this blog` })
+
+  blog.title = title|| blog.title
+  blog.author = author|| blog.author
+  blog.url = url || blog.url
+  blog.likes = parseInt(likes) || blog.likes
 
   await blog.save()
 
