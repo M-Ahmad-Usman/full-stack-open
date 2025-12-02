@@ -4,49 +4,50 @@ const Blog = require('../models/blog')
 const middleware = require('../utils/middleware')
 const User = require('../models/user')
 
-const { extractTokenPayload } = middleware
+// Middlewares
+const extractTokenPayload = middleware.extractTokenPayload
+const verifyContentType = middleware.verifyContentType('application/json')
 
 blogRouter.get('/', async (request, response) => {
-
   const blogs = await Blog.find({})
     .populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
-blogRouter.post('/', extractTokenPayload, async (request, response) => {
+blogRouter.post(
+  '/',
+  verifyContentType,
+  extractTokenPayload,
+  async (request, response) => {
 
-  const { tokenPayload } = request
-  const { title, author, url } = request.body
+    const { tokenPayload } = request
+    const { title, author, url } = request.body
 
-  if (!tokenPayload.userId)
-    return response.status(401).json({ error: 'token invalid' })
+    if (!tokenPayload.userId)
+      return response.status(401).json({ error: 'token invalid' })
 
-  if (!title)
-    return response.status(400).json({ error: `Blog's title is required` })
-  if (!author)
-    return response.status(400).json({ error: `Blog's Author is required` })
-  if (!url)
-    return response.status(400).json({ error: `Blog's url is required` })
+    if (!title || !author || !url)
+      return response.status(400).json({ error: `Blog's title, author and url are required` })
 
-  const user = await User.findById(tokenPayload.userId)
+    const user = await User.findById(tokenPayload.userId)
 
-  if (!user)
-    return response.status(400).json({ error: 'userId missing or invalid' })
+    if (!user)
+      return response.status(400).json({ error: 'userId missing or invalid' })
 
-  const blog = new Blog({
-    title,
-    author,
-    url,
-    likes: request.body.likes || 0,
-    user: user._id
+    const blog = new Blog({
+      title,
+      author,
+      url,
+      likes: request.body.likes || 0,
+      user: user._id
+    })
+
+    const savedBlog = await blog.save()
+    user.blogs.push(savedBlog._id)
+    await user.save()
+
+    response.status(201).json(savedBlog)
   })
-
-  const savedBlog = await blog.save()
-  user.blogs.push(savedBlog._id)
-  await user.save()
-
-  response.status(201).json(savedBlog)
-})
 
 blogRouter.get('/:id', async (request, response) => {
   const id = request.params.id
@@ -60,55 +61,65 @@ blogRouter.get('/:id', async (request, response) => {
   response.json(resultantBlog)
 })
 
-blogRouter.delete('/:id', extractTokenPayload, async (request, response) => {
-  const id = request.params.id
-  const { tokenPayload } = request
+blogRouter.delete(
+  '/:id',
+  verifyContentType,
+  extractTokenPayload,
+  async (request, response) => {
 
-  if (!tokenPayload.userId)
-    return response.status(401).json({ error: 'token invalid' })
+    const id = request.params.id
+    const { tokenPayload } = request
 
-  const blog = await Blog.findOne({ _id: id })
+    if (!tokenPayload.userId)
+      return response.status(401).json({ error: 'token invalid' })
 
-  if (!blog)
-    return response.status(404).json({ error: 'No blog available' })
+    const blog = await Blog.findOne({ _id: id })
 
-  if (blog.user.toString() !== tokenPayload.userId)
-    return response.status(403).json({ error: `You're not authorized to delete this blog` })
+    if (!blog)
+      return response.status(404).json({ error: 'No blog available' })
 
-  await blog.deleteOne()
+    if (blog.user.toString() !== tokenPayload.userId)
+      return response.status(403).json({ error: `You're not authorized to delete this blog` })
 
-  response.status(204).end()
-})
+    await blog.deleteOne()
 
-blogRouter.put('/:id', extractTokenPayload, async (request, response) => {
-  const id = request.params.id
-  const { tokenPayload } = request
+    response.status(204).end()
+  })
 
-  if (!tokenPayload.userId)
-    return response.status(401).json({ error: 'token invalid' })
+blogRouter.put(
+  '/:id',
+  verifyContentType,
+  extractTokenPayload,
+  async (request, response) => {
 
-  const { title, author, url, likes } = request.body
+    const id = request.params.id
+    const { tokenPayload } = request
 
-  if (!title.trim() || !author.trim() || !url.trim() || !parseInt(likes)) {
-    return response.status(400).json({ error: 'Atleast one valid value is required for blog' })
-  }
+    if (!tokenPayload.userId)
+      return response.status(401).json({ error: 'token invalid' })
 
-  const blog = await Blog.findById(id)
+    const { title, author, url, likes } = request.body
 
-  if (!blog)
-    return response.status(404).json({ error: 'No blog available with given id' })
+    if (!title.trim() || !author.trim() || !url.trim() || !parseInt(likes)) {
+      return response.status(400).json({ error: 'Atleast one valid value is required for blog' })
+    }
 
-  if (blog.user.toString() !== tokenPayload.userId)
-    return response.status(403).json({ error: `You're not authorized to delete this blog` })
+    const blog = await Blog.findById(id)
 
-  blog.title = title|| blog.title
-  blog.author = author|| blog.author
-  blog.url = url || blog.url
-  blog.likes = parseInt(likes) || blog.likes
+    if (!blog)
+      return response.status(404).json({ error: 'No blog available with given id' })
 
-  await blog.save()
+    if (blog.user.toString() !== tokenPayload.userId)
+      return response.status(403).json({ error: `You're not authorized to delete this blog` })
 
-  response.json(blog)
-})
+    blog.title = title || blog.title
+    blog.author = author || blog.author
+    blog.url = url || blog.url
+    blog.likes = parseInt(likes) || blog.likes
+
+    await blog.save()
+
+    response.json(blog)
+  })
 
 module.exports = blogRouter
