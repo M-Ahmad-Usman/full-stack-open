@@ -164,6 +164,86 @@ describe('Blog API', () => {
 
   })
 
+  describe('DELETE /api/blogs/:id', () => {
+
+    test('fails with status 401 if no authentication header', async () => {
+
+      const blog = await helper.createBlog()
+
+      const response = await api
+        .delete(baseEndpoint + '/' + blog._id.toString())
+        .expect(401)
+
+      const requiredKeywords = ['jwt', 'token', 'access token', 'required', 'bearer scheme']
+
+      const error = response.body.error.toLowerCase()
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test(`fails with status 401 if token doesn't has expected data`, async () => {
+      const blog = await helper.createBlog()
+      const tokenWithInvalidPayload = helper.generateValidToken()
+
+      const response = await api.delete(baseEndpoint + '/' + blog._id.toString())
+        .auth(tokenWithInvalidPayload, { type: 'bearer' })
+        .expect(401)
+
+      const error = response.body.error.toLowerCase()
+      const requiredKeywords = ['token', 'invalid']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test('fails with status 401 if jwt token itself is invalid', async () => {
+      const blog = await helper.createBlog()
+      const invalidToken = helper.generateInvalidToken()
+
+      const response = await api
+        .delete(baseEndpoint + '/' + blog._id.toString())
+        .auth(invalidToken, { type: 'bearer' })
+        .expect(401)
+
+      const error = response.body.error.toLowerCase()
+      const requiredKeywords = ['token', 'missing', 'invalid']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
+    test('fails with status 401 if token is expired', async () => {
+      const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
+
+      const expiredToken = helper.generateValidToken(user, '1ms')
+
+      const response = await api
+        .delete(baseEndpoint + '/' + blog._id.toString())
+        .auth(expiredToken, { type: 'bearer' })
+        .expect(401)
+
+      const error = response.body.error.toLowerCase()
+
+      assert(error.includes('expired'))
+    })
+
+    test('succeeds with status 204 on valid data and token', async () => {
+      const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
+
+      const token = helper.generateValidToken(user)
+
+      await api.delete(baseEndpoint + '/' + blog._id.toString())
+        .auth(token, { type: 'bearer' })
+        .expect(204)
+
+      const blogsInDB = await helper.getBlogsInDB()
+
+      // DB is cleared before every test. So there will be no other blog.
+      assert.strictEqual(blogsInDB.length, 0)
+    })
+
+  })
+
 })
 
 // After everything is done we have to close the mongoDB collection
