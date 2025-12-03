@@ -173,7 +173,7 @@ describe('Blog API', () => {
         .expect(400)
 
       const error = response.body.error.toLowerCase()
-      const requiredKeywords = ['title', 'author', 'url', 'required']
+      const requiredKeywords = ['title', 'author', 'url', 'string']
 
       assert(requiredKeywords.every(k => error.includes(k)))
     })
@@ -401,12 +401,12 @@ describe('Blog API', () => {
         .expect(400)
 
       const error = response.body.error.toLowerCase()
-      const requiredKeywords = ['value', 'required']
+      const requiredKeywords = ['field', 'required']
 
       assert(requiredKeywords.every(k => error.includes(k)))
     })
 
-    test('succeeds with status 204 on valid data and token', async () => {
+    test('succeeds with status 200 on valid data and token', async () => {
       const user = await helper.createUser()
       const blog = await helper.createBlog({}, user)
       const contentToUpdate = helper.getRandomBlog()
