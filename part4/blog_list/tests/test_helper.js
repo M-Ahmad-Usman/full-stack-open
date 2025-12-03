@@ -101,6 +101,19 @@ const getRandomBlog = () => {
 
 const getSampleBlogs = () => sampleBlogs
 
+// Decodes a JWT token and returns the payload
+// Does not verify the signature, just decodes it
+const decodeToken = (token) => {
+  const parts = token.split('.')
+  if (parts.length !== 3) {
+    throw new Error('Invalid token format')
+  }
+
+  // Decode the payload (second part)
+  const payload = Buffer.from(parts[1], 'base64').toString()
+  return JSON.parse(payload)
+}
+
 const helper = {
   removeProperty,
   getBlogsInDB,
@@ -112,7 +125,8 @@ const helper = {
   getSampleBlogs,
   generateValidToken,
   generateInvalidToken,
-  clearDB
+  clearDB,
+  decodeToken
 }
 
 module.exports = helper
