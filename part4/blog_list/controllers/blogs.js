@@ -26,8 +26,18 @@ blogRouter.post(
     if (!tokenPayload.userId)
       return response.status(401).json({ error: 'token invalid' })
 
-    if (!title || !author || !url)
-      return response.status(400).json({ error: `Blog's title, author and url are required` })
+    const error = { error: '' }
+
+    // Validate types
+    if (!title || typeof title !== 'string')
+      error.error = 'title must be string. '
+    if (!author || typeof author !== 'string')
+      error.error += 'author must be string. '
+    if (!url || typeof url !== 'string')
+      error.error += 'url must be string.'
+
+    if (error.error !== '')
+      return response.status(400).json(error)
 
     const user = await User.findById(tokenPayload.userId)
 
