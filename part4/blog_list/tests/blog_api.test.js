@@ -406,6 +406,31 @@ describe('Blog API', () => {
       assert(requiredKeywords.every(k => error.includes(k)))
     })
 
+    test('fails with status 400 if data is sent with wrong data type', async () => {
+
+      const user = await helper.createUser()
+      const blog = await helper.createBlog({}, user)
+
+      const invalidData = {
+        title: 1,
+        author: ['something'],
+        url: { invalid: 'invalid' },
+      }
+
+      const token = helper.generateValidToken(user)
+
+      const response = await api
+        .put(baseEndpoint + '/' + blog._id.toString())
+        .send(invalidData)
+        .auth(token, { type: 'bearer' })
+        .expect(400)
+
+      const error = response.body.error
+      const requiredKeywords = ['title', 'author', 'url', 'string']
+
+      assert(requiredKeywords.every(k => error.includes(k)))
+    })
+
     test('succeeds with status 200 on valid data and token', async () => {
       const user = await helper.createUser()
       const blog = await helper.createBlog({}, user)
