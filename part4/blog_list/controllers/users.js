@@ -1,6 +1,11 @@
 const userRouter = require('express').Router()
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
+const middleware = require('../utils/middleware')
+
+const CONTENT_TYPE = 'application/json'
+
+const verifyContentType = middleware.verifyContentType(CONTENT_TYPE)
 
 userRouter.get('/', async (request, response) => {
   const users = await User.find({})
@@ -9,7 +14,7 @@ userRouter.get('/', async (request, response) => {
   response.json(users)
 })
 
-userRouter.post('/', async (request, response) => {
+userRouter.post('/', verifyContentType, async (request, response) => {
 
   const { name, username, password } = request.body
 
