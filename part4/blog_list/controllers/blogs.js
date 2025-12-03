@@ -109,9 +109,24 @@ blogRouter.put(
 
     const { title, author, url, likes } = request.body
 
-    if (!title || !author || !url || !parseInt(likes)) {
-      return response.status(400).json({ error: 'Atleast one valid value is required for blog' })
+    // Check if at least one field is provided
+    if (!title && !author && !url && likes === undefined) {
+      return response.status(400).json({ error: 'At least one field is required for update' })
     }
+
+    // Collect all validation errors
+    const errors = []
+    if (title && typeof title !== 'string')
+      errors.push('title must be a string')
+    if (author && typeof author !== 'string')
+      errors.push('author must be a string')
+    if (url && typeof url !== 'string')
+      errors.push('url must be a string')
+    if (likes !== undefined && !Number.isInteger(likes))
+      errors.push('likes must be an integer')
+
+    if (errors.length > 0)
+      return response.status(400).json({ error: errors.join('. ') })
 
     const blog = await Blog.findById(id)
 
