@@ -116,7 +116,12 @@ const App = () => {
       <Notification message={errorMessage} />
 
       {!user && loginForm()}
-      {user && noteForm()}
+      {user && (
+        <div>
+          <p>{user.name} logged in</p>
+          {noteForm()}
+        </div>
+      )}
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
