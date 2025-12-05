@@ -19,6 +19,16 @@ const App = () => {
       .then(initialNotes => setNotes(initialNotes))
   }, [])
 
+  // Verify whether user is logged in or not
+  useEffect(() => {
+    const loggedUserJSON = localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteService.setToken(user.token)
+    }
+  }, [])
+
   const addNote = event => {
     event.preventDefault()
     const noteObject = {
@@ -58,6 +68,10 @@ const App = () => {
 
     try {
       const user = await loginService.login({ username, password })
+
+      // Save logged in user to local storage
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)) 
+
       noteService.setToken(user.token)
       setUser(user)
       setUsername('')
