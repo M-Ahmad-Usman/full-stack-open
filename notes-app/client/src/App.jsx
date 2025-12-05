@@ -3,6 +3,7 @@ import Footer from './components/Footer'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import noteService from './services/notes'
+import loginService from './services/login'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -11,6 +12,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     noteService.getAll()
@@ -51,9 +53,22 @@ const App = () => {
       })
   }
 
-  const handleLogin = event => {
+  const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
+    
+    try {
+      const user = await loginService.login({ username, password })
+
+      setUser(user)
+      setUsername('')
+      setPassword('')
+
+    } catch {
+      setErrorMessage('wrong credentials')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
   }
 
   const handleNoteChange = event => {
