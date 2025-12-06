@@ -12,12 +12,24 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
+    const loggedInUser = localStorage.getItem('loggedInUser')
+    if (loggedInUser)
+      setUser(JSON.parse(loggedInUser))
+    
+  }, [])
+
+  useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
   }, [])
 
-  // If not logged in, ask to login
+  const logOutUser = () => {
+    localStorage.removeItem('loggedInUser')
+    setUser(null)
+  }
+
+  // Check whether user is logged in or not
   if (user === null)
     return (
       <div>
@@ -31,6 +43,7 @@ const App = () => {
       <div>
         <h2>Blogs</h2>
         <p>{user.username} logged in</p>
+        <button onClick={logOutUser}>Log out</button>
       </div>
 
       <div>
