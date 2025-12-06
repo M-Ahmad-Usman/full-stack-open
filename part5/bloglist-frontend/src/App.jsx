@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 // Components
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 
 // Services
 import blogService from './services/blogs'
@@ -13,9 +14,12 @@ const App = () => {
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
-    if (loggedInUser)
-      setUser(JSON.parse(loggedInUser))
-    
+    if (loggedInUser) {
+      const user = JSON.parse(loggedInUser)
+      setUser(user)
+      blogService.setToken(user.accessToken)
+    }
+
   }, [])
 
   useEffect(() => {
@@ -41,12 +45,21 @@ const App = () => {
   return (
     <>
       <div>
-        <h2>Blogs</h2>
+        <h2>User</h2>
         <p>{user.username} logged in</p>
         <button onClick={logOutUser}>Log out</button>
       </div>
 
       <div>
+        <h2>Create New</h2>
+        <BlogForm
+          blogs={blogs}
+          setBlogs={setBlogs}
+        />
+      </div>
+
+      <div>
+        <h2>Blogs</h2>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
