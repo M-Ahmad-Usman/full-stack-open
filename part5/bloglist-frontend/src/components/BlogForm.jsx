@@ -8,7 +8,12 @@ const BlogForm = (props) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const { blogs, setBlogs } = props
+  const { 
+    blogs, 
+    setBlogs,
+    setIsError,
+    showNotification
+  } = props
 
   const handleBlogSubmit = async (event) => {
 
@@ -18,8 +23,11 @@ const BlogForm = (props) => {
 
     event.preventDefault()
 
+    setIsError(false)
+
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
-      alert('title, author and url are required.')
+      setIsError(true)
+      showNotification('title, author and url are required', 3000)
       return;
     }
 
@@ -27,6 +35,7 @@ const BlogForm = (props) => {
 
     const createdBlog = await blogService.create(newBlog)
     setBlogs(blogs.concat(createdBlog))
+    showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
 
   return (

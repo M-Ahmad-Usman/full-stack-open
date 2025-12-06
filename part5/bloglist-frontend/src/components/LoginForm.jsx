@@ -8,7 +8,7 @@ const LoginForm = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const { setUser } = props
+  const { setUser, setIsError, showNotification } = props
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -16,9 +16,12 @@ const LoginForm = (props) => {
 
     form.reportValidity()
 
+    setIsError(false)
+
     // validations
     if ((username.trim() === '' || password.trim() === '') || (username.length < 3 || password.length < 3)) {
-      alert('Both password and username must be 3 characters long.')
+      setIsError(true)
+      showNotification('Both password and username must be 3 characters long.', 3000)
       return
     }
 
@@ -28,7 +31,8 @@ const LoginForm = (props) => {
       localStorage.setItem('loggedInUser', JSON.stringify(user))
       blogService.setToken(user.accessToken)
     } catch {
-      alert('Invalid Credentials')
+      setIsError(true)
+      showNotification('Invalid Credentials', 2500)
     }
   }
 
