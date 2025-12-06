@@ -12,12 +12,12 @@ const LoginForm = (props) => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
+    const form = event.target
 
-    setUsername(username.trim())
-    setPassword(password.trim())
+    form.reportValidity()
 
     // validations
-    if ((username === '' || password === '') || (username.length < 3 || password.length < 3)) {
+    if ((username.trim() === '' || password.trim() === '') || (username.length < 3 || password.length < 3)) {
       alert('Both password and username must be 3 characters long.')
       return
     }
@@ -39,10 +39,11 @@ const LoginForm = (props) => {
         <label htmlFor="username">Username:</label>
         <input
           type="text"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
           name="username"
           id="username"
+          required
+          value={username}
+          onChange={e => setUsername(e.target.value)}
         />
       </div>
 
@@ -50,10 +51,11 @@ const LoginForm = (props) => {
         <label htmlFor="password">Password:</label>
         <input
           type="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
           name="password"
           id="password"
+          required
+          value={password}
+          onChange={e => setPassword(e.target.value)}
         />
       </div>
 
