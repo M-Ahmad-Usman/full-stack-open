@@ -1,8 +1,33 @@
 
+import { useState } from "react"
+import loginService from "../services/login"
+
 const LoginForm = (props) => {
 
-  // Destructure stateful variables, their setters and form submit handler
-  const { username, setUsername, password, setPassword, handleLogin } = props
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
+  const { setUser } = props
+
+  const handleLogin = async (event) => {
+    event.preventDefault()
+
+    setUsername(username.trim())
+    setPassword(password.trim())
+
+    // validations
+    if ((username === '' || password === '') || (username.length < 3 || password.length < 3)) {
+      alert('Both password and username must be 3 characters long.')
+      return
+    }
+
+    try {
+      const user = await loginService.login({ username, password })
+      setUser(user)
+    } catch {
+      alert('Invalid Credentials')
+    }
+  }
 
   return (
     <form id="login-form" onSubmit={handleLogin}>
@@ -20,12 +45,12 @@ const LoginForm = (props) => {
 
       <div>
         <label htmlFor="password">Password:</label>
-        <input 
+        <input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          name="password" 
-          id="password" 
+          name="password"
+          id="password"
         />
       </div>
 
