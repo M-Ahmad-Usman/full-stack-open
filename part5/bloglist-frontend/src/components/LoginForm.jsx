@@ -1,6 +1,7 @@
 
 import { useState } from "react"
 import loginService from "../services/login"
+import blogService from '../services/blogs'
 
 const LoginForm = (props) => {
 
@@ -25,6 +26,7 @@ const LoginForm = (props) => {
       const user = await loginService.login({ username, password })
       setUser(user)
       localStorage.setItem('loggedInUser', JSON.stringify(user))
+      blogService.setToken(user.accessToken)
     } catch {
       alert('Invalid Credentials')
     }
