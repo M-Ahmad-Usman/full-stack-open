@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
 
 // Services
 import blogService from './services/blogs'
@@ -11,6 +12,8 @@ import blogService from './services/blogs'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
+  const [isError, setIsError] = useState(false)
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
@@ -28,6 +31,11 @@ const App = () => {
     )
   }, [])
 
+  const showNotification = (message, time=2000) => {
+    setNotification(message)
+    setTimeout(() => setNotification(null), time)
+  }
+
   const logOutUser = () => {
     localStorage.removeItem('loggedInUser')
     setUser(null)
@@ -38,12 +46,26 @@ const App = () => {
     return (
       <div>
         <h2>Login to application</h2>
-        <LoginForm setUser={setUser} />
+        <Notification 
+          message={notification} 
+          isError={isError}
+        />
+        <LoginForm
+          setUser={setUser}
+          setIsError={setIsError}
+          showNotification={showNotification}
+        />
       </div>
     )
 
   return (
     <>
+
+      <Notification 
+        message={notification} 
+        isError={isError}
+      />
+
       <div>
         <h2>User</h2>
         <p>{user.username} logged in</p>
@@ -55,6 +77,8 @@ const App = () => {
         <BlogForm
           blogs={blogs}
           setBlogs={setBlogs}
+          setIsError={setIsError}
+          showNotification={showNotification}
         />
       </div>
 
