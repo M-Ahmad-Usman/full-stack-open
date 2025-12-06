@@ -24,6 +24,7 @@ const LoginForm = (props) => {
     try {
       const user = await loginService.login({ username, password })
       setUser(user)
+      localStorage.setItem('loggedInUser', JSON.stringify(user))
     } catch {
       alert('Invalid Credentials')
     }
