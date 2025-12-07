@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Footer from './components/Footer'
 import Note from './components/Note'
 import Notification from './components/Notification'
+import LoginForm from './components/LoginForm'
 import noteService from './services/notes'
 import loginService from './services/login'
 
@@ -85,32 +86,6 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label>
-          username
-          <input
-            type="text"
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          password
-          <input
-            type="password"
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </label>
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
-
   const noteForm = () => (
     <form onSubmit={addNote}>
       <input value={newNote} onChange={handleNoteChange} />
@@ -129,7 +104,16 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
-      {!user && loginForm()}
+      {
+        !user && 
+        <LoginForm 
+          handleSubmit={handleLogin}
+          handleUsernameChange={e => setUsername(e.target.value)}
+          handlePasswordChange={e => setPassword(e.target.value)}
+          username={username}
+          password={password}
+          />
+      }
       {user && (
         <div>
           <p>{user.name} logged in</p>
