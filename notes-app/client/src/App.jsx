@@ -10,14 +10,11 @@ import Togglable from './components/Toggleable'
 
 // Services
 import noteService from './services/notes'
-import loginService from './services/login'
 
 const App = () => {
   const [notes, setNotes] = useState([])
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -61,26 +58,9 @@ const App = () => {
       })
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-
-    try {
-      const user = await loginService.login({ username, password })
-
-      // Save logged in user to local storage
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)) 
-
-      noteService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-
-    } catch {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
+  const onSuccessfullLogin = (loggedInUser) => {
+    setUser(loggedInUser)
+    localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
   }
 
   const notesToShow = showAll ? notes : notes.filter(note => note.important)
@@ -94,13 +74,7 @@ const App = () => {
       {
         !user &&
         <Togglable buttonLabel='login'>
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
+          <LoginForm onSuccessfullLogin={onSuccessfullLogin} setErrorMessage={setErrorMessage} />
         </Togglable>
       }
       {/* If user is logged in then show button to open add new note form */}
