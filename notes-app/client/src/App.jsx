@@ -82,7 +82,7 @@ const App = () => {
         <div>
           <p>{user.name} logged in</p>
           <Togglable buttonLabel="new note">
-            <NoteForm addNote={addNote}/>
+            <NoteForm createNote={addNote}/>
           </Togglable>
         </div>
       )}
