@@ -61,6 +61,7 @@ const App = () => {
   const onSuccessfullLogin = (loggedInUser) => {
     setUser(loggedInUser)
     localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
+    noteService.setToken(loggedInUser.token)
   }
 
   const notesToShow = showAll ? notes : notes.filter(note => note.important)
