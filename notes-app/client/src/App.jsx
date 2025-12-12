@@ -60,7 +60,7 @@ const App = () => {
 
   const onSuccessfullLogin = (loggedInUser) => {
     setUser(loggedInUser)
-    localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
+    localStorage.setItem('loggedNoteappUser', JSON.stringify(loggedInUser))
     noteService.setToken(loggedInUser.token)
   }
 
