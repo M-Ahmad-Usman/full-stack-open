@@ -54,6 +54,17 @@ const App = () => {
     showNotification(errorMessage, 2500)
   }
 
+  // Blog Form event handlers
+  const onSuccessfullBlogCreation = (createdBlog) => {
+    setIsError(false)
+    setBlogs(blogs.concat(createdBlog))
+    showNotification(`${createdBlog.title} by ${createdBlog.author}`)
+  }
+  const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) => {
+    setIsError(true)
+    showNotification(errorMessage, timeToShowError ?? 2500)
+  }
+
   // Check whether user is logged in or not
   if (user === null)
     return (
@@ -89,10 +100,8 @@ const App = () => {
       <Toggleable buttonLabel="Create New Blog">
         <h2>Create New</h2>
         <BlogForm
-          blogs={blogs}
-          setBlogs={setBlogs}
-          setIsError={setIsError}
-          showNotification={showNotification}
+          onSuccess={onSuccessfullBlogCreation}
+          onFailure={onUnsuccessfullBlogCreation}
         />
       </Toggleable>
 
