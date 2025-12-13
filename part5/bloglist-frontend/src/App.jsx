@@ -10,13 +10,15 @@ import Toggleable from './components/Toggleable'
 // Services
 import blogService from './services/blogs'
 
+// Standard time
+const NOTIFICATION_TIMEOUT = 2500
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
+  const [notification, setNotification] = useState({ message: null, isError: false })
 
   const blogFormRef = useRef()
-  let isErrorRef = useRef(false)
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
@@ -34,10 +36,9 @@ const App = () => {
     )
   }, [])
 
-  const showNotification = (message, isError = false, time = 2500) => {
-    isErrorRef = isError
-    setNotification(message)
-    setTimeout(() => setNotification(null), time)
+  const showNotification = (message, isError = false, time = NOTIFICATION_TIMEOUT) => {
+    setNotification({ message, isError })
+    setTimeout(() => setNotification({ message: null, isError: false }), time)
   }
 
   const logOutUser = () => {
@@ -45,7 +46,7 @@ const App = () => {
     setUser(null)
   }
 
-  const showError = (errorMessage, timeToShowError = 2500) => 
+  const showError = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) => 
     showNotification(errorMessage, true, timeToShowError)
 
   // Will return a promise
@@ -57,7 +58,7 @@ const App = () => {
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
   }
-  const onUnsuccessfullLogin = (errorMessage, timeToShowError = 2500) => 
+  const onUnsuccessfullLogin = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) => 
     showError(errorMessage, timeToShowError)
 
   // Blog Form event handlers
@@ -75,8 +76,8 @@ const App = () => {
       <div>
         <h2>Login to application</h2>
         <Notification
-          message={notification}
-          isError={isErrorRef}
+          message={notification.message}
+          isError={notification.isError}
         />
         <Toggleable buttonLabel="login">
           <LoginForm
@@ -91,8 +92,8 @@ const App = () => {
     <>
 
       <Notification
-        message={notification}
-        isError={isErrorRef}
+        message={notification.message}
+        isError={notification.isError}
       />
 
       <div>
