@@ -146,4 +146,16 @@ blogRouter.put(
     response.json(blog)
   })
 
+blogRouter.put('/like/:id', async (request, response) => {
+  const blogId = request.params.id
+
+  const blog = await Blog.findById(blogId)
+  if (!blog)
+    return response.status(404).json({ error: 'no blog available with given id' })
+
+  blog.likes++
+  await blog.save()
+  return response.status(200).json(blog)
+})
+
 module.exports = blogRouter
