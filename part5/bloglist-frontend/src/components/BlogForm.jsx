@@ -15,6 +15,12 @@ const BlogForm = (props) => {
     showNotification
   } = props
 
+  const resetForm = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
   const handleBlogSubmit = async (event) => {
 
     const form = event.target
@@ -34,6 +40,7 @@ const BlogForm = (props) => {
     const newBlog = { title, author, url }
 
     const createdBlog = await blogService.create(newBlog)
+    resetForm()
     setBlogs(blogs.concat(createdBlog))
     showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
