@@ -107,10 +107,10 @@ blogRouter.put(
     if (!tokenPayload.userId)
       return response.status(401).json({ error: 'token invalid' })
 
-    const { title, author, url, likes } = request.body
+    const { title, author, url } = request.body
 
     // Check if at least one field is provided
-    if (!title && !author && !url && likes === undefined) {
+    if (!title && !author && !url) {
       return response.status(400).json({ error: 'At least one field is required for update' })
     }
 
@@ -122,8 +122,6 @@ blogRouter.put(
       errors.push('author must be a string')
     if (url && typeof url !== 'string')
       errors.push('url must be a string')
-    if (likes !== undefined && !Number.isInteger(likes))
-      errors.push('likes must be an integer')
 
     if (errors.length > 0)
       return response.status(400).json({ error: errors.join('. ') })
@@ -139,7 +137,6 @@ blogRouter.put(
     blog.title = title.trim() ?? blog.title
     blog.author = author.trim() ?? blog.author
     blog.url = url.trim() ?? blog.url
-    blog.likes = parseInt(likes) ?? blog.likes
 
     await blog.save()
 
