@@ -5,6 +5,7 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Toggleable from './components/Toggleable'
 
 // Services
 import blogService from './services/blogs'
@@ -31,7 +32,7 @@ const App = () => {
     )
   }, [])
 
-  const showNotification = (message, time=2000) => {
+  const showNotification = (message, time = 2000) => {
     setNotification(message)
     setTimeout(() => setNotification(null), time)
   }
@@ -46,23 +47,25 @@ const App = () => {
     return (
       <div>
         <h2>Login to application</h2>
-        <Notification 
-          message={notification} 
+        <Notification
+          message={notification}
           isError={isError}
         />
-        <LoginForm
-          setUser={setUser}
-          setIsError={setIsError}
-          showNotification={showNotification}
-        />
+        <Toggleable buttonLabel="login">
+          <LoginForm
+            setUser={setUser}
+            setIsError={setIsError}
+            showNotification={showNotification}
+          />
+        </Toggleable>
       </div>
     )
 
   return (
     <>
 
-      <Notification 
-        message={notification} 
+      <Notification
+        message={notification}
         isError={isError}
       />
 
@@ -72,7 +75,7 @@ const App = () => {
         <button onClick={logOutUser}>Log out</button>
       </div>
 
-      <div>
+      <Toggleable buttonLabel="Create New Blog">
         <h2>Create New</h2>
         <BlogForm
           blogs={blogs}
@@ -80,7 +83,7 @@ const App = () => {
           setIsError={setIsError}
           showNotification={showNotification}
         />
-      </div>
+      </Toggleable>
 
       <div>
         <h2>Blogs</h2>
