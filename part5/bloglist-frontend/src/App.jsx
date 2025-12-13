@@ -13,8 +13,10 @@ import blogService from './services/blogs'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [isError, setIsError] = useState(false)
   const [notification, setNotification] = useState(null)
+
+  const blogFormRef = useRef()
+  let isErrorRef = useRef(false)
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
@@ -32,7 +34,8 @@ const App = () => {
     )
   }, [])
 
-  const showNotification = (message, time = 2000) => {
+  const showNotification = (message, isError = false, time = 2000) => {
+    isErrorRef = isError
     setNotification(message)
     setTimeout(() => setNotification(null), time)
   }
@@ -42,31 +45,27 @@ const App = () => {
     setUser(null)
   }
 
+  const showError = (errorMessage, timeToShowError) => showNotification(errorMessage, true, timeToShowError ?? 2500)
+
   // Login Form event handlers
   const onSuccessfullLogin = (loggedInUser) => {
-    setIsError(false)
     setUser(loggedInUser)
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
   }
   const onUnsuccessfullLogin = (errorMessage) => {
-    setIsError(true)
-    showNotification(errorMessage, 2500)
+    showError(errorMessage, 2500)
   }
 
   // Blog Form event handlers
   const onSuccessfullBlogCreation = (createdBlog) => {
     blogFormRef.current.toggleVisibility()
     setBlogs(blogs.concat(createdBlog))
-    setIsError(false)
     showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
   const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) => {
-    setIsError(true)
-    showNotification(errorMessage, timeToShowError ?? 2500)
+    showError(errorMessage, timeToShowError ?? 2500)
   }
-
-  const blogFormRef = useRef()
 
   // Check whether user is logged in or not
   if (user === null)
@@ -75,7 +74,7 @@ const App = () => {
         <h2>Login to application</h2>
         <Notification
           message={notification}
-          isError={isError}
+          isError={isErrorRef}
         />
         <Toggleable buttonLabel="login">
           <LoginForm
@@ -91,7 +90,7 @@ const App = () => {
 
       <Notification
         message={notification}
-        isError={isError}
+        isError={isErrorRef}
       />
 
       <div>
