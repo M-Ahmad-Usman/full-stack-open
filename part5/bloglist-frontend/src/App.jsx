@@ -49,8 +49,23 @@ const App = () => {
   const showError = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) => 
     showNotification(errorMessage, true, timeToShowError)
 
-  // Will return a promise
-  const likeBlog = (blog) => blogService.like(blog)
+  const likeBlog = async (blog) => {
+    // 1. Update UI immediately
+    const previousBlogs = blogs
+    setBlogs(blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes + 1 } : b))
+
+    // 2. Sync with server
+    try {
+      // On Success - UI is already up to date
+      await blogService.like(blog)
+    }
+    catch (error) {
+      // 3. Revert back on failure
+      console.error(error.message)
+      setBlogs(previousBlogs)
+      showError('Could not like blog', 2500)
+    }
+  }
 
   // Login Form event handlers
   const onSuccessfullLogin = (loggedInUser) => {
@@ -58,7 +73,7 @@ const App = () => {
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
   }
-  const onUnsuccessfullLogin = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) => 
+  const onUnsuccessfullLogin = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) =>
     showError(errorMessage, timeToShowError)
 
   // Blog Form event handlers
@@ -67,8 +82,10 @@ const App = () => {
     setBlogs(blogs.concat(createdBlog))
     showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
-  const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) => 
+  const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) =>
     showError(errorMessage, timeToShowError)
+
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   // Check whether user is logged in or not
   if (user === null)
@@ -112,8 +129,8 @@ const App = () => {
 
       <div>
         <h2>Blogs</h2>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} showError={showError} />
+        {sortedBlogs.map(blog =>
+          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
         )}
       </div>
     </>
