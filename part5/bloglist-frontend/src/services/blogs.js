@@ -23,7 +23,7 @@ const create = async (blog) => {
 }
 
 const like = async (blog) => {
-  const { data: blogWithUpdatedLikes } = await axios.put(`${baseUrl}/${blog.id}`)
+  const { data: blogWithUpdatedLikes } = await axios.put(`${baseUrl}/like/${blog.id}`)
   return blogWithUpdatedLikes
 }
 
