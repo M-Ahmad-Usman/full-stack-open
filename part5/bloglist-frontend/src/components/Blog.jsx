@@ -17,11 +17,11 @@ const Blog = (props) => {
   const toggleVisbility = () => setShowDetails(!showDetails)
 
   const onBlogLike = async () => {
-    prevLikes = likes
+    prevLikes.current = likes
     setLikes(likes + 1)
 
     try {
-      likeBlog(blog)
+      await likeBlog(blog)
     }
     catch (error) {
       setLikes(prevLikes)
