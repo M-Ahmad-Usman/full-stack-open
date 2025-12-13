@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Components
 import Blog from './components/Blog'
@@ -56,14 +56,17 @@ const App = () => {
 
   // Blog Form event handlers
   const onSuccessfullBlogCreation = (createdBlog) => {
-    setIsError(false)
+    blogFormRef.current.toggleVisibility()
     setBlogs(blogs.concat(createdBlog))
+    setIsError(false)
     showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
   const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) => {
     setIsError(true)
     showNotification(errorMessage, timeToShowError ?? 2500)
   }
+
+  const blogFormRef = useRef()
 
   // Check whether user is logged in or not
   if (user === null)
@@ -97,7 +100,7 @@ const App = () => {
         <button onClick={logOutUser}>Log out</button>
       </div>
 
-      <Toggleable buttonLabel="Create New Blog">
+      <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
         <h2>Create New</h2>
         <BlogForm
           onSuccess={onSuccessfullBlogCreation}
