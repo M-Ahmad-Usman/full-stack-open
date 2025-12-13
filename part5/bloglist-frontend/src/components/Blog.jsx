@@ -1,35 +1,18 @@
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 
 const Blog = (props) => {
 
-  const { blog, likeBlog, showError } = props
+  const { blog, likeBlog } = props
 
   const [showDetails, setShowDetails] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
 
-  let prevLikes = useRef(likes)
 
   // Hide when details are visible
   const hideWhenVisible = { display: showDetails ? 'none' : 'block' }
   const showWhenVisible = { display: showDetails ? 'block' : 'none' }
 
   const toggleVisbility = () => setShowDetails(!showDetails)
-
-  const onBlogLike = async () => {
-    prevLikes.current = likes
-    setLikes(likes + 1)
-
-    try {
-      await likeBlog(blog)
-    }
-    catch (error) {
-      setLikes(prevLikes)
-      console.error(error)
-      showError(`Cannot like blog. Something went wrong.`, 3000)
-    }
-
-  }
 
   const buttonLabel = showDetails ? 'Hide' : 'View'
 
@@ -52,7 +35,7 @@ const Blog = (props) => {
         <b>Title:</b> {blog.title} <button onClick={toggleVisbility}>{buttonLabel}</button> <br />
         <b>Author</b> {blog.author} <br />
         <b>URL</b> {blog.url} <br />
-        <b>Likes:</b> {likes} <button onClick={onBlogLike}>Like</button> <br />
+        <b>Likes:</b> {blog.likes} <button onClick={() => likeBlog(blog)}>Like</button> <br />
       </div>
     </div>
   )
