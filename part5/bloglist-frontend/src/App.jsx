@@ -67,6 +67,24 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blogToDelete) => {
+
+    const confirmDelete = confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}`)
+
+    if (!confirmDelete)
+      return
+
+    try {
+      await blogService.deleteBlog(blogToDelete)
+      setBlogs(blogs.filter(b => b.id !== blogToDelete.id))
+      showNotification('Blog deleted successfuly')
+    } 
+    catch (error) {
+      console.error(error)
+      showError('Something went wrong. Cannot delete blog.')
+    }
+  }
+
   // Login Form event handlers
   const onSuccessfullLogin = (loggedInUser) => {
     setUser(loggedInUser)
@@ -130,7 +148,12 @@ const App = () => {
       <div>
         <h2>Blogs</h2>
         {sortedBlogs.map(blog =>
-          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} />
+          <Blog 
+            key={blog.id} 
+            blog={blog} 
+            likeBlog={likeBlog} 
+            deleteBlog={deleteBlog}
+          />
         )}
       </div>
     </>
