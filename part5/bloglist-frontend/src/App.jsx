@@ -48,6 +48,9 @@ const App = () => {
   const showError = (errorMessage, timeToShowError = 2500) => 
     showNotification(errorMessage, true, timeToShowError)
 
+  // Will return a promise
+  const likeBlog = (blog) => blogService.like(blog)
+
   // Login Form event handlers
   const onSuccessfullLogin = (loggedInUser) => {
     setUser(loggedInUser)
@@ -109,7 +112,7 @@ const App = () => {
       <div>
         <h2>Blogs</h2>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} likeBlog={likeBlog} showError={showError} />
         )}
       </div>
     </>
