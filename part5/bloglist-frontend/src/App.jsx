@@ -34,7 +34,7 @@ const App = () => {
     )
   }, [])
 
-  const showNotification = (message, isError = false, time = 2000) => {
+  const showNotification = (message, isError = false, time = 2500) => {
     isErrorRef = isError
     setNotification(message)
     setTimeout(() => setNotification(null), time)
@@ -45,7 +45,8 @@ const App = () => {
     setUser(null)
   }
 
-  const showError = (errorMessage, timeToShowError) => showNotification(errorMessage, true, timeToShowError ?? 2500)
+  const showError = (errorMessage, timeToShowError = 2500) => 
+    showNotification(errorMessage, true, timeToShowError)
 
   // Login Form event handlers
   const onSuccessfullLogin = (loggedInUser) => {
@@ -53,9 +54,8 @@ const App = () => {
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
   }
-  const onUnsuccessfullLogin = (errorMessage) => {
-    showError(errorMessage, 2500)
-  }
+  const onUnsuccessfullLogin = (errorMessage, timeToShowError = 2500) => 
+    showError(errorMessage, timeToShowError)
 
   // Blog Form event handlers
   const onSuccessfullBlogCreation = (createdBlog) => {
@@ -63,9 +63,8 @@ const App = () => {
     setBlogs(blogs.concat(createdBlog))
     showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
-  const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) => {
-    showError(errorMessage, timeToShowError ?? 2500)
-  }
+  const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) => 
+    showError(errorMessage, timeToShowError)
 
   // Check whether user is logged in or not
   if (user === null)
