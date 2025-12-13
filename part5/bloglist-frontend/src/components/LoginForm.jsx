@@ -1,14 +1,18 @@
 
 import { useState } from "react"
 import loginService from "../services/login"
-import blogService from '../services/blogs'
 
 const LoginForm = (props) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const { setUser, setIsError, showNotification } = props
+  const { onSuccess, onFailure } = props
+
+  const resetForm = () => {
+    setUsername('')
+    setPassword('')
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -16,23 +20,18 @@ const LoginForm = (props) => {
 
     form.reportValidity()
 
-    setIsError(false)
-
     // validations
     if ((username.trim() === '' || password.trim() === '') || (username.length < 3 || password.length < 3)) {
-      setIsError(true)
-      showNotification('Both password and username must be 3 characters long.', 3000)
+      onFailure('username & password cannot be less than 3 characters')
       return
     }
 
     try {
       const user = await loginService.login({ username, password })
-      setUser(user)
-      localStorage.setItem('loggedInUser', JSON.stringify(user))
-      blogService.setToken(user.accessToken)
+      resetForm()
+      onSuccess(user)
     } catch {
-      setIsError(true)
-      showNotification('Invalid Credentials', 2500)
+      onFailure('Invalid Credentials')
     }
   }
 

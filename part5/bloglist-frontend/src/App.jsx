@@ -42,6 +42,18 @@ const App = () => {
     setUser(null)
   }
 
+  // Login Form event handlers
+  const onSuccessfullLogin = (loggedInUser) => {
+    setIsError(false)
+    setUser(loggedInUser)
+    localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
+    blogService.setToken(loggedInUser.accessToken)
+  }
+  const onUnsuccessfullLogin = (errorMessage) => {
+    setIsError(true)
+    showNotification(errorMessage, 2500)
+  }
+
   // Check whether user is logged in or not
   if (user === null)
     return (
@@ -53,9 +65,8 @@ const App = () => {
         />
         <Toggleable buttonLabel="login">
           <LoginForm
-            setUser={setUser}
-            setIsError={setIsError}
-            showNotification={showNotification}
+            onSuccess={onSuccessfullLogin}
+            onFailure={onUnsuccessfullLogin}
           />
         </Toggleable>
       </div>
