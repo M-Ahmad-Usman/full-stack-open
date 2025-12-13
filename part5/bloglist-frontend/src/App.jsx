@@ -80,6 +80,14 @@ const App = () => {
       showNotification('Blog deleted successfuly')
     } 
     catch (error) {
+      const respondedErrorMessage = error.response.data.error
+      const statusCode = error.response.status
+      
+      if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
+        showNotification(`You can only delete notes which you've created.`, false, 3000)
+        return
+      }
+
       console.error(error)
       showError('Something went wrong. Cannot delete blog.')
     }
