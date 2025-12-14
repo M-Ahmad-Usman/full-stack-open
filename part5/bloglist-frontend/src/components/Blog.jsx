@@ -33,9 +33,10 @@ const Blog = (props) => {
 
       <div style={showWhenVisible}>
         <b>Title:</b> {blog.title} <button onClick={toggleVisbility}>{buttonLabel}</button> <br />
-        <b>Author</b> {blog.author} <br />
-        <b>URL</b> {blog.url} <br />
+        <b>Author:</b> {blog.author} <br />
+        <b>URL:</b> {blog.url} <br />
         <b>Likes:</b> {blog.likes} <button onClick={() => likeBlog(blog)}>Like</button> <br />
+        <b>Added by:</b> {blog.user.username} <br />
         <button onClick={() => deleteBlog(blog)}>Remove</button>
       </div>
     </div>
