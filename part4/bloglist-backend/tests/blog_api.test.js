@@ -456,6 +456,8 @@ describe('Blog API', () => {
 
   })
 
+  // TODO: Add tests for PATCH /api/blogs/like/:id
+
 })
 
 // After everything is done we have to close the mongoDB collection
