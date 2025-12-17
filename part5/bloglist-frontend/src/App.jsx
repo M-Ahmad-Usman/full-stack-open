@@ -46,7 +46,7 @@ const App = () => {
     setUser(null)
   }
 
-  const showError = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) => 
+  const showError = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) =>
     showNotification(errorMessage, true, timeToShowError)
 
   const likeBlog = async (blog) => {
@@ -78,13 +78,13 @@ const App = () => {
       await blogService.deleteBlog(blogToDelete)
       setBlogs(blogs.filter(b => b.id !== blogToDelete.id))
       showNotification('Blog deleted successfuly')
-    } 
+    }
     catch (error) {
       const respondedErrorMessage = error.response.data.error
       const statusCode = error.response.status
-      
+
       if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
-        showNotification(`You can only delete notes which you've created.`, false, 3000)
+        showNotification("You can only delete notes which you've created.", false, 3000)
         return
       }
 
@@ -156,10 +156,10 @@ const App = () => {
       <div>
         <h2>Blogs</h2>
         {sortedBlogs.map(blog =>
-          <Blog 
-            key={blog.id} 
-            blog={blog} 
-            likeBlog={likeBlog} 
+          <Blog
+            key={blog.id}
+            blog={blog}
+            likeBlog={likeBlog}
             deleteBlog={deleteBlog}
             user={user}
           />

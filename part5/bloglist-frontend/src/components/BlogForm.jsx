@@ -1,5 +1,5 @@
 
-import { useState } from "react"
+import { useState } from 'react'
 import blogService from '../services/blogs'
 
 const BlogForm = (props) => {
@@ -26,7 +26,7 @@ const BlogForm = (props) => {
 
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
       onFailure('title, author and url are required', 3000)
-      return;
+      return
     }
 
     const newBlog = { title, author, url }
