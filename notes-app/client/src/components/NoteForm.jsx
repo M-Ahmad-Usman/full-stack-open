@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const NoteForm = ({ createNote }) => {
 
@@ -6,7 +6,7 @@ const NoteForm = ({ createNote }) => {
 
   const addNote = (event) => {
     event.preventDefault()
-    
+
     createNote({
       content: newNote,
       important: true
