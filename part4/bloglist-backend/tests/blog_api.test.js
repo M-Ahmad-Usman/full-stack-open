@@ -436,6 +436,9 @@ describe('Blog API', () => {
       const blog = await helper.createBlog({}, user)
       const contentToUpdate = helper.getRandomBlog()
 
+      // likes property cannot be modified
+      contentToUpdate.likes = blog.likes
+
       const token = helper.generateValidToken(user)
 
       const { body: returnedBlog } = await api
