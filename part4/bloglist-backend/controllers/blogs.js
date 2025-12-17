@@ -143,7 +143,7 @@ blogRouter.put(
     response.json(blog)
   })
 
-blogRouter.put('/like/:id', async (request, response) => {
+blogRouter.patch('/like/:id', async (request, response) => {
   const blogId = request.params.id
 
   const blog = await Blog.findById(blogId)
