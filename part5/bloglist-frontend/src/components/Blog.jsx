@@ -3,7 +3,7 @@ import { useState } from "react"
 
 const Blog = (props) => {
 
-  const { blog, likeBlog, deleteBlog } = props
+  const { blog, likeBlog, deleteBlog, user } = props
 
   const [showDetails, setShowDetails] = useState(false)
 
@@ -37,7 +37,7 @@ const Blog = (props) => {
         <b>URL:</b> {blog.url} <br />
         <b>Likes:</b> {blog.likes} <button onClick={() => likeBlog(blog)}>Like</button> <br />
         <b>Added by:</b> {blog.user.username} <br />
-        <button onClick={() => deleteBlog(blog)}>Remove</button>
+        {user.username === blog.user.username && <button onClick={() => deleteBlog(blog)}>Remove</button>}
       </div>
     </div>
   )
