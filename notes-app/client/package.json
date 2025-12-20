@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "vitest run",
     "json-server": "npx json-server --port 3001 db.json"
   },
   "dependencies": {
