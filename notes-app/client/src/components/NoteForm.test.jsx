@@ -8,7 +8,15 @@ test('<NoteForm /> updates parent state and calls onSubmit', async () => {
 
   render(<NoteForm createNote={createNote} />)
 
-  const input = screen.getByRole('textbox')
+  /*
+    This wouldn't work if the component has multiple textboxes
+    We can user getAllByRole which will return an array of all inputs.
+    This approach isn't good as it depends on the order of inputs.
+  */
+  // const input = screen.getByRole('textbox')
+
+  // The more easy option would be to call by label text
+  const input = screen.getByLabelText('content')
   const sendButton = screen.getByText('save')
 
   await user.type(input, 'testing a form...')
