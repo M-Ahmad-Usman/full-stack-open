@@ -17,6 +17,9 @@ test('<NoteForm /> updates parent state and calls onSubmit', async () => {
 
   // The more easy option would be to call by label text
   const input = screen.getByLabelText('content')
+
+  // We can also use placeholder text to get the input
+  // const input = screen.getByPlaceholderText('write note content here')
   const sendButton = screen.getByText('save')
 
   await user.type(input, 'testing a form...')
