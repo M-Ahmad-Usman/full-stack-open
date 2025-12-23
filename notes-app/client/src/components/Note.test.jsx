@@ -20,3 +20,20 @@ test('renders content', () => {
   // const element = await screen.findByText('text')
   expect(element).toBeDefined()
 })
+
+/*
+  There is another queryByText method.
+  It returns the element but it does not cause an exception if it is not found.
+  We could eg. use the method to ensure that something is not rendered to the component.
+*/
+test('does not render this', () => {
+  const note = {
+    content: 'This is a reminder',
+    important: true
+  }
+
+  render(<Note note={note} />)
+
+  const element = screen.queryByText('do not want this thing to be rendered')
+  expect(element).toBeNull()
+})
