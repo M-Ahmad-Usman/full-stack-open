@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Note from './Note'
 
 test('renders content', () => {
@@ -60,3 +61,23 @@ test('renders content using css attributes', () => {
   expect(div).toHaveTextContent('Component testing is done with react-testing-library')
 
 })
+
+test('clicking the button calls event handler once', async () => {
+  const note = {
+    content: 'Component testing is done with react-testing-library',
+    important: true
+  }
+
+  // Define event handler as a mock function created using vite.
+  const mockHandler = vi.fn()
+  render(
+    <Note note={note} toggleImportance={mockHandler} />
+  )
+
+  // Start session to simulate user events.
+  const user = userEvent.setup()
+  const button = screen.getByText('make not important')
+  await user.click(button)
+  // mock.calls is an array that contains data about each call that the mock function has received.
+  // toHaveLength(1) ensures that the mock function has been called exactly once.
+  expect(mockHandler.mock.calls).toHaveLength(1)})
