@@ -45,3 +45,31 @@ test('all blog details are shown when component is expanded', async () => {
   expect(screen.getByText(blog.likes, { exact: false })).toBeInTheDocument()
 
 })
+
+
+test('like button calls like funtion every time it is pressed', async () => {
+  const user = { username: 'Ahmad' }
+
+  const blog = {
+    title: 'React patterns',
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+    likes: 7,
+    user
+  }
+
+  const mockLikeHandler = vi.fn()
+
+  render(<Blog blog={blog} user={user} likeBlog={mockLikeHandler} />)
+
+  const event = userEvent.setup()
+  const likeButton = screen.getByText('Like')
+
+  // Press like button twice
+  await Promise.all([
+    event.click(likeButton),
+    event.click(likeButton)
+  ])
+
+  expect(mockLikeHandler.mock.calls).toHaveLength(2)
+})
