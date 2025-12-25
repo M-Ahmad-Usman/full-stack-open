@@ -9,6 +9,7 @@ import Toggleable from './components/Toggleable'
 
 // Services
 import blogService from './services/blogs'
+import loginservice from './services/login'
 
 // Standard time
 const NOTIFICATION_TIMEOUT = 2500
@@ -93,14 +94,12 @@ const App = () => {
     }
   }
 
-  // Login Form event handlers
+  // Login Form event handler
   const onSuccessfullLogin = (loggedInUser) => {
     setUser(loggedInUser)
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
   }
-  const onUnsuccessfullLogin = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) =>
-    showError(errorMessage, timeToShowError)
 
   // Blog Form event handler
   const onSuccessfullBlogCreation = (createdBlog) => {
@@ -122,8 +121,9 @@ const App = () => {
         />
         <Toggleable buttonLabel="login">
           <LoginForm
+            login={loginservice.login}
             onSuccess={onSuccessfullLogin}
-            onFailure={onUnsuccessfullLogin}
+            showErrorNotification={showError}
           />
         </Toggleable>
       </div>

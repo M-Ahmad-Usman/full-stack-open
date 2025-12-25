@@ -1,13 +1,12 @@
 
 import { useState } from 'react'
-import loginService from '../services/login'
 
 const LoginForm = (props) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const { onSuccess, onFailure } = props
+  const { login, onSuccess, showErrorNotification } = props
 
   const resetForm = () => {
     setUsername('')
@@ -22,16 +21,16 @@ const LoginForm = (props) => {
 
     // validations
     if ((username.trim() === '' || password.trim() === '') || (username.length < 3 || password.length < 3)) {
-      onFailure('username & password cannot be less than 3 characters')
+      showErrorNotification('username & password cannot be less than 3 characters')
       return
     }
 
     try {
-      const user = await loginService.login({ username, password })
+      const user = await login({ username, password })
       resetForm()
       onSuccess(user)
     } catch {
-      onFailure('Invalid Credentials')
+      showErrorNotification('Invalid Credentials')
     }
   }
 
