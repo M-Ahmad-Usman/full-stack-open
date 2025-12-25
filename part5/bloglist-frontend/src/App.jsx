@@ -102,14 +102,12 @@ const App = () => {
   const onUnsuccessfullLogin = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) =>
     showError(errorMessage, timeToShowError)
 
-  // Blog Form event handlers
+  // Blog Form event handler
   const onSuccessfullBlogCreation = (createdBlog) => {
     blogFormRef.current.toggleVisibility()
     setBlogs(blogs.concat(createdBlog))
     showNotification(`${createdBlog.title} by ${createdBlog.author}`)
   }
-  const onUnsuccessfullBlogCreation = (errorMessage, timeToShowError) =>
-    showError(errorMessage, timeToShowError)
 
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
@@ -150,7 +148,7 @@ const App = () => {
         <BlogForm
           createBlog={blogService.create}
           onSuccess={onSuccessfullBlogCreation}
-          onFailure={onUnsuccessfullBlogCreation}
+          showErrorNotification={showError}
         />
       </Toggleable>
 
