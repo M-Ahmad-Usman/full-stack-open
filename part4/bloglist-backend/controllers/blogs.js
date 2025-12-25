@@ -56,7 +56,9 @@ blogRouter.post(
     user.blogs.push(savedBlog._id)
     await user.save()
 
-    response.status(201).json(savedBlog)
+    const populatedBlog = await savedBlog.populate('user', { username: 1, name: 1 })
+
+    response.status(201).json(populatedBlog)
   })
 
 blogRouter.get('/:id', async (request, response) => {
