@@ -14,8 +14,6 @@ const Blog = (props) => {
 
   const toggleVisbility = () => setShowDetails(!showDetails)
 
-  const buttonLabel = showDetails ? 'Hide' : 'View'
-
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -28,11 +26,11 @@ const Blog = (props) => {
     <div style={blogStyle}>
       <div style={hideWhenVisible}>
         {blog.title} {blog.author}
-        <button onClick={toggleVisbility}>{buttonLabel}</button>
+        <button onClick={toggleVisbility}>View</button>
       </div>
 
       <div style={showWhenVisible}>
-        <b>Title:</b> {blog.title} <button onClick={toggleVisbility}>{buttonLabel}</button> <br />
+        <b>Title:</b> {blog.title} <button onClick={toggleVisbility}>Hide</button> <br />
         <b>Author:</b> {blog.author} <br />
         <b>URL:</b> {blog.url} <br />
         <b>Likes:</b> {blog.likes} <button onClick={() => likeBlog(blog)}>Like</button> <br />
