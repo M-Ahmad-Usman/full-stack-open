@@ -1,6 +1,5 @@
 
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
 const BlogForm = (props) => {
 
@@ -8,7 +7,7 @@ const BlogForm = (props) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const { onSuccess, onFailure } = props
+  const { createBlog, onSuccess, onFailure } = props
 
   const resetForm = () => {
     setTitle('')
@@ -32,7 +31,7 @@ const BlogForm = (props) => {
     const newBlog = { title, author, url }
 
     try {
-      const createdBlog = await blogService.create(newBlog)
+      const createdBlog = await createBlog(newBlog)
       resetForm()
       onSuccess(createdBlog)
     }

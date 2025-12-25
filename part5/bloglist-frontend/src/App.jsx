@@ -148,6 +148,7 @@ const App = () => {
       <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
         <h2>Create New</h2>
         <BlogForm
+          createBlog={blogService.create}
           onSuccess={onSuccessfullBlogCreation}
           onFailure={onUnsuccessfullBlogCreation}
         />
