@@ -6,7 +6,10 @@
   "author": "M-Ahmad-Usman",
   "type": "module",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test",
+    "test:report": "playwright show-report"
+  },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/node": "^25.0.3"
