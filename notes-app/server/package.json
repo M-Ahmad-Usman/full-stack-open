@@ -10,7 +10,8 @@
     "build:ui": "rm -rf dist && cd ../client && npm run build && cp -r dist ../server",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push origin practice",
     "lint": "eslint .",
-    "seed": "cross-env NODE_ENV=development node seed_db.js"
+    "seed": "cross-env NODE_ENV=development node seed_db.js",
+    "start:test": "cross-env NODE_ENV=test node --watch index.js"
   },
   "author": "M-Ahmad-Usman",
   "license": "ISC",
