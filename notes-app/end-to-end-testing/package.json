@@ -4,7 +4,7 @@
   "description": "Testing end-to-end system using Playwright.",
   "license": "ISC",
   "author": "M-Ahmad-Usman",
-  "type": "module",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
