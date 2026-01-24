@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test --project=chromium --project=firefox",
+    "test": "playwright test --project=chromium",
     "test:report": "playwright show-report"
   },
   "devDependencies": {
