@@ -1,10 +1,13 @@
-const { test, expect, describe } = require('@playwright/test')
+const { test, expect, describe, beforeEach } = require('@playwright/test')
 
 describe('Note app', () => {
 
-  test('front page can be opened', async ({ page }) => {
-
+  // All tests start by going to the page.
+  beforeEach( async ({ page }) => {
     await page.goto('http://localhost:5173')
+  })
+
+  test('front page can be opened', async ({ page }) => {
 
     const locator = page.getByText('Notes')
     await expect(locator).toBeVisible()
@@ -12,10 +15,10 @@ describe('Note app', () => {
   })
 
   test('user can log in', async ({ page }) => {
-    await page.goto('http://localhost:5173')
 
     await page.getByRole('button', { name: 'login' }).click()
-
+    
+    // Make sure that the following user exists
     await page.getByLabel('username').fill('alice_johnson')
     await page.getByLabel('password').fill('password123')
 
