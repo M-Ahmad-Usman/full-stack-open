@@ -1,4 +1,7 @@
 const { test, expect, describe, beforeEach } = require('@playwright/test')
+const helpers = require('./helper')
+
+const { loginWith } = helpers
 
 describe('Note app', () => {
 
@@ -26,25 +29,13 @@ describe('Note app', () => {
   })
 
   test('user can log in', async ({ page }) => {
-
-    await page.getByRole('button', { name: 'login' }).click()
-    
-    // Make sure that the following user exists
-    await page.getByLabel('username').fill('alice_johnson')
-    await page.getByLabel('password').fill('password123')
-
-    await page.getByRole('button', { name: 'login' }).click()
+    await loginWith(page, 'alice_johnson', 'password123')
 
     await expect(page.getByText('Alice Johnson logged in')).toBeVisible()
   })
 
   test('login fails with wrong password', async ({ page }) => {
-    await page.getByRole('button', { name: 'login' }).click()
-    
-    await page.getByLabel('username').fill('alice_johnson')
-    await page.getByLabel('password').fill('wrong')
-
-    await page.getByRole('button', { name: 'login' }).click()
+    await loginWith(page, 'alice_johnson', 'wrong_password')
 
     await expect(page.getByText('wrong credentials')).toBeVisible()
 
@@ -63,12 +54,7 @@ describe('Note app', () => {
 
     // Log in user
     beforeEach( async ({ page }) => {
-      await page.getByRole('button', { name: 'login' }).click()
-
-      await page.getByLabel('username').fill('alice_johnson')
-      await page.getByLabel('password').fill('password123')
-
-      await page.getByRole('button', { name: 'login' }).click()
+      loginWith(page, 'alice_johnson', 'password123')
     } )
 
     test('a new note can be created', async ({ page }) => {
