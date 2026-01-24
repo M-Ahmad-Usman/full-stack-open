@@ -38,6 +38,27 @@ describe('Note app', () => {
     await expect(page.getByText('Alice Johnson logged in')).toBeVisible()
   })
 
+  test('login fails with wrong password', async ({ page }) => {
+    await page.getByRole('button', { name: 'login' }).click()
+    
+    await page.getByLabel('username').fill('alice_johnson')
+    await page.getByLabel('password').fill('wrong')
+
+    await page.getByRole('button', { name: 'login' }).click()
+
+    await expect(page.getByText('wrong credentials')).toBeVisible()
+
+    // We can also test that the error is rendered in the correct component
+    const errorDiv = page.locator('.error')  
+    await expect(errorDiv).toContainText('wrong credentials')
+
+    // We can also test rendered text styles
+    await expect(errorDiv).toHaveCSS('border-style', 'solid')
+    await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
+
+    await expect(page.getByText('Matti Luukkainen logged in')).not.toBeVisible()
+  })
+
   describe('When logged in', () => {
 
     // Log in user
