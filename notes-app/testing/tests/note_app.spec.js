@@ -61,6 +61,20 @@ describe('Note app', () => {
       await expect(page.getByText(noteContent)).toBeVisible()
     })
 
+    describe('and a note exists', () => {
+      
+      beforeEach(async ({ page }) => {
+        await page.getByRole('button', { name: 'new note' }).click()
+        await page.getByLabel('content').fill('another note by playwright')
+        await page.getByRole('button', { name: 'save' }).click()
+      })
+
+      test('importance can be changed', async({ page }) => {
+        await page.getByRole('button', { name: 'make not important' }).click()
+        await expect(page.getByText('make important')).toBeVisible()
+      })
+
+    })
   })
 
 })
