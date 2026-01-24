@@ -8,8 +8,17 @@ const loginWith = async (page, username, password) => {
   await page.getByRole('button', { name: 'login' }).click()
 }
 
+const createNote = async (page, noteContent) => {
+  await page.getByRole('button', { name: 'new note' }).click()
+
+  await page.getByLabel('content').fill(noteContent)
+
+  await page.getByRole('button', { name: 'save' }).click()
+}
+
 const helpers = {
-  loginWith
+  loginWith,
+  createNote
 }
 
 module.exports = helpers
