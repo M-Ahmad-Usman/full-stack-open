@@ -8,9 +8,9 @@ describe('Note app', () => {
   beforeEach( async ({ page, request }) => {
 
     // Reset the database
-    await request.post('http://localhost:3001/api/testing/reset')
+    await request.post('/api/testing/reset')
     // Create new user
-    await request.post('http://localhost:3001/api/users', {
+    await request.post('/api/users', {
       data: {
         name: 'Alice Johnson',
         username: 'alice_johnson',
@@ -18,7 +18,7 @@ describe('Note app', () => {
       }
     })
 
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
   })
 
   test('front page can be opened', async ({ page }) => {
