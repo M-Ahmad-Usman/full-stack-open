@@ -2,8 +2,19 @@ const { test, expect, describe, beforeEach } = require('@playwright/test')
 
 describe('Note app', () => {
 
-  // All tests start by going to the page.
-  beforeEach( async ({ page }) => {
+  beforeEach( async ({ page, request }) => {
+
+    // Reset the database
+    await request.post('http://localhost:3001/api/testing/reset')
+    // Create new user
+    await request.post('http://localhost:3001/api/users', {
+      data: {
+        name: 'Alice Johnson',
+        username: 'alice_johnson',
+        password: 'password123'
+      }
+    })
+
     await page.goto('http://localhost:5173')
   })
 
