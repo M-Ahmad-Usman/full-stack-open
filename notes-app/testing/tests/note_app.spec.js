@@ -27,4 +27,29 @@ describe('Note app', () => {
     await expect(page.getByText('Alice Johnson logged in')).toBeVisible()
   })
 
+  describe('When logged in', () => {
+
+    // Log in user
+    beforeEach( async ({ page }) => {
+      await page.getByRole('button', { name: 'login' }).click()
+
+      await page.getByLabel('username').fill('alice_johnson')
+      await page.getByLabel('password').fill('password123')
+
+      await page.getByRole('button', { name: 'login' }).click()
+    } )
+
+    test('a new note can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'new note' }).click()
+
+      const noteContent = 'a note created by playwright'
+      await page.getByLabel('content').fill(noteContent)
+
+      await page.getByRole('button', { name: 'save' }).click()
+
+      await expect(page.getByText(noteContent)).toBeVisible()
+    })
+
+  })
+
 })
