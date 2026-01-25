@@ -1,2 +1,11 @@
 node_modules
 .env
+
+# vitest
+coverage/
+
+# Playwright output and reports
+playwright-report/
+test-results/
+*.pw.log
+*.playwright/**
