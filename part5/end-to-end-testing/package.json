@@ -1,0 +1,17 @@
+{
+  "name": "end-to-end-testing",
+  "version": "1.0.0",
+  "description": "End to End testing of BlogList project using Playwright framework.",
+  "license": "ISC",
+  "author": "M-Ahmad-Usman",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test --project=chromium",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@types/node": "^25.0.10"
+  }
+}
