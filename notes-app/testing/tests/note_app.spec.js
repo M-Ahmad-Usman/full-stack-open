@@ -69,11 +69,16 @@ describe('Note app', () => {
       beforeEach(async ({ page }) => {
         await createNote(page, 'first note')
         await createNote(page, 'second note')
+        await createNote(page, 'third note')
       })
 
       test('one of those can be made nonimportant', async ({ page }) => {
 
-        const otherNoteText = page.getByText('first note')
+        /* To add breakpoints for test debugging, use:
+            await page.pause() 
+        */
+
+        const otherNoteText = page.getByText('second note')
         
         // The note text is in span element. Referncing span parent which is main note
         const otherNoteElement = otherNoteText.locator('..')
