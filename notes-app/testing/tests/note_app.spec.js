@@ -73,17 +73,14 @@ describe('Note app', () => {
 
       test('one of those can be made nonimportant', async ({ page }) => {
 
-        const otherNoteElement = page.getByText('first note')
+        const otherNoteText = page.getByText('first note')
+        
+        // The note text is in span element. Referncing span parent which is main note
+        const otherNoteElement = otherNoteText.locator('..')
 
-        /* This would cause error if the component which contains the text 'first note'
-        doesn't contains the button */
         await otherNoteElement
           .getByRole('button', { name: 'make not important' })
           .click()
-        /* If the button is just outside the component then we can do this:
-          const otherNoteText = page.getByText('first note')
-          const otherNoteElement = otherNoteText.locator('..')
-        */
 
         await expect(otherNoteElement.getByText('make important')).toBeVisible()
 
