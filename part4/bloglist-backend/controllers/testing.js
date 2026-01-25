@@ -1,0 +1,15 @@
+const testingRouter = require('express').Router()
+
+const User = require('../models/user')
+const Blog = require('../models/blog')
+
+testingRouter.post('/reset', async(request, response) => {
+  await Promise.all([
+    Blog.deleteMany(),
+    User.deleteMany()
+  ])
+
+  return response.status(204).end()
+})
+
+module.exports = testingRouter
