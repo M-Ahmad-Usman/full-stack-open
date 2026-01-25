@@ -5,7 +5,7 @@ const { loginWith, createNote } = helpers
 
 describe('Note app', () => {
 
-  beforeEach( async ({ page, request }) => {
+  beforeEach(async ({ page, request }) => {
 
     // Reset the database
     await request.post('/api/testing/reset')
@@ -40,7 +40,7 @@ describe('Note app', () => {
     await expect(page.getByText('wrong credentials')).toBeVisible()
 
     // We can also test that the error is rendered in the correct component
-    const errorDiv = page.locator('.error')  
+    const errorDiv = page.locator('.error')
     await expect(errorDiv).toContainText('wrong credentials')
 
     // We can also test rendered text styles
@@ -53,7 +53,7 @@ describe('Note app', () => {
   describe('When logged in', () => {
 
     // Log in user
-    beforeEach( async ({ page }) => {
+    beforeEach(async ({ page }) => {
       loginWith(page, 'alice_johnson', 'password123')
     })
 
@@ -64,15 +64,29 @@ describe('Note app', () => {
       await expect(page.getByText(noteContent)).toBeVisible()
     })
 
-    describe('and a note exists', () => {
-      
+    describe('and several notes exists', () => {
+
       beforeEach(async ({ page }) => {
-        await createNote(page, 'another note by playwright')
+        await createNote(page, 'first note')
+        await createNote(page, 'second note')
       })
 
-      test('importance can be changed', async({ page }) => {
-        await page.getByRole('button', { name: 'make not important' }).click()
-        await expect(page.getByText('make important')).toBeVisible()
+      test('one of those can be made nonimportant', async ({ page }) => {
+
+        const otherNoteElement = page.getByText('first note')
+
+        /* This would cause error if the component which contains the text 'first note'
+        doesn't contains the button */
+        await otherNoteElement
+          .getByRole('button', { name: 'make not important' })
+          .click()
+        /* If the button is just outside the component then we can do this:
+          const otherNoteText = page.getByText('first note')
+          const otherNoteElement = otherNoteText.locator('..')
+        */
+
+        await expect(otherNoteElement.getByText('make important')).toBeVisible()
+
       })
 
     })
