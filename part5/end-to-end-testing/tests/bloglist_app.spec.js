@@ -1,14 +1,21 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 const helper = require('./helper')
 
-const { loginUser } = helper
+const { loginUser, createBlog } = helper
 
-// User for testing
+// Testing Data
 const USER1 = {
   name: 'Matti Luukkainen',
   username: 'mluukkai',
   password: 'salainen'
 }
+
+const BLOG1 = {
+  title: 'Test Blog',
+  author: 'Test Author',
+  URL: 'https://bloglist.com'
+}
+
 
 describe('Blog app', () => {
 
@@ -62,28 +69,16 @@ describe('Blog app', () => {
       })
 
       test('a new blog can be created', async ({ page }) => {
-        
-        const TEST_BLOG = {
-          title: 'Test Blog',
-          author: 'Test Author',
-          URL: 'https://bloglist.com'
-        }
 
-        await page.getByRole('button', { name: 'Create New Blog' }).click()
-
-        await page.getByLabel('Title').fill(TEST_BLOG.title)
-        await page.getByLabel('Author').fill(TEST_BLOG.author)
-        await page.getByLabel('URL').fill(TEST_BLOG.URL)
-
-        await page.getByRole('button', { name: 'Add Blog' }).click()
+        await createBlog(page, BLOG1)
 
         // Verify notification is shown
-        const SUCCESS_MSG = `${TEST_BLOG.title} by ${TEST_BLOG.author} has been added.`
+        const SUCCESS_MSG = `${BLOG1.title} by ${BLOG1.author} has been added.`
         await expect(page.getByText(SUCCESS_MSG)).toBeVisible()
 
         // Verify toggleable blog is shown in blog list
         const blogElement = page
-          .getByText(`${TEST_BLOG.title} ${TEST_BLOG.author}`)
+          .getByText(`${BLOG1.title} ${BLOG1.author}`)
 
         // Verify the blog is available in list
         await expect(blogElement).toBeVisible()
