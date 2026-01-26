@@ -49,12 +49,49 @@ describe('Blog app', () => {
     })
 
     test('fails with incorrect credentials', async ({ page }) => {
-      await loginUser(page, { username: 'incorrect', password: 'incorrect'})
+      await loginUser(page, { username: 'incorrect', password: 'incorrect' })
 
       await expect(page.getByText(`${USER1.username} logged in`)).not.toBeVisible()
 
       await expect(page.getByText('Invalid Credentials')).toBeVisible()
-    }) 
+    })
+
+    describe('When logged in', () => {
+      beforeEach(async ({ page }) => {
+        await loginUser(page, USER1)
+      })
+
+      test('a new blog can be created', async ({ page }) => {
+        
+        const TEST_BLOG = {
+          title: 'Test Blog',
+          author: 'Test Author',
+          URL: 'https://bloglist.com'
+        }
+
+        await page.getByRole('button', { name: 'Create New Blog' }).click()
+
+        await page.getByLabel('Title').fill(TEST_BLOG.title)
+        await page.getByLabel('Author').fill(TEST_BLOG.author)
+        await page.getByLabel('URL').fill(TEST_BLOG.URL)
+
+        await page.getByRole('button', { name: 'Add Blog' }).click()
+
+        // Verify notification is shown
+        const SUCCESS_MSG = `${TEST_BLOG.title} by ${TEST_BLOG.author} has been added.`
+        await expect(page.getByText(SUCCESS_MSG)).toBeVisible()
+
+        // Verify toggleable blog is shown in blog list
+        const blogElement = page
+          .getByText(`${TEST_BLOG.title} ${TEST_BLOG.author}`)
+
+        // Verify the blog is available in list
+        await expect(blogElement).toBeVisible()
+        // Verify the existence of toggleable button
+        await expect(blogElement.getByRole('button', { name: 'View' })).toBeVisible()
+
+      })
+    })
 
   })
 
