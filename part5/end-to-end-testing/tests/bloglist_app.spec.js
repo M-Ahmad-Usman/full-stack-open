@@ -86,6 +86,22 @@ describe('Blog app', () => {
         await expect(blogElement.getByRole('button', { name: 'View' })).toBeVisible()
 
       })
+
+      test('blog can be liked', async ({ page }) => {
+
+        await createBlog(page, BLOG1)
+
+        // Click on view button to toggle blog's details
+        await page.getByRole('button', { name: 'view' }).click()
+
+        // like blog
+        await page.getByRole('button', { name: 'like' }).click()
+
+        // Verify that the blog has only 1 like
+        await expect(page.getByText('likes: 1')).toBeVisible()
+
+      })
+
     })
 
   })
