@@ -1,4 +1,8 @@
 
+const createUser = async(request, user) => {
+  await request.post('/api/users', { data: user })
+}
+
 const loginUser = async (page, user) => {
   await page.getByRole('button', { name: 'login' }).click()
 
@@ -20,6 +24,6 @@ const createBlog = async (page, blog) => {
   await page.getByRole('button', { name: 'Add Blog' }).click()
 }
 
-const helper = { loginUser, createBlog }
+const helper = { loginUser, createBlog, createUser }
 
 module.exports = helper
