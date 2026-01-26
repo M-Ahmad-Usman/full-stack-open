@@ -102,6 +102,24 @@ describe('Blog app', () => {
 
       })
 
+      test(`blog's creator can delete the blog`, async ({ page }) => {
+        await createBlog(page, BLOG1)
+
+        await page.pause()
+
+        // Click on view button to toggle blog's details
+        await page.getByRole('button', { name: 'view' }).click()
+
+        // Register prompt dialog handler to accept blog deletion
+        page.on('dialog', dialog => dialog.accept())
+
+        // Click on remove button to delete the blog
+        await page.getByRole('button', { name: 'Remove' }).click()
+
+        await expect(page.getByText('Blog deleted successfully')).toBeVisible()
+        await expect(page.getByText(BLOG1.title)).not.toBeVisible()
+      })
+
     })
 
   })
