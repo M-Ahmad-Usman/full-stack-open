@@ -1,7 +1,8 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
 const helper = require('./helper')
+const { request } = require('node:http')
 
-const { loginUser, createBlog } = helper
+const { loginUser, createBlog, createUser } = helper
 
 // Testing Data
 const USER1 = {
@@ -25,7 +26,7 @@ describe('Blog app', () => {
     await request.post('/api/testing/reset')
 
     // Create user in the db
-    await request.post('/api/users', { data: USER1 })
+    await createUser(request, USER1)
 
     await page.goto('/')
   })
@@ -118,6 +119,31 @@ describe('Blog app', () => {
 
         await expect(page.getByText('Blog deleted successfully')).toBeVisible()
         await expect(page.getByText(BLOG1.title)).not.toBeVisible()
+      })
+
+      test('only blog author sees the remove button', async ({ page, request }) => {
+
+        const newUser = {
+          name: 'new user',
+          username: 'new_user',
+          password: 'password'
+        }
+
+        await Promise.all([
+          createUser(request, newUser),
+          createBlog(page, BLOG1)
+        ])
+        
+        // Log out USER1
+        await page.getByRole('button', { name: 'log out' }).click()
+        // log in newUser
+        await loginUser(page, newUser)
+
+        // Toggle the blog's content
+        await page.getByRole('button', { name: 'view' }).click()
+
+        await expect(page.getByRole('button', { name: 'Remove' })).not.toBeVisible()
+
       })
 
     })
