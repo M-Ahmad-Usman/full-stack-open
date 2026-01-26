@@ -105,7 +105,7 @@ const App = () => {
   const onSuccessfullBlogCreation = (createdBlog) => {
     blogFormRef.current.toggleVisibility()
     setBlogs(blogs.concat(createdBlog))
-    showNotification(`${createdBlog.title} by ${createdBlog.author}`)
+    showNotification(`${createdBlog.title} by ${createdBlog.author} has been added.`)
   }
 
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
