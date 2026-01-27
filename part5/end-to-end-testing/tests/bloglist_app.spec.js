@@ -133,7 +133,7 @@ describe('Blog app', () => {
           createUser(request, newUser),
           createBlog(page, BLOG1)
         ])
-        
+
         // Log out USER1
         await page.getByRole('button', { name: 'log out' }).click()
         // log in newUser
@@ -143,6 +143,55 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'view' }).click()
 
         await expect(page.getByRole('button', { name: 'Remove' })).not.toBeVisible()
+
+      })
+
+      test('blogs are in sorted order according to likes', async ({ page }) => {
+
+        // Test blog data
+        const testBlogs = [
+          {
+            title: 'first blog',
+            author: 'first author',
+            URL: 'https://bloglist.com'
+          },
+          {
+            title: 'second blog',
+            author: 'second author',
+            URL: 'https://bloglist.com'
+          },
+          {
+            title: 'third blog',
+            author: 'third author',
+            URL: 'https://bloglist.com'
+          },
+        ]
+
+        await createBlog(page, testBlogs[0])
+        await createBlog(page, testBlogs[1])
+        await createBlog(page, testBlogs[2])
+
+        
+        // Like the third blog 2 times
+        await page.getByText(testBlogs[2].title).getByRole('button', { name: 'view' }).click()
+        const thirdBlogLikeBtn = page
+          .getByText(testBlogs[2].title)
+          .getByRole('button', { name: 'like' })
+        
+        await thirdBlogLikeBtn.click()
+        await thirdBlogLikeBtn.click()
+
+        // Like the second blog 1 time
+        await page.getByText(testBlogs[1].title).getByRole('button', { name: 'view' }).click()
+        await page.getByText(testBlogs[1].title).getByRole('button', { name: 'like' }).click()
+
+        await page.reload()
+
+        const blogList = await page.locator('.blog').all()
+
+        await expect(blogList[0]).toContainText(`${testBlogs[2].title} ${testBlogs[2].author}`)
+        await expect(blogList[1]).toContainText(`${testBlogs[1].title} ${testBlogs[1].author}`)
+        await expect(blogList[2]).toContainText(`${testBlogs[0].title} ${testBlogs[0].author}`)
 
       })
 
