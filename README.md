@@ -167,21 +167,12 @@ Returning to the frontend with comprehensive testing strategies and token-based 
 
 ## Practice Project: Notes App
 
-**🔗 Live Demo:** [notes-server-0xpd.onrender.com](https://notes-server-0xpd.onrender.com) | **Branch:** `practice`
+**🔗 Live Demo:** [notes-server-0xpd.onrender.com](https://notes-server-0xpd.onrender.com) | **Branch:** `practice`**
 
-A full-stack notes application demonstrating integration of concepts from Parts 0-4.
+A full-stack notes application integrating concepts from Parts 0-5 with complete testing strategies (unit tests, component tests with React Testing Library, and E2E tests with Playwright).
 
-### Stack
-- **Frontend:** React, Vite, Axios
-- **Backend:** Node.js, Express, MongoDB, Mongoose
-- **Security:** JWT authentication, bcrypt password hashing
-- **Testing:** Node.js test runner, supertest
+**Stack:** React 19 + Vite | Node.js + Express | MongoDB | JWT Auth | Vitest | Playwright
 
-### Features
-- User registration and JWT-based login (1-hour token expiration)
-- Create, read, update, and delete notes
-- Toggle note importance and filter by importance
-- Protected routes with ownership verification
-- Full test coverage (unit and integration tests)
+**Features:** User authentication, full-stack CRUD operations, component & E2E testing, token management
 
 ---
