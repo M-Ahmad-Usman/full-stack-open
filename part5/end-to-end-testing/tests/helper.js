@@ -24,6 +24,23 @@ const createBlog = async (page, blog) => {
   await page.getByRole('button', { name: 'Add Blog' }).click()
 }
 
-const helper = { loginUser, createBlog, createUser }
+const likeBlog = async (page, blog) => {
+
+  const blogElement = await page
+    .getByText(blog.title)
+  
+  await blogElement.getByRole('button', { name: 'view' }).click()
+  await blogElement.getByRole('button', { name: 'like' }).click()
+
+  await blogElement.getByRole('button', { name: 'hide' }).click()
+
+}
+
+const helper = { 
+  loginUser,
+  createBlog,
+  createUser,
+  likeBlog
+}
 
 module.exports = helper
