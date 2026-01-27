@@ -22,6 +22,9 @@ const createBlog = async (page, blog) => {
   await page.getByLabel('URL').fill(blog.URL)
 
   await page.getByRole('button', { name: 'Add Blog' }).click()
+
+  // Wait for the blog to be rendered
+  await page.getByText(`${blog.title} ${blog.author}`).waitFor()
 }
 
 const likeBlog = async (page, blog) => {
