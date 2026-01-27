@@ -2,7 +2,12 @@ const { test, expect, beforeEach, describe } = require('@playwright/test')
 const helper = require('./helper')
 const { request } = require('node:http')
 
-const { loginUser, createBlog, createUser } = helper
+const {
+  loginUser,
+  createBlog,
+  createUser,
+  likeBlog
+} = helper
 
 // Testing Data
 const USER1 = {
@@ -149,50 +154,45 @@ describe('Blog app', () => {
       test('blogs are in sorted order according to likes', async ({ page }) => {
 
         // Test blog data
-        const testBlogs = [
-          {
+        const testBlogs = {
+          leastPopular: {
             title: 'first blog',
             author: 'first author',
             URL: 'https://bloglist.com'
           },
-          {
+          moderatelyPopular: {
             title: 'second blog',
             author: 'second author',
             URL: 'https://bloglist.com'
           },
-          {
+          mostPopular: {
             title: 'third blog',
             author: 'third author',
             URL: 'https://bloglist.com'
-          },
-        ]
+          }
+        }
 
-        await createBlog(page, testBlogs[0])
-        await createBlog(page, testBlogs[1])
-        await createBlog(page, testBlogs[2])
+        await page.pause()
 
-        
-        // Like the third blog 2 times
-        await page.getByText(testBlogs[2].title).getByRole('button', { name: 'view' }).click()
-        const thirdBlogLikeBtn = page
-          .getByText(testBlogs[2].title)
-          .getByRole('button', { name: 'like' })
-        
-        await thirdBlogLikeBtn.click()
-        await thirdBlogLikeBtn.click()
+        // Render in specific order
+        await createBlog(page, testBlogs.moderatelyPopular)
+        await createBlog(page, testBlogs.leastPopular)
+        await createBlog(page, testBlogs.mostPopular)
 
-        // Like the second blog 1 time
-        await page.getByText(testBlogs[1].title).getByRole('button', { name: 'view' }).click()
-        await page.getByText(testBlogs[1].title).getByRole('button', { name: 'like' }).click()
+        // Like the most populear blog 2 times
+        await likeBlog(page, testBlogs.mostPopular)
+        await likeBlog(page, testBlogs.mostPopular)
 
-        await page.reload()
+        // Like the moderately popular blog 1 time
+        await likeBlog(page, testBlogs.moderatelyPopular)
 
-        const blogList = await page.locator('.blog').all()
+        // least popular blog does not has any likes
 
-        await expect(blogList[0]).toContainText(`${testBlogs[2].title} ${testBlogs[2].author}`)
-        await expect(blogList[1]).toContainText(`${testBlogs[1].title} ${testBlogs[1].author}`)
-        await expect(blogList[2]).toContainText(`${testBlogs[0].title} ${testBlogs[0].author}`)
+        const blogElements = await page.locator('.blog').all()
 
+        await expect(blogElements[0]).toContainText(testBlogs.mostPopular.title)
+        await expect(blogElements[1]).toContainText(testBlogs.moderatelyPopular.title)
+        await expect(blogElements[2]).toContainText(testBlogs.leastPopular.title)
       })
 
     })
