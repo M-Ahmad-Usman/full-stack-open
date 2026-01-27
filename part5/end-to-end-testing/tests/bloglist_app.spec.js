@@ -172,8 +172,6 @@ describe('Blog app', () => {
           }
         }
 
-        await page.pause()
-
         // Render in specific order
         await createBlog(page, testBlogs.moderatelyPopular)
         await createBlog(page, testBlogs.leastPopular)
