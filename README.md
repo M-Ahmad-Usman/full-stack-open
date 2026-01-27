@@ -14,7 +14,10 @@ Full Stack Open is a comprehensive introduction to modern web development with J
 ├── part1/              # Introduction to React
 ├── part2/              # Communicating with server
 ├── part3/              # Programming a server with Node.js and Express
-└── part4/              # Testing Express servers, user administration
+├── part4/              # Testing Express servers, user administration
+└── part5/              # Testing React apps
+    ├── bloglist-frontend/   # React frontend with Vitest tests
+    └── end-to-end-testing/  # Playwright E2E tests
 ```
 
 ---
@@ -106,6 +109,57 @@ Professional backend architecture with authentication and comprehensive testing.
 - Sequential execution to avoid race conditions
 
 **Key Concepts:** JWT auth, bcrypt, backend testing (Node.js test runner, supertest), database relationships, middleware composition, TDD, async/await patterns
+
+---
+
+### Part 5: Testing React Apps
+
+Returning to the frontend with comprehensive testing strategies and token-based authentication.
+
+**Project: bloglist-frontend** - React frontend for blog application with full authentication and testing
+
+**Authentication & Security:**
+- Token-based authentication with local storage
+- Login/logout functionality with JWT tokens
+- Protected routes and user-specific content
+- Automatic token attachment to API requests
+
+**UI Components:**
+- `LoginForm` - User authentication interface
+- `BlogForm` - Toggleable form for creating new blogs
+- `Blog` - Expandable blog display with like and delete functionality
+- `Toggleable` - Reusable component for show/hide behavior
+- `Notification` - Success/error message display
+
+**Frontend Testing (Vitest + React Testing Library):**
+- Component unit tests with mocking and user interaction simulation
+- `Blog.test.jsx` - Rendering, expansion, and like button functionality
+- `BlogForm.test.jsx` - Form submission with correct data
+- Mock functions for event handlers and user events
+- DOM querying strategies (getByText, getByRole, container queries)
+
+**End-to-End Testing (Playwright):**
+- Complete user workflow testing from login to blog management
+- Test helper functions for common operations (login, create blog, like blog)
+- Database reset before each test for isolation
+- Comprehensive test scenarios:
+  - Login form display and authentication (success/failure)
+  - Blog creation and notification verification
+  - Blog liking and like counter updates
+  - Blog deletion with authorization checks
+  - Remove button visibility based on ownership
+  - Blog sorting by likes (most liked first)
+- Dialog handling for confirmation prompts
+- Multiple user scenarios with role-based visibility
+
+**Architecture:**
+- Modular service layer for API communication (`services/blogs.js`, `services/login.js`)
+- Controlled forms with state management
+- Conditional rendering based on authentication state
+- Custom hooks for form handling
+- PropTypes for type checking (deprecated in React 19)
+
+**Key Concepts:** Token authentication, localStorage, React Testing Library, Vitest, user-event simulation, component testing, E2E testing with Playwright, test helpers, test isolation, beforeEach hooks, async testing
 
 ---
 
