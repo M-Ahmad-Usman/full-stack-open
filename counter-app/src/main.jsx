@@ -4,8 +4,7 @@ import { createStore } from 'redux'
 const noteReducer = (state = [], action) => {
   switch (action.type) {
     case 'NEW_NOTE':
-      state.push(action.payload)
-      return state
+      return state.concat(action.payload)
     default:
       return state
   }
