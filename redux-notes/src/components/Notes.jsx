@@ -17,13 +17,13 @@ const Notes = () => {
 
   return (
     <ul>
-      {notes.map(note => {
+      {notes.map(note => (
         <Note
           key={note.id}
           note={note}
           handleClick={() => dispatch(toggleImportanceOf(note.id))}
         />
-      })}
+      ))}
     </ul>
   )
 }
