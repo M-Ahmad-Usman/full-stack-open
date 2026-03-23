@@ -11,7 +11,7 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value
     if (!content.trim()) return
     event.target.anecdote.value = ''
-    dispatch(createAnecdote(content))
+    dispatch(createAnecdote({ content }))
   }
 
   return (

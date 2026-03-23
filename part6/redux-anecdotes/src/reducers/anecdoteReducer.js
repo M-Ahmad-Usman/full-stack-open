@@ -1,3 +1,6 @@
+
+import { createSlice } from '@reduxjs/toolkit'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -6,6 +9,8 @@ const anecdotesAtStart = [
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 ]
+
+// Utitilies
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
@@ -19,42 +24,24 @@ const asObject = anecdote => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
-
-  switch (action.type) {
-    case 'VOTE': {
+const anecdoteSlice = createSlice({
+  name: 'anecdotes',
+  initialState,
+  reducers: {
+    voteAnecdote(state, action) {
+      
       const anecdote = state.find(a => a.id === action.payload.id)
 
-      const votedAnecdote = {
-        ...anecdote,
-        votes: anecdote.votes + 1
-      }
+      anecdote.votes++
 
-      return state.map(a => a.id !== votedAnecdote.id ? a : votedAnecdote)
-    }
-
-    case 'CREATE': {
-      return [...state, asObject(action.payload.content)]
-    }
-
-    default:
       return state
+    },
+    createAnecdote(state, action) {
+      state.push(asObject(action.payload.content))
+      return state
+    }
   }
-}
+})
 
-// action creators
-export const voteAnecdote = (id) => {
-  return {
-    type: 'VOTE',
-    payload: { id }
-  }
-}
-
-export const createAnecdote = (content) => {
-  return {
-    type: 'CREATE',
-    payload: { content }
-  }
-}
-
-export default reducer
+export const { voteAnecdote, createAnecdote } = anecdoteSlice.actions
+export default anecdoteSlice.reducer
