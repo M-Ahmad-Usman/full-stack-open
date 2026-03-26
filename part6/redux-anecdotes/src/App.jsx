@@ -7,12 +7,14 @@ const App = () => {
 
   return (
     <div>
-      <Notification></Notification>
       <h2>Anecdotes</h2>
+      <Notification />
+      
       <Filter />
-      <AnecdoteList></AnecdoteList>
+      <AnecdoteList />
+
       <h2>create new</h2>
-      <AnecdoteForm></AnecdoteForm>
+      <AnecdoteForm />
     </div>
   )
 }
