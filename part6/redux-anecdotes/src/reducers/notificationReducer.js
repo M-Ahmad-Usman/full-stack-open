@@ -13,5 +13,5 @@ const notificationSlice = createSlice({
   }
 })
 
-export const { setNotification } = notificationSlice.actions
+export const { setNotificationMsg } = notificationSlice.actions
 export default notificationSlice.reducer
