@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "server": "json-server -p 3001 db.json",
     "test": "vitest"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "eslint": "^10.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "json-server": "^1.0.0-beta.15",
     "vite": "^7.3.1",
     "vitest": "^4.0.18"
   }
