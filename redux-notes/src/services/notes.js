@@ -6,7 +6,7 @@ const getAll = async () => {
   if (!response.ok) 
     throw new Error('Failed to fetch notes')
 
-  return await response.data
+  return await response.json()
 }
 
 export default { getAll }
