@@ -26,4 +26,20 @@ const createNew = async (content) => {
   return await response.json()
 }
 
-export default { getAll, createNew }
+const updateImportanceOf = async (id, updatedImportance) => {
+  const options = {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ important: updatedImportance })
+  }
+  
+  const response = await fetch(baseUrl + `/${id}`, options)
+
+  if (!response.ok) {
+    throw new Error('Failed to update importance note: ', id)
+  }
+
+  return (await response).json()
+}
+
+export default { getAll, createNew, updateImportanceOf }
