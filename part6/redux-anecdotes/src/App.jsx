@@ -15,7 +15,7 @@ const App = () => {
 
   useEffect(() => {
     anecdoteService.getAll()
-      .then(anecdotes => dispatch(setAnecdotes( { anecdotes })))
+      .then(anecdotes => dispatch(setAnecdotes({ anecdotes })))
   }, [dispatch])
 
   return (
