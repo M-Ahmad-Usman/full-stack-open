@@ -3,12 +3,38 @@
     {
       "content": "the app state is in redux store",
       "important": true,
-      "id": 1
+      "id": "1"
     },
     {
       "content": "state changes are made with actions",
       "important": false,
-      "id": 2
+      "id": "2"
+    },
+    {
+      "content": "hello",
+      "important": false,
+      "id": "qIh5I_cqlII"
+    },
+    {
+      "content": "",
+      "important": false,
+      "id": "r89Y1C9NkB0"
+    },
+    {
+      "content": "",
+      "important": false,
+      "id": "9ZI_ussSZjg"
+    },
+    {
+      "content": "",
+      "important": false,
+      "id": "wSrRi5YaSFA"
+    },
+    {
+      "content": "",
+      "important": false,
+      "id": "Ep_095hPPTY"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
