@@ -1,5 +1,6 @@
 
 import { createSlice } from '@reduxjs/toolkit'
+import { showNotification } from './notificationReducer'
 import anecdoteService from '../services/anecdote'
 
 const anecdoteSlice = createSlice({
@@ -35,9 +36,16 @@ export function createAnecdote(anecdoteData) {
   const createAnecdoteAction = anecdoteSlice.actions.createAnecdote
 
   return async dispatch => {
-    const newAnecdote = await anecdoteService.createAnecdote(anecdoteData)
 
-    dispatch(createAnecdoteAction(newAnecdote))
+    try {
+      const newAnecdote = await anecdoteService.createAnecdote(anecdoteData)
+      dispatch(createAnecdoteAction(newAnecdote))
+      dispatch(showNotification(`Anecdote: "${newAnecdote.content}" created.`, 5 ))
+    }
+    catch (err) {
+      dispatch(showNotification(`Failed to create anecdote. Something went wrong`, 5 ))
+      console.error(err)
+    }
   }
 }
 
@@ -50,10 +58,14 @@ export function voteAnecdote(anecdote) {
 
     try {
       await anecdoteService.voteAnecdote(anecdote)
+      dispatch(showNotification(`you voted '${anecdote.content}'`, 2))
     }
     catch (err) {
+      // Revert back to original state
       dispatch(updateAnecdoteVotesAction(anecdote))
+      dispatch(showNotification(`Failed to vote anecdote`, 2))
       console.error(err)
+      return
     }
   }
 }
