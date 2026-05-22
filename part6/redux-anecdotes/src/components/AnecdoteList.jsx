@@ -4,10 +4,11 @@ import { showNotification, resetNotification } from "../reducers/notificationRed
 
 const AnecdoteList = () => {
 
-  const anecdotes = useSelector(({ anecdotes, filter }) => {
-    return anecdotes
-      .filter(a => a.content.toLowerCase().includes(filter.toLowerCase()))
-  })
+  const anecdotes = useSelector(({ anecdotes }) => anecdotes )
+  const filter = useSelector(({ filter }) => filter)
+
+  const filteredAnecdotes = anecdotes
+    .filter(a => a.content.toLowerCase().includes(filter.toLowerCase()))
 
   const dispatch = useDispatch()
 
@@ -29,7 +30,7 @@ const AnecdoteList = () => {
 
   return (
     <div>
-      {anecdotes.map(anecdote => (
+      {filteredAnecdotes.map(anecdote => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
