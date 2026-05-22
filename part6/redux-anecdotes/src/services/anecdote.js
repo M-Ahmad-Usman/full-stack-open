@@ -23,4 +23,17 @@ const createAnecdote = async (anecdote) => {
   return createdAnecdote
 }
 
-export default { getAll, createAnecdote }
+const voteAnecdote = async (anecdote) => {
+  
+  const votedAnecdote = { ...anecdote, votes: anecdote.votes + 1 }
+  const response = await fetch(baseUrl + `/${votedAnecdote.id}`, { method: 'PATCH', body: JSON.stringify(votedAnecdote) })
+
+  if (!response.ok) {
+    console.error(response)
+    throw new Error('Failed to vote anecdote')
+  }
+
+  return await response.json()
+}
+
+export default { getAll, createAnecdote, voteAnecdote }

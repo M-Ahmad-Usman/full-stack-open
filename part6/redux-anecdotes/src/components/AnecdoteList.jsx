@@ -24,7 +24,7 @@ const AnecdoteList = () => {
     }
     renderNotification(notification)
 
-    dispatch(voteAnecdote({ id: anecdote.id }))
+    dispatch(voteAnecdote(anecdote))
   }
 
   return (
