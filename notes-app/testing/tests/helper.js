@@ -16,7 +16,7 @@ const createNote = async (page, noteContent) => {
   await page.getByRole('button', { name: 'save' }).click()
 
   // Wait for the created note to be rendered on the screen
-  await page.getByText(content).waitFor()
+  await page.getByText(noteContent).waitFor()
 }
 
 const helpers = {
