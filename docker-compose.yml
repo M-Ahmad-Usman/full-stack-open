@@ -1,0 +1,14 @@
+services:
+  database:
+    image: mongodb/mongodb-community-server:8.0-ubi9-slim
+    container_name: local-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      MONGODB_INITDB_ROOT_PASSWORD: secretpassword
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
