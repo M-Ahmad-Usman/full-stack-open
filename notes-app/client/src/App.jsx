@@ -35,15 +35,21 @@ const App = () => {
       .then(returnedNote => {
         setNotes(notes.map(note => (note.id !== id ? note : returnedNote)))
       })
-      // .catch(() => {
-      //   setErrorMessage(
-      //     `Note '${note.content}' was already removed from server`
-      //   )
-      //   setTimeout(() => {
-      //     setErrorMessage(null)
-      //   }, 5000)
-      //   setNotes(notes.filter(n => n.id !== id))
-      // })
+    // .catch(() => {
+    //   setErrorMessage(
+    //     `Note '${note.content}' was already removed from server`
+    //   )
+    //   setTimeout(() => {
+    //     setErrorMessage(null)
+    //   }, 5000)
+    //   setNotes(notes.filter(n => n.id !== id))
+    // })
+  }
+
+  const deleteNote = id => {
+    noteService.remove(id).then(() => {
+      setNotes(notes.filter(n => n.id !== id))
+    })
   }
 
   const padding = {
@@ -62,7 +68,7 @@ const App = () => {
 
       <Routes>
         <Route path='notes/:id' element={
-          <Note notes={notes} toggleImportance={toggleImportanceOf} />
+          <Note notes={notes} toggleImportance={toggleImportanceOf} deleteNote={deleteNote} />
         }>
 
         </Route>
