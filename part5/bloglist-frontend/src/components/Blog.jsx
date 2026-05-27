@@ -21,8 +21,12 @@ const Blog = ({ blog, blogHandlers, loggedInUser }) => {
       <div><b>Author:</b> {blog.author} </div>
       <div><b>URL:</b> {blog.url} </div>
 
-      {/* only logged in users can like blog */}
-      {loggedInUser && <div><b>Likes:</b> {blog.likes} <button onClick={() => blogHandlers.likeBlog(blog)}>Like</button> </div>}
+      <div>
+        {/* show likes to all users */}
+        <b>Likes:</b> {blog.likes}
+        {/* show like button only to authenticated users */}
+        {loggedInUser && <button onClick={() => blogHandlers.likeBlog(blog)}>Like</button>}
+      </div>
 
       <div><b>Added by:</b> {blog.user.username} </div>
 
