@@ -1,8 +1,9 @@
 
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 
 // Components
+import Blog from './components/Blog'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
@@ -20,11 +21,7 @@ const Home = () => {
   const [notification, setNotification] = useState({ message: null, isError: false })
 
   const navigate = useNavigate()
-
-  const showNotification = (message, isError = false, time = NOTIFICATION_TIMEOUT) => {
-    setNotification({ message, isError })
-    setTimeout(() => setNotification({ message: null, isError: false }), time)
-  }
+  const match = useMatch('/blogs/:id')
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -40,6 +37,18 @@ const Home = () => {
 
   }, [])
 
+  if (blogs.length === 0)
+    return null
+
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : undefined
+
+  const showNotification = (message, isError = false, time = NOTIFICATION_TIMEOUT) => {
+    setNotification({ message, isError })
+    setTimeout(() => setNotification({ message: null, isError: false }), time)
+  }
+
   const logOutUser = () => {
     localStorage.removeItem('loggedInUser')
     setUser(undefined)
@@ -50,6 +59,52 @@ const Home = () => {
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
     navigate('/')
+  }
+
+  const blogHandlers = {
+    likeBlog: async function (blog) {
+      // 1. Update UI immediately
+      const previousBlogs = blogs
+      setBlogs(blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes + 1 } : b))
+
+      // 2. Sync with server
+      try {
+        await blogService.like(blog)
+      }
+      catch (error) {
+        // 3. Revert back on failure
+        console.error(error.message)
+        setBlogs(previousBlogs)
+        showNotification('Could not like blog', true, 2500)
+      }
+    },
+    deleteBlog: async function (blogToDelete) {
+
+      const confirmDelete = confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}`)
+
+      if (!confirmDelete)
+        return
+
+      try {
+        await blogService.deleteBlog(blogToDelete)
+        setBlogs(blogs.filter(b => b.id !== blogToDelete.id))
+        showNotification('Blog deleted successfully')
+        navigate('/')
+      }
+      catch (error) {
+        const respondedErrorMessage = error.response.data.error
+        const statusCode = error.response.status
+
+        if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
+          showNotification("You can only delete notes which you've created.", false, 3000)
+          return
+        }
+
+        console.error(error)
+        showNotification('Something went wrong. Cannot delete blog.', true)
+        navigate('/')
+      }
+    }
   }
 
   const padding = { padding: 4 }
@@ -74,6 +129,7 @@ const Home = () => {
       <Routes>
 
         <Route path='/' element={<BlogList blogs={blogs} />} />
+        <Route path='/blogs/:id' element={<Blog blog={blog} blogHandlers={blogHandlers} loggedInUser={user} />}></Route>
         <Route path='/login' element={
           <LoginForm
             login={loginService.login}

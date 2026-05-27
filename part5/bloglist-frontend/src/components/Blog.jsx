@@ -1,17 +1,5 @@
 
-import { useState } from 'react'
-
-const Blog = (props) => {
-
-  const { blog, likeBlog, deleteBlog, user } = props
-
-  const [showDetails, setShowDetails] = useState(false)
-
-  // Hide when details are visible
-  const hideWhenVisible = { display: showDetails ? 'none' : 'block' }
-  const showWhenVisible = { display: showDetails ? 'block' : 'none' }
-
-  const toggleVisbility = () => setShowDetails(!showDetails)
+const Blog = ({ blog, blogHandlers, loggedInUser }) => {
 
   const blogStyle = {
     paddingTop: 10,
@@ -21,21 +9,26 @@ const Blog = (props) => {
     marginBottom: 5
   }
 
+  if (!blog)
+    return (
+      <div>Blog not found</div>
+    )
+
   return (
     <div style={blogStyle} className='blog'>
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author}
-        <button onClick={toggleVisbility}>View</button>
-      </div>
 
-      <div style={showWhenVisible}>
-        <b>Title:</b> {blog.title} <button onClick={toggleVisbility}>Hide</button> <br />
-        <b>Author:</b> {blog.author} <br />
-        <b>URL:</b> {blog.url} <br />
-        <b>Likes:</b> {blog.likes} <button onClick={() => likeBlog(blog)}>Like</button> <br />
-        <b>Added by:</b> {blog.user.username} <br />
-        {user.username === blog.user.username && <button onClick={() => deleteBlog(blog)}>Remove</button>}
-      </div>
+      <div><b>Title:</b> {blog.title} </div>
+      <div><b>Author:</b> {blog.author} </div>
+      <div><b>URL:</b> {blog.url} </div>
+
+      {/* only logged in users can like blog */}
+      {loggedInUser && <div><b>Likes:</b> {blog.likes} <button onClick={() => blogHandlers.likeBlog(blog)}>Like</button> </div>}
+
+      <div><b>Added by:</b> {blog.user.username} </div>
+
+      {/* Only authors can delete blogs */}
+      {loggedInUser && loggedInUser.username === blog.user.username && <button onClick={() => blogHandlers.deleteBlog(blog)}>Remove</button>}
+
     </div>
   )
 }
