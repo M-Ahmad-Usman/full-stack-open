@@ -1,75 +1,108 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { expect, test, vi } from 'vitest'
+
 import Blog from './Blog.jsx'
-import { expect, test } from 'vitest'
 
-test("render's blog title and author by default", () => {
-  const user = { username: 'Ahmad' }
+test('Blog information and the number of likes are displayed to unauthenticated users, buttons are not displayed', () => {
 
-  const blog = {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-    user
-  }
+  const loggedInUser = undefined // unauthenticated user
+  const blog = generateTestBlog({ title: 'my blog', likes: 10 })
 
-  render(<Blog blog={blog} user={user} />)
+  const mockBlogHandlers = generateMockBlogHandlers()
 
-  // Title and author should be visible together when the component isn't expanded
-  expect(screen.getByText(`${blog.title} ${blog.author}`)).toBeInTheDocument()
+  render(<Blog blog={blog} blogHandlers={mockBlogHandlers} loggedInUser={loggedInUser} />)
 
-  // URL and likes should NOT be visible by default
-  expect(screen.queryByText('https://reactpatterns.com/')).not.toBeInTheDocument()
-  expect(screen.queryByText('7')).not.toBeInTheDocument()
+  expect(screen.getByText(blog.title)).toBeInTheDocument()
+  expect(screen.getByText('10')).toBeInTheDocument()
+
+  expect(screen.queryAllByRole('button')).toHaveLength(0)
+
 })
 
-test('all blog details are shown when component is expanded', async () => {
-  const user = { username: 'Ahmad' }
+test("Authenticated users who are not the blog's creator are shown only the like button", async () => {
 
-  const blog = {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-    user
-  }
+  const loggedInUser = generateTestUser()
+  const blogAuthor = generateTestUser({ username: 'author' })
+  const blog = generateTestBlog({ user: blogAuthor })
 
-  render(<Blog blog={blog} user={user} />)
+  const mockBlogHandlers = generateMockBlogHandlers()
+
+  render(<Blog blog={blog} blogHandlers={mockBlogHandlers} loggedInUser={loggedInUser} />)
+
+  expect(screen.getByRole('button', { name: 'Like' })).toBeDefined()
+  expect(screen.getAllByRole('button')).toHaveLength(1)
+})
+
+test('Provided like blog handler prop is called when an authenticated user likes a blog', async () => {
+
+  const loggedInUser = generateTestUser()
+  const blog = generateTestBlog()
+
+  const mockBlogHandlers = generateMockBlogHandlers()
+
+  render(<Blog blog={blog} blogHandlers={mockBlogHandlers} loggedInUser={loggedInUser} />)
 
   const event = userEvent.setup()
-  const button = screen.getByText('View')
-  await event.click(button)
+  const likeBtn = screen.getByRole('button', { name: 'Like' })
 
-  expect(screen.getByText(blog.url, { exact: false })).toBeInTheDocument()
-  expect(screen.getByText(blog.likes, { exact: false })).toBeInTheDocument()
+  await event.click(likeBtn)
 
+  expect(mockBlogHandlers.likeBlog).toBeCalled()
 })
 
+test("The blog's creator is also shown the remove button", async () => {
+  const loggedInUser = generateTestUser()
+  const blog = generateTestBlog({ user: loggedInUser }) // loggedIn user is the blog's creator
 
-test('like button calls like funtion every time it is pressed', async () => {
-  const user = { username: 'Ahmad' }
+  const mockBlogHandlers = generateMockBlogHandlers()
 
-  const blog = {
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-    user
-  }
+  render(<Blog blog={blog} blogHandlers={mockBlogHandlers} loggedInUser={loggedInUser} />)
 
-  const mockLikeHandler = vi.fn()
+  expect(screen.getByRole('button', { name: 'Remove' })).toBeDefined()
+})
 
-  render(<Blog blog={blog} user={user} likeBlog={mockLikeHandler} />)
+test('Provided delete blog handler prop is called when blog creator tries to remove a blog', async () => {
+  const loggedInUser = generateTestUser()
+  const blog = generateTestBlog({ user: loggedInUser }) // loggedIn user is the blog's creator
+
+  const mockBlogHandlers = generateMockBlogHandlers()
+
+  render(<Blog blog={blog} blogHandlers={mockBlogHandlers} loggedInUser={loggedInUser} />)
 
   const event = userEvent.setup()
-  const likeButton = screen.getByText('Like')
+  const removeBtn = screen.getByRole('button', { name: 'Remove' })
 
-  // Press like button twice
-  await Promise.all([
-    event.click(likeButton),
-    event.click(likeButton)
-  ])
+  await event.click(removeBtn)
 
-  expect(mockLikeHandler.mock.calls).toHaveLength(2)
+  expect(mockBlogHandlers.deleteBlog).toBeCalled()
 })
+
+
+
+// Utils
+const generateTestUser = (user = {}) => {
+  return { name: 'test user', username: `test_user_${Date.now()}`, ...user }
+}
+
+const generateTestBlog = (blog = {}) => {
+  return {
+    title: 'test title',
+    author: 'test author',
+    url: 'https://test.com/',
+    likes: 0,
+    user: generateTestUser(),
+    ...blog
+  }
+}
+
+const generateMockBlogHandlers = () => {
+  const mockHandler = vi.fn()
+
+  const mockBlogHandlers = {
+    likeBlog: mockHandler,
+    deleteBlog: mockHandler
+  }
+
+  return mockBlogHandlers
+}
