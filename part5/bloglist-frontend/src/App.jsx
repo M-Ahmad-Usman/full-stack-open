@@ -15,7 +15,7 @@ import blogService from './services/blogs'
 
 const NOTIFICATION_TIMEOUT = 2500
 
-const Home = () => {
+const App = () => {
 
   const [blogs, setBlogs] = useState([])
   const [loggedInUser, setloggedInUser] = useState(undefined)
@@ -162,4 +162,4 @@ const Home = () => {
 
 }
 
-export default Home
+export default App
