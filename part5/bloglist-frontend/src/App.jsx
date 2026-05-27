@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 
 // Services
@@ -61,6 +62,7 @@ const Home = () => {
     navigate('/')
   }
 
+  // handlers
   const blogHandlers = {
     likeBlog: async function (blog) {
       // 1. Update UI immediately
@@ -107,6 +109,12 @@ const Home = () => {
     }
   }
 
+  const onSuccessfullBlogCreation = (createdBlog) => {
+    setBlogs(blogs.concat(createdBlog))
+    showNotification(`${createdBlog.title} by ${createdBlog.author} has been added.`)
+    navigate('/')
+  }
+
   const isUserLoggedIn = loggedInUser === undefined
   const padding = { padding: 4 }
 
@@ -120,9 +128,11 @@ const Home = () => {
 
       <div>
         <Link style={padding} to="/">blogs</Link>
-        {isUserLoggedIn
-          ? <Link style={padding} to="/login">login</Link>
-          : <button onClick={logOutUser}>logout</button>
+        {isUserLoggedIn || <Link style={padding} to={'/create'}>new blog</Link>}
+        {
+          isUserLoggedIn
+            ? <Link style={padding} to="/login">login</Link>
+            : <button onClick={logOutUser}>logout</button>
         }
         {isUserLoggedIn || <div>{loggedInUser.username} logged in</div>}
       </div>
@@ -131,6 +141,13 @@ const Home = () => {
 
         <Route path='/' element={<BlogList blogs={blogs} />} />
         <Route path='/blogs/:id' element={<Blog blog={blog} blogHandlers={blogHandlers} loggedInUser={loggedInUser} />}></Route>
+        <Route path='/create' element={
+          <BlogForm
+            createBlog={blogService.create}
+            onSuccess={onSuccessfullBlogCreation}
+            showNotification={showNotification}
+          />}
+        />
         <Route path='/login' element={
           <LoginForm
             login={loginService.login}

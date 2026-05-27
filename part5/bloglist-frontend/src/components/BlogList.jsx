@@ -4,13 +4,6 @@ import { Link } from 'react-router-dom'
 
 const BlogList = ({ blogs }) => {
 
-  // Blog Form event handler
-  // const onSuccessfullBlogCreation = (createdBlog) => {
-  //   blogFormRef.current.toggleVisibility()
-  //   setBlogs(blogs.concat(createdBlog))
-  //   showNotification(`${createdBlog.title} by ${createdBlog.author} has been added.`)
-  // }
-
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (

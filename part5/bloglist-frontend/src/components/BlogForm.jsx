@@ -7,7 +7,7 @@ const BlogForm = (props) => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const { createBlog, onSuccess, showErrorNotification } = props
+  const { createBlog, onSuccess, showNotification } = props
 
   const resetForm = () => {
     setTitle('')
@@ -24,7 +24,7 @@ const BlogForm = (props) => {
     event.preventDefault()
 
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
-      showErrorNotification('title, author and url are required', 3000)
+      showNotification('title, author and url are required', true, 3000)
       return
     }
 
@@ -37,7 +37,7 @@ const BlogForm = (props) => {
     }
     catch (error) {
       console.error({ type: 'Blog Creation', message: error.message })
-      showErrorNotification('Something went wrong. Please try again', 2500)
+      showNotification('Something went wrong. Please try again', true, 2500)
     }
   }
 
