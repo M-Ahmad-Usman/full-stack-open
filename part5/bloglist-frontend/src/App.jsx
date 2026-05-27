@@ -17,7 +17,7 @@ const NOTIFICATION_TIMEOUT = 2500
 const Home = () => {
 
   const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(undefined)
+  const [loggedInUser, setloggedInUser] = useState(undefined)
   const [notification, setNotification] = useState({ message: null, isError: false })
 
   const navigate = useNavigate()
@@ -28,10 +28,10 @@ const Home = () => {
   }, [])
 
   useEffect(() => {
-    const loggedInUser = localStorage.getItem('loggedInUser')
-    if (loggedInUser) {
-      const user = JSON.parse(loggedInUser)
-      setUser(user)
+    const storedUserData = localStorage.getItem('loggedInUser')
+    if (storedUserData) {
+      const user = JSON.parse(storedUserData)
+      setloggedInUser(user)
       blogService.setToken(user.accessToken)
     }
 
@@ -51,11 +51,11 @@ const Home = () => {
 
   const logOutUser = () => {
     localStorage.removeItem('loggedInUser')
-    setUser(undefined)
+    setloggedInUser(undefined)
   }
 
   const onSuccessfullLogin = (loggedInUser) => {
-    setUser(loggedInUser)
+    setloggedInUser(loggedInUser)
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
     navigate('/')
@@ -107,6 +107,7 @@ const Home = () => {
     }
   }
 
+  const isUserLoggedIn = loggedInUser === undefined
   const padding = { padding: 4 }
 
   return (
@@ -119,17 +120,17 @@ const Home = () => {
 
       <div>
         <Link style={padding} to="/">blogs</Link>
-        {user === undefined
+        {isUserLoggedIn
           ? <Link style={padding} to="/login">login</Link>
           : <button onClick={logOutUser}>logout</button>
         }
-        {user === undefined || <div>{user.username} logged in</div>}
+        {isUserLoggedIn || <div>{loggedInUser.username} logged in</div>}
       </div>
 
       <Routes>
 
         <Route path='/' element={<BlogList blogs={blogs} />} />
-        <Route path='/blogs/:id' element={<Blog blog={blog} blogHandlers={blogHandlers} loggedInUser={user} />}></Route>
+        <Route path='/blogs/:id' element={<Blog blog={blog} blogHandlers={blogHandlers} loggedInUser={loggedInUser} />}></Route>
         <Route path='/login' element={
           <LoginForm
             login={loginService.login}
