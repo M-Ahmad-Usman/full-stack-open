@@ -7,7 +7,6 @@ const Blog = (props) => {
 
   const [showDetails, setShowDetails] = useState(false)
 
-
   // Hide when details are visible
   const hideWhenVisible = { display: showDetails ? 'none' : 'block' }
   const showWhenVisible = { display: showDetails ? 'block' : 'none' }

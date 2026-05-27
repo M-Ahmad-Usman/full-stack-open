@@ -1,25 +1,34 @@
-import { useState, useEffect, useRef } from 'react'
+
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
 // Components
-import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
-import Toggleable from './components/Toggleable'
 
 // Services
+import loginService from './services/login'
 import blogService from './services/blogs'
-import loginservice from './services/login'
 
-// Standard time
 const NOTIFICATION_TIMEOUT = 2500
 
-const App = () => {
+const Home = () => {
+
   const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(undefined)
   const [notification, setNotification] = useState({ message: null, isError: false })
 
-  const blogFormRef = useRef()
+  const navigate = useNavigate()
+
+  const showNotification = (message, isError = false, time = NOTIFICATION_TIMEOUT) => {
+    setNotification({ message, isError })
+    setTimeout(() => setNotification({ message: null, isError: false }), time)
+  }
+
+  useEffect(() => {
+    blogService.getAll().then(blogs => setBlogs(blogs))
+  }, [])
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('loggedInUser')
@@ -31,141 +40,52 @@ const App = () => {
 
   }, [])
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
-  }, [])
-
-  const showNotification = (message, isError = false, time = NOTIFICATION_TIMEOUT) => {
-    setNotification({ message, isError })
-    setTimeout(() => setNotification({ message: null, isError: false }), time)
-  }
-
   const logOutUser = () => {
     localStorage.removeItem('loggedInUser')
-    setUser(null)
+    setUser(undefined)
   }
 
-  const showError = (errorMessage, timeToShowError = NOTIFICATION_TIMEOUT) =>
-    showNotification(errorMessage, true, timeToShowError)
-
-  const likeBlog = async (blog) => {
-    // 1. Update UI immediately
-    const previousBlogs = blogs
-    setBlogs(blogs.map(b => b.id === blog.id ? { ...b, likes: b.likes + 1 } : b))
-
-    // 2. Sync with server
-    try {
-      // On Success - UI is already up to date
-      await blogService.like(blog)
-    }
-    catch (error) {
-      // 3. Revert back on failure
-      console.error(error.message)
-      setBlogs(previousBlogs)
-      showError('Could not like blog', 2500)
-    }
-  }
-
-  const deleteBlog = async (blogToDelete) => {
-
-    const confirmDelete = confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}`)
-
-    if (!confirmDelete)
-      return
-
-    try {
-      await blogService.deleteBlog(blogToDelete)
-      setBlogs(blogs.filter(b => b.id !== blogToDelete.id))
-      showNotification('Blog deleted successfully')
-    }
-    catch (error) {
-      const respondedErrorMessage = error.response.data.error
-      const statusCode = error.response.status
-
-      if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
-        showNotification("You can only delete notes which you've created.", false, 3000)
-        return
-      }
-
-      console.error(error)
-      showError('Something went wrong. Cannot delete blog.')
-    }
-  }
-
-  // Login Form event handler
   const onSuccessfullLogin = (loggedInUser) => {
     setUser(loggedInUser)
     localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
     blogService.setToken(loggedInUser.accessToken)
+    navigate('/')
   }
 
-  // Blog Form event handler
-  const onSuccessfullBlogCreation = (createdBlog) => {
-    blogFormRef.current.toggleVisibility()
-    setBlogs(blogs.concat(createdBlog))
-    showNotification(`${createdBlog.title} by ${createdBlog.author} has been added.`)
-  }
-
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-
-  // Check whether user is logged in or not
-  if (user === null)
-    return (
-      <div>
-        <h2>Login to application</h2>
-        <Notification
-          message={notification.message}
-          isError={notification.isError}
-        />
-        <Toggleable buttonLabel="login">
-          <LoginForm
-            login={loginservice.login}
-            onSuccess={onSuccessfullLogin}
-            showErrorNotification={showError}
-          />
-        </Toggleable>
-      </div>
-    )
+  const padding = { padding: 4 }
 
   return (
-    <>
 
+    <>
       <Notification
         message={notification.message}
         isError={notification.isError}
       />
 
       <div>
-        <h2>User</h2>
-        <p>{user.username} logged in</p>
-        <button onClick={logOutUser}>Log out</button>
+        <Link style={padding} to="/">blogs</Link>
+        {user === undefined
+          ? <Link style={padding} to="/login">login</Link>
+          : <button onClick={logOutUser}>logout</button>
+        }
+        {user === undefined || <div>{user.username} logged in</div>}
       </div>
 
-      <Toggleable buttonLabel="Create New Blog" ref={blogFormRef}>
-        <h2>Create New</h2>
-        <BlogForm
-          createBlog={blogService.create}
-          onSuccess={onSuccessfullBlogCreation}
-          showErrorNotification={showError}
+      <Routes>
+
+        <Route path='/' element={<BlogList blogs={blogs} />} />
+        <Route path='/login' element={
+          <LoginForm
+            login={loginService.login}
+            onSuccess={onSuccessfullLogin}
+            showNotification={showNotification}
+          />}
         />
-      </Toggleable>
 
-      <div>
-        <h2>Blogs</h2>
-        {sortedBlogs.map(blog =>
-          <Blog
-            key={blog.id}
-            blog={blog}
-            likeBlog={likeBlog}
-            deleteBlog={deleteBlog}
-            user={user}
-          />
-        )}
-      </div>
+      </Routes>
     </>
   )
+
 }
 
-export default App
+export default Home
