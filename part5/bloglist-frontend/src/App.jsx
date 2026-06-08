@@ -38,9 +38,6 @@ const App = () => {
 
   }, [])
 
-  if (blogs.length === 0)
-    return null
-
   const blog = match
     ? blogs.find(blog => blog.id === match.params.id)
     : undefined
