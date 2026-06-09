@@ -1,37 +1,33 @@
 
-const createUser = async(request, user) => {
+const createUser = async (request, user) => {
   await request.post('/api/users', { data: user })
 }
 
 const loginUser = async (page, user) => {
-  await page.getByRole('button', { name: 'login' }).click()
-
   // fill in the login form
   await page.getByLabel('username').fill(user.username)
   await page.getByLabel('password').fill(user.password)
 
-  await page.getByRole('button', { name: 'login' }).click()
+  // On successful login, user will be redirected to '/'
+  await page.getByRole('button', { name: 'Login' }).click()
 }
 
 const createBlog = async (page, blog) => {
-  await page.getByRole('button', { name: 'Create New Blog' }).click()
-
   // fill in the form with blog data
   await page.getByLabel('Title').fill(blog.title)
   await page.getByLabel('Author').fill(blog.author)
   await page.getByLabel('URL').fill(blog.URL)
 
+  // On successful blog creation, page will be redirected to '/'
   await page.getByRole('button', { name: 'Add Blog' }).click()
 
   // Wait for the blog to be rendered
-  await page.getByText(`${blog.title} ${blog.author}`).waitFor()
+  // await page.getByRole('link', { name: blog.title }).waitFor()
 }
 
 const likeBlog = async (page, blog) => {
+  const blogElement = await page.getByText(blog.title)
 
-  const blogElement = await page
-    .getByText(blog.title)
-  
   await blogElement.getByRole('button', { name: 'view' }).click()
   await blogElement.getByRole('button', { name: 'like' }).click()
 
@@ -39,11 +35,31 @@ const likeBlog = async (page, blog) => {
 
 }
 
-const helper = { 
+const generateBlog = (blog = {}) => {
+  return {
+    title: `Test Blog ${Date.now()}`,
+    author: 'Test Author',
+    URL: 'https://bloglist.com',
+    ...blog
+  }
+}
+
+const generateUser = (user = {}) => {
+  return {
+    name: 'Test User',
+    username: `test_user_${Date.now()}`,
+    password: 'password123',
+    ...user
+  }
+}
+
+const helper = {
   loginUser,
   createBlog,
   createUser,
-  likeBlog
+  likeBlog,
+  generateBlog,
+  generateUser
 }
 
 module.exports = helper

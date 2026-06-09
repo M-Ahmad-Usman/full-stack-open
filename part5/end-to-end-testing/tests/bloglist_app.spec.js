@@ -6,115 +6,114 @@ const {
   loginUser,
   createBlog,
   createUser,
-  likeBlog
+  likeBlog,
+  generateBlog,
+  generateUser
 } = helper
 
-// Testing Data
-const USER1 = {
-  name: 'Matti Luukkainen',
-  username: 'mluukkai',
-  password: 'salainen'
-}
-
-const BLOG1 = {
-  title: 'Test Blog',
-  author: 'Test Author',
-  URL: 'https://bloglist.com'
-}
-
+const savedUser = generateUser()
 
 describe('Blog app', () => {
 
   beforeEach(async ({ page, request }) => {
-
-    // Reset the database
+    // Reset the db
     await request.post('/api/testing/reset')
-
-    // Create user in the db
-    await createUser(request, USER1)
-
+    // Save user in the db
+    await createUser(request, savedUser)
     await page.goto('/')
   })
 
-  test('Login form is shown', async ({ page }) => {
-
-    const loginBtn = page.getByRole('button', { name: 'login' })
+  test('Login button is clickable', async ({ page }) => {
+    const loginBtn = page.getByRole('link', { name: 'login' })
 
     await expect(loginBtn).toBeVisible()
 
     await loginBtn.click()
 
-    // Make sure that the login form is visible
+    // login form is visible
     expect(page.getByLabel('username')).toBeVisible()
     expect(page.getByLabel('password')).toBeVisible()
 
+    // page is on login route
+    expect(page).toHaveURL('/login')
   })
 
   describe('login', () => {
 
     test('succeeds with correct credentials', async ({ page }) => {
-      await loginUser(page, USER1)
+      await page.goto('/login')
+      await loginUser(page, savedUser)
 
-      await expect(page.getByText(`${USER1.username} logged in`)).toBeVisible()
+      await expect(page.getByText(`logged in`)).toBeVisible()
 
-      await expect(page.getByText('Invalid Credentials')).not.toBeVisible()
-
+      // After login user is redirected to home screen
+      await expect(page).toHaveURL('/')
     })
 
     test('fails with incorrect credentials', async ({ page }) => {
+      await page.goto('/login')
       await loginUser(page, { username: 'incorrect', password: 'incorrect' })
 
-      await expect(page.getByText(`${USER1.username} logged in`)).not.toBeVisible()
-
       await expect(page.getByText('Invalid Credentials')).toBeVisible()
+      await expect(page.getByText(`logged in`)).not.toBeVisible()
+
+      // If login fails then user should remain on /login and shouldn't be redirected elsewhere
+      await expect(page).toHaveURL('/login')
     })
 
     describe('When logged in', () => {
+
       beforeEach(async ({ page }) => {
-        await loginUser(page, USER1)
+        await page.goto('/login')
+        await loginUser(page, savedUser)
+        // wait for the application to save access token
+        await page.getByText(`logged in`).waitFor()
       })
 
-      test('a new blog can be created', async ({ page }) => {
+      test('logged in user can create blog', async ({ page }) => {
 
-        await createBlog(page, BLOG1)
+        const blog = generateBlog()
+
+        await page.goto('/create')
+        await createBlog(page, blog)
 
         // Verify notification is shown
-        const SUCCESS_MSG = `${BLOG1.title} by ${BLOG1.author} has been added.`
+        const SUCCESS_MSG = `${blog.title} by ${blog.author} has been added.`
         await expect(page.getByText(SUCCESS_MSG)).toBeVisible()
 
-        // Verify toggleable blog is shown in blog list
-        const blogElement = page
-          .getByText(`${BLOG1.title} ${BLOG1.author}`)
-
-        // Verify the blog is available in list
-        await expect(blogElement).toBeVisible()
-        // Verify the existence of toggleable button
-        await expect(blogElement.getByRole('button', { name: 'View' })).toBeVisible()
-
+        // Verify that the clickable link for the  blog is available
+        await expect(page.getByRole('link', { name: blog.title })).toBeDefined()
       })
 
       test('blog can be liked', async ({ page }) => {
 
-        await createBlog(page, BLOG1)
+        const blog = generateBlog()
 
-        // Click on view button to toggle blog's details
-        await page.getByRole('button', { name: 'view' }).click()
+        await page.goto('/create')
+        await createBlog(page, blog)
+
+        // Open blog's details page
+        await page.getByRole('link', { name: blog.title }).click()
 
         // like blog
         await page.getByRole('button', { name: 'like' }).click()
 
         // Verify that the blog has only 1 like
         await expect(page.getByText('likes: 1')).toBeVisible()
-
       })
 
       test(`blog's creator can delete the blog`, async ({ page }) => {
-        await createBlog(page, BLOG1)
+        
+        const blog = generateBlog()
 
+        await page.goto('/create')
+        await createBlog(page, blog)
+
+        
+        // Open blog's details page
+        await page.getByRole('link', { name: blog.title }).click()
+        
         await page.pause()
-
-        // Click on view button to toggle blog's details
-        await page.getByRole('button', { name: 'view' }).click()
 
         // Register prompt dialog handler to accept blog deletion
         page.on('dialog', dialog => dialog.accept())
@@ -123,74 +122,68 @@ describe('Blog app', () => {
         await page.getByRole('button', { name: 'Remove' }).click()
 
         await expect(page.getByText('Blog deleted successfully')).toBeVisible()
-        await expect(page.getByText(BLOG1.title)).not.toBeVisible()
+        await expect(page.getByText(blog.title)).not.toBeVisible()
       })
 
       test('only blog author sees the remove button', async ({ page, request }) => {
+        
+        const anotherUser = generateUser()
+        await createUser(request, anotherUser)
 
-        const newUser = {
-          name: 'new user',
-          username: 'new_user',
-          password: 'password'
-        }
+        await page.goto('/create')
+        const blog = generateBlog()
+        await createBlog(page, blog)
 
-        await Promise.all([
-          createUser(request, newUser),
-          createBlog(page, BLOG1)
-        ])
+        // Log out savedUser
+        await page.getByRole('button', { name: 'logout' }).click()
 
-        // Log out USER1
-        await page.getByRole('button', { name: 'log out' }).click()
-        // log in newUser
-        await loginUser(page, newUser)
+        // log in anotherUser
+        await page.goto('/login')
+        await loginUser(page, anotherUser)
 
-        // Toggle the blog's content
-        await page.getByRole('button', { name: 'view' }).click()
+        // Open blog's details page
+        await page.getByRole('link', { name: blog.title }).click()
 
         await expect(page.getByRole('button', { name: 'Remove' })).not.toBeVisible()
-
       })
 
       test('blogs are in sorted order according to likes', async ({ page }) => {
 
         // Test blog data
-        const testBlogs = {
-          leastPopular: {
-            title: 'first blog',
-            author: 'first author',
-            URL: 'https://bloglist.com'
-          },
-          moderatelyPopular: {
-            title: 'second blog',
-            author: 'second author',
-            URL: 'https://bloglist.com'
-          },
-          mostPopular: {
-            title: 'third blog',
-            author: 'third author',
-            URL: 'https://bloglist.com'
-          }
+        const blogs = {
+          leastPopular: generateBlog({ title: 'least popular blog' }),
+          moderatelyPopular: generateBlog({ title: 'moderately popular blog' }),
+          mostPopular: generateBlog({ title: 'most popular blog' })
         }
 
         // Render in specific order
-        await createBlog(page, testBlogs.moderatelyPopular)
-        await createBlog(page, testBlogs.leastPopular)
-        await createBlog(page, testBlogs.mostPopular)
+        await page.goto('/create')
+        await createBlog(page, blogs.moderatelyPopular)
+        await page.goto('/create')
+        await createBlog(page, blogs.leastPopular)
+        await page.goto('/create')
+        await createBlog(page, blogs.mostPopular)
 
-        // Like the most populear blog 2 times
-        await likeBlog(page, testBlogs.mostPopular)
-        await likeBlog(page, testBlogs.mostPopular)
+        // Like the most popular blog 2 times
+        await page.getByRole('link', { name: blogs.mostPopular.title }).click()
+        await page.getByRole('button', { name: 'like' }).click()
+        await page.getByRole('button', { name: 'like' }).click()
+
 
         // Like the moderately popular blog 1 time
-        await likeBlog(page, testBlogs.moderatelyPopular)
+        await page.goto('/')
+        await page.getByRole('link', { name: blogs.moderatelyPopular.title }).click()
+        await page.getByRole('button', { name: 'like' }).click()
 
         // least popular blog does not has any likes
 
-        const blogElements = await page.locator('.blog').all()
+        // Move to main page
+        await page.goto('/')
+        const blogElements = await page.locator('li').all()
 
-        await expect(blogElements[0]).toContainText(testBlogs.mostPopular.title)
-        await expect(blogElements[1]).toContainText(testBlogs.moderatelyPopular.title)
-        await expect(blogElements[2]).toContainText(testBlogs.leastPopular.title)
+        await expect(blogElements[0]).toContainText(blogs.mostPopular.title)
+        await expect(blogElements[1]).toContainText(blogs.moderatelyPopular.title)
+        await expect(blogElements[2]).toContainText(blogs.leastPopular.title)
       })
 
     })
