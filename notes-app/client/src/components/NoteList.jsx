@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 
 // Components
 import Notification from './Notification'
@@ -32,7 +33,7 @@ const NoteList = ({ notes }) => {
     noteService.setToken(loggedInUser.token)
   }
 
-  const notesToShow = showAll ? notes : notes.filter(note => note.important)
+  const filteredNotes = showAll ? notes : notes.filter(note => note.important)
 
   return (
     <div>
@@ -52,13 +53,39 @@ const NoteList = ({ notes }) => {
           show {showAll ? 'important' : 'all'}
         </button>
       </div>
-      <ul>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>content</TableCell>
+              <TableCell>user</TableCell>
+              <TableCell>important</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredNotes.map(note => (
+              <TableRow key={note.id}>
+                <TableCell>
+                  <Link to={`/notes/${note.id}`}>{note.content}</Link>
+                </TableCell>
+                <TableCell>
+                  {note.user.name}
+                </TableCell>
+                <TableCell>
+                  {note.important ? 'yes': ''}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {/* <ul>
         {notesToShow.map(note => (
           <li key={note.id}>
             <Link to={`/notes/${note.id}`}>{note.content}</Link>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   )
 }

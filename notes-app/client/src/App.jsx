@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
+import { Container } from '@mui/material'
+
 import noteService from './services/notes'
 
-import { Routes, Route, Link, useMatch } from 'react-router-dom'
 import NoteList from './components/NoteList'
 import Home from './components/Home'
 import Footer from './components/Footer'
@@ -60,7 +62,7 @@ const App = () => {
 
   return (
 
-    <div>
+    <Container>
       <div>
         <Link style={padding} to="/">home</Link>
         <Link style={padding} to="/notes">notes</Link>
@@ -83,7 +85,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
       </Routes>
       <Footer />
-    </div>
+    </Container>
   )
 }
 
