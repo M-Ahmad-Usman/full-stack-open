@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import loginService from '../services/login'
 
-const LoginForm = ({ onSuccessfullLogin, setErrorMessage }) => {
+const LoginForm = ({ onSuccessfullLogin, setNotification }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -26,9 +26,9 @@ const LoginForm = ({ onSuccessfullLogin, setErrorMessage }) => {
       onSuccessfullLogin(user)
 
     } catch {
-      setErrorMessage('wrong credentials')
+      setNotification({ text: 'wrong credentials', type: 'error' })
       setTimeout(() => {
-        setErrorMessage(null)
+        setNotification(null)
       }, 5000)
     }
   }

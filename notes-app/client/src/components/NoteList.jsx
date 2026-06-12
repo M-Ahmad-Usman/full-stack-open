@@ -4,17 +4,15 @@ import { Link } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material'
 
 // Components
-import Notification from './Notification'
 import LoginForm from './LoginForm'
 import Togglable from './Toggleable'
 
 // Services
 import noteService from '../services/notes'
 
-const NoteList = ({ notes }) => {
+const NoteList = ({ notes, setNotification }) => {
 
   const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
 
   // Verify whether user is logged in or not
@@ -38,13 +36,12 @@ const NoteList = ({ notes }) => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={errorMessage} />
 
       {/* If user isn't logged in then show button to open login form */}
       {
         !user &&
         <Togglable buttonLabel='login'>
-          <LoginForm onSuccessfullLogin={onSuccessfullLogin} setErrorMessage={setErrorMessage} />
+          <LoginForm onSuccessfullLogin={onSuccessfullLogin} setNotification={setNotification}/>
         </Togglable>
       }
 

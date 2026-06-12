@@ -9,9 +9,11 @@ import Home from './components/Home'
 import Footer from './components/Footer'
 import NoteForm from './components/NoteForm'
 import Note from './components/Note'
+import Notification from './components/Notification'
 
 const App = () => {
   const [notes, setNotes] = useState([])
+  const [notification, setNotification] = useState(null)
 
   const match = useMatch('/notes/:id')
   const note = match
@@ -27,6 +29,8 @@ const App = () => {
   const addNote = noteObject => {
     noteService.create(noteObject).then(returnedNote => {
       setNotes(notes.concat(returnedNote))
+      setNotification({ text: `Note '${returnedNote.content}' added`, type: 'success' })
+      setTimeout(() => setNotification(null), 2500)
     })
   }
 
@@ -69,6 +73,7 @@ const App = () => {
         <Link style={padding} to="/create">new note</Link>
       </div>
 
+      <Notification notification={notification}/>
 
       <Routes>
         <Route path='notes/:id' element={
@@ -77,7 +82,7 @@ const App = () => {
 
         </Route>
         <Route path="/notes" element={
-          <NoteList notes={notes} />
+          <NoteList notes={notes} setNotification={setNotification}/>
         } />
         <Route path="/create" element={
           <NoteForm createNote={addNote} />
