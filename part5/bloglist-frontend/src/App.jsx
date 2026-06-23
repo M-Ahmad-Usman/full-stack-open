@@ -1,7 +1,8 @@
 
 import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Container } from '@mui/material'
+import { Button, Container, AppBar } from '@mui/material'
+import Toolbar from '@mui/material/Toolbar'
 
 // Components
 import Blog from './components/Blog'
@@ -114,7 +115,7 @@ const App = () => {
   }
 
   const isUserLoggedIn = loggedInUser === undefined
-  const padding = { padding: 4 }
+  const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
   return (
 
@@ -125,13 +126,21 @@ const App = () => {
       />
 
       <div>
-        <Link style={padding} to="/">blogs</Link>
-        {isUserLoggedIn || <Link style={padding} to={'/create'}>new blog</Link>}
-        {
-          isUserLoggedIn
-            ? <Link style={padding} to="/login">login</Link>
-            : <button onClick={logOutUser}>logout</button>
-        }
+        <AppBar position='static'>
+          <Toolbar style={{ display: 'flex' }}>
+            <Button color='inherit' component={Link} to='/' sx={style}>
+              Blog App
+            </Button>
+            <Button color='inherit' component={Link} to='/' sx={{ style, marginLeft: 'auto' }}>
+              blogs
+            </Button>
+            {isUserLoggedIn || <Button color='inherit' component={Link} to='/create' sx={style}>new blog</Button>}
+            {isUserLoggedIn
+              ? <Button color='inherit' component={Link} to='/login' sx={style}>login</Button>
+              : <Button color='inherit' onClick={logOutUser}>logout</Button>
+            }
+          </Toolbar>
+        </AppBar>
         {isUserLoggedIn || <div>{loggedInUser.username} logged in</div>}
       </div>
 
