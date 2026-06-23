@@ -1,6 +1,7 @@
 
 import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { Container } from '@mui/material'
 
 // Components
 import Blog from './components/Blog'
@@ -117,7 +118,7 @@ const App = () => {
 
   return (
 
-    <>
+    <Container>
       <Notification
         message={notification.message}
         isError={notification.isError}
@@ -154,7 +155,7 @@ const App = () => {
         />
 
       </Routes>
-    </>
+    </Container>
   )
 
 }

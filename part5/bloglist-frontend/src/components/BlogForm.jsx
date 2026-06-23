@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { TextField, Button } from '@mui/material'
 
 const BlogForm = (props) => {
 
@@ -41,46 +42,40 @@ const BlogForm = (props) => {
     }
   }
 
+  const margin = { margin: '12px 4px' }
+
   return (
-    <form onSubmit={handleBlogSubmit}>
-      <div>
-        <label htmlFor="title">Title:</label>
-        <input
-          type="text"
-          name="title"
-          id="title"
-          required
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-        />
-      </div>
 
-      <div>
-        <label htmlFor="author">Author:</label>
-        <input
-          type="text"
-          name="author"
-          id="author"
-          required
-          value={author}
-          onChange={e => setAuthor(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="url">URL:</label>
-        <input
-          type="url"
-          name="url"
-          id="url"
-          required
-          value={url}
-          onChange={e => setUrl(e.target.value)}
-        />
-      </div>
-
-      <button type="submit">Add Blog</button>
-    </form>
+    <div style={margin}>
+      <form onSubmit={handleBlogSubmit}>
+        <div>
+          <TextField
+            label='Title'
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+        </div>
+        <div>
+          <TextField
+            label='Author'
+            required
+            value={author}
+            onChange={e => setAuthor(e.target.value)}
+          />
+        </div>
+        <div>
+          <TextField
+            label='URL'
+            required
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+          />
+        </div>
+        <div>
+          <Button type='submit' variant='contained'>Add Blog</Button>
+        </div>
+      </form>
+    </div>
   )
 }
 

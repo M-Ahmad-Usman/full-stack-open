@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { TextField, Button } from '@mui/material'
 
 const LoginForm = (props) => {
 
@@ -34,36 +35,32 @@ const LoginForm = (props) => {
     }
   }
 
+  const margin = { margin: '12px 4px' }
+
   return (
-    <form id="login-form" onSubmit={handleLogin}>
-
-      <div>
-        <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          required
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          required
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-        />
-      </div>
-
-      <button type="submit">Login</button>
-
-    </form>
+    <div style={margin}>
+      <form id="login-form" onSubmit={handleLogin}>
+        <div>
+          <TextField
+            label='Username'
+            required
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+          />
+        </div>
+        <div>
+          <TextField
+            label='Password'
+            required
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          <Button type='submit' variant='contained'>Login</Button>
+        </div>
+      </form>
+    </div>
   )
 }
 
