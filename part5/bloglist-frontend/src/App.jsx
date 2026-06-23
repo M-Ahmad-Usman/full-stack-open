@@ -20,7 +20,7 @@ const App = () => {
 
   const [blogs, setBlogs] = useState([])
   const [loggedInUser, setloggedInUser] = useState(undefined)
-  const [notification, setNotification] = useState({ message: null, isError: false })
+  const [notification, setNotification] = useState({ message: null, type: false })
 
   const navigate = useNavigate()
   const match = useMatch('/blogs/:id')
@@ -43,9 +43,9 @@ const App = () => {
     ? blogs.find(blog => blog.id === match.params.id)
     : undefined
 
-  const showNotification = (message, isError = false, time = NOTIFICATION_TIMEOUT) => {
-    setNotification({ message, isError })
-    setTimeout(() => setNotification({ message: null, isError: false }), time)
+  const showNotification = (message, type, time = NOTIFICATION_TIMEOUT) => {
+    setNotification({ message, type })
+    setTimeout(() => setNotification({ message: null, type: null }), time)
   }
 
   const logOutUser = () => {
@@ -75,7 +75,7 @@ const App = () => {
         // 3. Revert back on failure
         console.error(error.message)
         setBlogs(previousBlogs)
-        showNotification('Could not like blog', true, 2500)
+        showNotification('Could not like blog', 'error', 2500)
       }
     },
     deleteBlog: async function (blogToDelete) {
@@ -88,7 +88,7 @@ const App = () => {
       try {
         await blogService.deleteBlog(blogToDelete)
         setBlogs(blogs.filter(b => b.id !== blogToDelete.id))
-        showNotification('Blog deleted successfully')
+        showNotification('Blog deleted successfully', 'success')
         navigate('/')
       }
       catch (error) {
@@ -96,12 +96,12 @@ const App = () => {
         const statusCode = error.response.status
 
         if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
-          showNotification("You can only delete notes which you've created.", false, 3000)
+          showNotification("You can only delete notes which you've created.", 'error', 3000)
           return
         }
 
         console.error(error)
-        showNotification('Something went wrong. Cannot delete blog.', true)
+        showNotification('Something went wrong. Cannot delete blog.', 'error')
         navigate('/')
       }
     }
@@ -109,7 +109,7 @@ const App = () => {
 
   const onSuccessfullBlogCreation = (createdBlog) => {
     setBlogs(blogs.concat(createdBlog))
-    showNotification(`${createdBlog.title} by ${createdBlog.author} has been added.`)
+    showNotification(`${createdBlog.title} by ${createdBlog.author} has been added.`, 'success')
     navigate('/')
   }
 
@@ -121,7 +121,7 @@ const App = () => {
     <Container>
       <Notification
         message={notification.message}
-        isError={notification.isError}
+        type={notification.type}
       />
 
       <div>

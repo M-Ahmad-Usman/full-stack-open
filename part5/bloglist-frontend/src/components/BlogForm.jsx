@@ -25,7 +25,7 @@ const BlogForm = (props) => {
     event.preventDefault()
 
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
-      showNotification('title, author and url are required', true, 3000)
+      showNotification('title, author and url are required', 'info', 3000)
       return
     }
 
@@ -38,7 +38,7 @@ const BlogForm = (props) => {
     }
     catch (error) {
       console.error({ type: 'Blog Creation', message: error.message })
-      showNotification('Something went wrong. Please try again', true, 2500)
+      showNotification('Something went wrong. Please try again', 'error', 2500)
     }
   }
 

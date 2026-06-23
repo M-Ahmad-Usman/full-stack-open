@@ -1,26 +1,20 @@
 
+import { Alert } from '@mui/material'
+
 const Notification = (props) => {
 
-  const { message, isError } = props
+  const { message, type } = props
 
   if (message === null) {
     return null
   }
 
-  const style = {
-    color: isError ? 'red' : 'green',
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  }
+  console.log(props)
 
   return (
-    <div style={style}>
+    <Alert style={{ margin: '12px 4px' }} severity={type}>
       {message}
-    </div>
+    </Alert>
   )
 }
 

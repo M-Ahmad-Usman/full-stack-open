@@ -22,7 +22,7 @@ const LoginForm = (props) => {
 
     // validations
     if ((username.trim() === '' || password.trim() === '') || (username.length < 3 || password.length < 3)) {
-      showNotification('username & password cannot be less than 3 characters', true, 5000)
+      showNotification('username & password cannot be less than 3 characters', 'info', 5000)
       return
     }
 
@@ -31,7 +31,7 @@ const LoginForm = (props) => {
       resetForm()
       onSuccess(user)
     } catch {
-      showNotification('Invalid Credentials', true, 4000)
+      showNotification('Invalid Credentials', 'error', 4000)
     }
   }
 
