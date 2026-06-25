@@ -120,29 +120,27 @@ const App = () => {
   return (
 
     <Container>
+      <AppBar position='static'>
+        <Toolbar style={{ display: 'flex' }}>
+          <Button color='inherit' component={Link} to='/' sx={style}>
+            Blog App
+          </Button>
+          <Button color='inherit' component={Link} to='/' sx={{ style, marginLeft: 'auto' }}>
+            blogs
+          </Button>
+          {isUserLoggedIn || <Button color='inherit' component={Link} to='/create' sx={style}>new blog</Button>}
+          {isUserLoggedIn
+            ? <Button color='inherit' component={Link} to='/login' sx={style}>login</Button>
+            : <Button color='inherit' onClick={logOutUser}>logout</Button>
+          }
+        </Toolbar>
+      </AppBar>
+      {isUserLoggedIn || <div style={{ margin: '8px 0px' }}>{loggedInUser.username} logged in</div>}
+
       <Notification
         message={notification.message}
         type={notification.type}
       />
-
-      <div>
-        <AppBar position='static'>
-          <Toolbar style={{ display: 'flex' }}>
-            <Button color='inherit' component={Link} to='/' sx={style}>
-              Blog App
-            </Button>
-            <Button color='inherit' component={Link} to='/' sx={{ style, marginLeft: 'auto' }}>
-              blogs
-            </Button>
-            {isUserLoggedIn || <Button color='inherit' component={Link} to='/create' sx={style}>new blog</Button>}
-            {isUserLoggedIn
-              ? <Button color='inherit' component={Link} to='/login' sx={style}>login</Button>
-              : <Button color='inherit' onClick={logOutUser}>logout</Button>
-            }
-          </Toolbar>
-        </AppBar>
-        {isUserLoggedIn || <div>{loggedInUser.username} logged in</div>}
-      </div>
 
       <Routes>
 
