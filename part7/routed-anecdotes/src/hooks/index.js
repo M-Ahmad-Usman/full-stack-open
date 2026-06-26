@@ -33,5 +33,10 @@ export const useAnecdotes = () => {
       .then(createdAnecdote => setAnecdotes(anecdotes.concat(createdAnecdote)))
   }
 
-  return { anecdotes, addAnecdote }
+  const deleteAnecdote = deleteAnecdoteId => {
+    anecdoteService.deleteAnecdote(deleteAnecdoteId)
+      .then(() => setAnecdotes(anecdotes.filter(anecdote => anecdote.id !== deleteAnecdoteId)))
+  }
+
+  return { anecdotes, addAnecdote, deleteAnecdote }
 }

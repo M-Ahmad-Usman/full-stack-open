@@ -9,7 +9,7 @@ import { useAnecdotes } from './hooks'
 
 const App = () => {
  
-  const { anecdotes, addAnecdote } = useAnecdotes()
+  const { anecdotes, addAnecdote, deleteAnecdote } = useAnecdotes()
 
   return (
     <Router>
@@ -17,7 +17,7 @@ const App = () => {
         <h1>Software anecdotes</h1>
         <Menu />
         <Routes>
-          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
+          <Route path="/" element={<AnecdoteList anecdotes={anecdotes} deleteAnecdote={deleteAnecdote} />} />
           <Route path="/create" element={<CreateNew addAnecdote={addAnecdote} />} />
           <Route path="/about" element={<About />} />
         </Routes>
