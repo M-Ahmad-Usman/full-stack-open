@@ -29,21 +29,29 @@ const CreateNew = ({ addAnecdote }) => {
     infoField.reset()
   }
 
+  const getInputFields = fieldHook => { 
+    return { 
+      type: fieldHook.type,
+      value: fieldHook.value,
+      onChange: fieldHook.onChange 
+    } 
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...contentField} />
+          <input {...getInputFields(contentField)} />
         </div>
         <div>
           author
-          <input {...authorField}/>
+          <input {...getInputFields(authorField)}/>
         </div>
         <div>
           url for more info
-          <input {...infoField}/>
+          <input {...getInputFields(infoField)}/>
         </div>
         <button type='submit'>create</button>
         <button type='reset' onClick={handleReset}>reset</button>
