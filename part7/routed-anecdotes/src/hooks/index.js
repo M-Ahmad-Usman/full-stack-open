@@ -1,8 +1,7 @@
+// routed-anecdotes/src/hooks/index.js
 
-import { useState } from 'react'
-import { useEffect } from 'react'
-
-import anecdoteService from '../services/anecdotes'
+import { useState, useContext } from 'react'
+import { AnecdoteContext } from '../context/AnecdoteContext'
 
 export const useField = type => {
   const [value, setValue] = useState('')
@@ -21,22 +20,12 @@ export const useField = type => {
   }
 }
 
-export const useAnecdotes = () => {
-  const [anecdotes, setAnecdotes] = useState([])
+export const useAnecdotes = ()  => {
+  const context = useContext(AnecdoteContext);
 
-  useEffect(() => {
-    anecdoteService.getAll().then(data => setAnecdotes(data))
-  }, [])
-
-  const addAnecdote = anecdoteData => {
-    anecdoteService.createNew(anecdoteData)
-      .then(createdAnecdote => setAnecdotes(anecdotes.concat(createdAnecdote)))
+  if (context === undefined || context === null) {
+    throw new Error('useAnecdotes must be used within a AnecdoteProvider');
   }
 
-  const deleteAnecdote = deleteAnecdoteId => {
-    anecdoteService.deleteAnecdote(deleteAnecdoteId)
-      .then(() => setAnecdotes(anecdotes.filter(anecdote => anecdote.id !== deleteAnecdoteId)))
-  }
-
-  return { anecdotes, addAnecdote, deleteAnecdote }
+  return context;
 }
