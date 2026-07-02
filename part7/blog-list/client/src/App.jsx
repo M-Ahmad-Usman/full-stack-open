@@ -10,6 +10,7 @@ import BlogList from './components/BlogList'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import ErrorBoundary from './components/ErrorBoundary'
 
 // Services
 import loginService from './services/login'
@@ -142,26 +143,28 @@ const App = () => {
         type={notification.type}
       />
 
-      <Routes>
+      <ErrorBoundary>
+        <Routes>
 
-        <Route path='/' element={<BlogList blogs={blogs} />} />
-        <Route path='/blogs/:id' element={<Blog blog={blog} blogHandlers={blogHandlers} loggedInUser={loggedInUser} />}></Route>
-        <Route path='/create' element={
-          <BlogForm
-            createBlog={blogService.create}
-            onSuccess={onSuccessfullBlogCreation}
-            showNotification={showNotification}
-          />}
-        />
-        <Route path='/login' element={
-          <LoginForm
-            login={loginService.login}
-            onSuccess={onSuccessfullLogin}
-            showNotification={showNotification}
-          />}
-        />
+          <Route path='/' element={<BlogList blogs={blogs} />} />
+          <Route path='/blogs/:id' element={<Blog blog={blog} blogHandlers={blogHandlers} loggedInUser={loggedInUser} />}></Route>
+          <Route path='/create' element={
+            <BlogForm
+              createBlog={blogService.create}
+              onSuccess={onSuccessfullBlogCreation}
+              showNotification={showNotification}
+            />}
+          />
+          <Route path='/login' element={
+            <LoginForm
+              login={loginService.login}
+              onSuccess={onSuccessfullLogin}
+              showNotification={showNotification}
+            />}
+          />
 
-      </Routes>
+        </Routes>
+      </ErrorBoundary>
     </Container>
   )
 
