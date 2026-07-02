@@ -1,0 +1,30 @@
+{
+  "name": "bloglist-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "M-Ahmad-Usman",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node --env-file=.env --watch index.js",
+    "lint": "eslint .",
+    "test:integration": "NODE_ENV=test node --env-file=.env --test --test-concurrency=1",
+    "start:end-to-end-testing": "NODE_ENV=test node --env-file=.env index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.4",
+    "morgan": "^1.10.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@stylistic/eslint-plugin": "^5.5.0",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "supertest": "^7.1.4"
+  }
+}
