@@ -15,20 +15,19 @@ const app = require('../app')
 const api = supertest(app)
 
 describe('User API', () => {
-
   beforeEach(async () => await helper.clearDB())
 
   const baseEndpoint = '/api/users'
 
   describe('GET /api/users', () => {
-
     test('all users are returned as JSON', async () => {
       const initialUsers = await Promise.all([
         helper.createUser(),
-        helper.createUser()
+        helper.createUser(),
       ])
 
-      const { body: returnedUsers } = await api.get(baseEndpoint)
+      const { body: returnedUsers } = await api
+        .get(baseEndpoint)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -38,7 +37,8 @@ describe('User API', () => {
     test('users have id property instead of _id', async () => {
       await helper.createUser()
 
-      const { body: users } = await api.get(baseEndpoint)
+      const { body: users } = await api
+        .get(baseEndpoint)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -51,7 +51,8 @@ describe('User API', () => {
     test('users do not contain passwordHash', async () => {
       await helper.createUser()
 
-      const { body: users } = await api.get(baseEndpoint)
+      const { body: users } = await api
+        .get(baseEndpoint)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -65,20 +66,18 @@ describe('User API', () => {
       await helper.createBlog({}, user)
       await helper.createBlog({}, user)
 
-      const { body: users } = await api.get(baseEndpoint)
-        .expect(200)
+      const { body: users } = await api.get(baseEndpoint).expect(200)
 
       assert.strictEqual(users[0].blogs.length, 2)
       assert(Object.hasOwn(users[0].blogs[0], 'title'))
       assert(Object.hasOwn(users[0].blogs[0], 'author'))
     })
-
   })
 
   describe('POST /api/users', () => {
-
     test('fails with status 415 if Content-Type is not application/json', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .set('Content-Type', 'text/html')
         .send('<p>Hello</p>')
         .expect(415)
@@ -86,11 +85,12 @@ describe('User API', () => {
       const requiredKeywords = ['content-type', 'application/json']
       const error = response.body.error.toLowerCase()
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 400 if no body is sent', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .set('Content-Type', 'application/json')
         .expect(400)
 
@@ -99,7 +99,8 @@ describe('User API', () => {
     })
 
     test('fails with status 400 if username is missing', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({ password: 'TestPassword123' })
         .expect(400)
 
@@ -108,7 +109,8 @@ describe('User API', () => {
     })
 
     test('fails with status 400 if password is missing', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({ username: 'testuser' })
         .expect(400)
 
@@ -117,10 +119,11 @@ describe('User API', () => {
     })
 
     test('fails with status 400 if password is not a string', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: 'testuser',
-          password: 12345
+          password: 12345,
         })
         .expect(400)
 
@@ -129,10 +132,11 @@ describe('User API', () => {
     })
 
     test('fails with status 400 if password is shorter than 3 characters', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: 'testuser',
-          password: 'ab'
+          password: 'ab',
         })
         .expect(400)
 
@@ -141,10 +145,11 @@ describe('User API', () => {
     })
 
     test('fails with status 400 if username is shorter than 3 characters', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: 'ab',
-          password: 'ValidPassword123'
+          password: 'ValidPassword123',
         })
         .expect(400)
 
@@ -157,18 +162,20 @@ describe('User API', () => {
       const password = 'TestPassword'
 
       // First user creation
-      await api.post(baseEndpoint)
+      await api
+        .post(baseEndpoint)
         .send({
           username,
-          password
+          password,
         })
         .expect(201)
 
       // Try to create second user with same username
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username,
-          password: 'ValidPassword123'
+          password: 'ValidPassword123',
         })
         .expect(400)
 
@@ -182,10 +189,11 @@ describe('User API', () => {
       const userData = {
         name: 'Test User',
         username: 'newtestuser',
-        password: 'ValidPassword123'
+        password: 'ValidPassword123',
       }
 
-      const { body: savedUser } = await api.post(baseEndpoint)
+      const { body: savedUser } = await api
+        .post(baseEndpoint)
         .send(userData)
         .expect(201)
 
@@ -199,12 +207,10 @@ describe('User API', () => {
       const userData = {
         name: 'Another Test User',
         username: 'anothertestuser',
-        password: 'ValidPassword456'
+        password: 'ValidPassword456',
       }
 
-      await api.post(baseEndpoint)
-        .send(userData)
-        .expect(201)
+      await api.post(baseEndpoint).send(userData).expect(201)
 
       const usersInDB = await helper.getUsersInDB()
 
@@ -215,22 +221,22 @@ describe('User API', () => {
     test('succeeds with status 201 when name is not provided', async () => {
       const userData = {
         username: 'testuser_noname',
-        password: 'ValidPassword123'
+        password: 'ValidPassword123',
       }
 
-      const { body: savedUser } = await api.post(baseEndpoint)
+      const { body: savedUser } = await api
+        .post(baseEndpoint)
         .send(userData)
         .expect(201)
 
       assert.strictEqual(savedUser.username, userData.username)
     })
-
   })
 
   describe('DELETE /api/users/:id', () => {
-
     test('fails with status 400 if user does not exist', async () => {
-      const response = await api.delete(baseEndpoint + '/' + helper.nonExistingId())
+      const response = await api
+        .delete(baseEndpoint + '/' + helper.nonExistingId())
         .expect(400)
 
       const error = response.body.error.toLowerCase()
@@ -238,8 +244,7 @@ describe('User API', () => {
     })
 
     test('fails with status 400 if id is invalid', async () => {
-      const response = await api.delete(baseEndpoint + '/' + '123')
-        .expect(400)
+      const response = await api.delete(baseEndpoint + '/' + '123').expect(400)
 
       const error = response.body.error
       assert(error === 'malformatted id')
@@ -248,7 +253,8 @@ describe('User API', () => {
     test('succeeds with status 200 on valid id', async () => {
       const user = await helper.createUser()
 
-      const { body: deletedUser } = await api.delete(baseEndpoint + '/' + user._id.toString())
+      const { body: deletedUser } = await api
+        .delete(baseEndpoint + '/' + user._id.toString())
         .expect(200)
 
       assert.strictEqual(deletedUser.id, user._id.toString())
@@ -261,15 +267,12 @@ describe('User API', () => {
       const usersInDB = await helper.getUsersInDB()
       assert.strictEqual(usersInDB.length, 1)
 
-      await api.delete(baseEndpoint + '/' + usersInDB[0].id)
-        .expect(200)
+      await api.delete(baseEndpoint + '/' + usersInDB[0].id).expect(200)
 
       const usersAfterDelete = await helper.getUsersInDB()
       assert.strictEqual(usersAfterDelete.length, 0)
     })
-
   })
-
 })
 
 // After everything is done we have to close the mongoDB collection

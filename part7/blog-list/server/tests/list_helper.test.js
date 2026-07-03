@@ -1,4 +1,3 @@
-
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
 
@@ -8,14 +7,12 @@ const blogData = require('./blog_data')
 const { listWithNoBlog, listWithOneBlog, listWithMultipleBlogs } = blogData
 
 test('dummy returns one', () => {
-
   const { dummy } = listHelper
 
   assert.strictEqual(dummy(listWithNoBlog), 1)
 })
 
 describe('Total Likes', () => {
-
   // The function to test
   const { totalLikes } = listHelper
 
@@ -35,7 +32,6 @@ describe('Total Likes', () => {
 })
 
 describe('Favorite blog', () => {
-
   // The function to test
   const { favoriteBlog } = listHelper
 
@@ -57,7 +53,6 @@ describe('Favorite blog', () => {
 })
 
 describe('Most Blogs', () => {
-
   // The function to test
   const { mostBlogs } = listHelper
 
@@ -68,7 +63,7 @@ describe('Most Blogs', () => {
   test('when list has one blog equals to the author of that blog with number of blogs to 1', () => {
     const AUTHOR_WITH_MOST_BLOGS = {
       author: listWithOneBlog[0].author,
-      blogs: 1
+      blogs: 1,
     }
 
     assert.deepStrictEqual(mostBlogs(listWithOneBlog), AUTHOR_WITH_MOST_BLOGS)
@@ -77,15 +72,17 @@ describe('Most Blogs', () => {
   test('when list has many blogs equals to the author with most blogs', () => {
     const AUTHOR_WITH_MOST_BLOGS = {
       author: 'Robert C. Martin',
-      blogs: 3
+      blogs: 3,
     }
 
-    assert.deepStrictEqual(mostBlogs(listWithMultipleBlogs), AUTHOR_WITH_MOST_BLOGS)
+    assert.deepStrictEqual(
+      mostBlogs(listWithMultipleBlogs),
+      AUTHOR_WITH_MOST_BLOGS,
+    )
   })
 })
 
 describe('Most Likes', () => {
-
   // The function to test
   const { mostLikes } = listHelper
 
@@ -96,7 +93,7 @@ describe('Most Likes', () => {
   test('when list has one blog equals to the author of that blog with number of blogs to 1', () => {
     const AUTHOR_WITH_MOST_LIKES = {
       author: listWithOneBlog[0].author,
-      likes: listWithOneBlog[0].likes
+      likes: listWithOneBlog[0].likes,
     }
 
     assert.deepStrictEqual(mostLikes(listWithOneBlog), AUTHOR_WITH_MOST_LIKES)
@@ -105,9 +102,12 @@ describe('Most Likes', () => {
   test('when list has many blogs equals to the author with most blogs', () => {
     const AUTHOR_WITH_MOST_LIKES = {
       author: 'Edsger W. Dijkstra',
-      likes: 17
+      likes: 17,
     }
 
-    assert.deepStrictEqual(mostLikes(listWithMultipleBlogs), AUTHOR_WITH_MOST_LIKES)
+    assert.deepStrictEqual(
+      mostLikes(listWithMultipleBlogs),
+      AUTHOR_WITH_MOST_LIKES,
+    )
   })
 })

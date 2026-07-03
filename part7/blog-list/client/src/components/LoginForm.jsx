@@ -1,9 +1,7 @@
-
 import { useState } from 'react'
 import { TextField, Button, Stack } from '@mui/material'
 
 const LoginForm = (props) => {
-
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -21,8 +19,17 @@ const LoginForm = (props) => {
     form.reportValidity()
 
     // validations
-    if ((username.trim() === '' || password.trim() === '') || (username.length < 3 || password.length < 3)) {
-      showNotification('username & password cannot be less than 3 characters', 'info', 5000)
+    if (
+      username.trim() === '' ||
+      password.trim() === '' ||
+      username.length < 3 ||
+      password.length < 3
+    ) {
+      showNotification(
+        'username & password cannot be less than 3 characters',
+        'info',
+        5000,
+      )
       return
     }
 
@@ -39,18 +46,20 @@ const LoginForm = (props) => {
     <form id="login-form" style={{ margin: '12px 4px' }} onSubmit={handleLogin}>
       <Stack spacing={1} sx={{ maxWidth: '320px', padding: '4px' }}>
         <TextField
-          label='Username'
+          label="Username"
           required
           value={username}
-          onChange={e => setUsername(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
-          label='Password'
+          label="Password"
           required
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type='submit' variant='contained'>Login</Button>
+        <Button type="submit" variant="contained">
+          Login
+        </Button>
       </Stack>
     </form>
   )

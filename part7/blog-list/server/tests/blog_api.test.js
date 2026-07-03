@@ -15,21 +15,19 @@ const app = require('../app')
 const api = supertest(app)
 
 describe('Blog API', () => {
-
   beforeEach(async () => await helper.clearDB())
 
   const baseEndpoint = '/api/blogs'
 
   describe('GET /api/blogs', () => {
-
-
     test('all blogs are returned as JSON', async () => {
       const initialBlogs = await Promise.all([
         helper.createBlog(),
-        helper.createBlog()
+        helper.createBlog(),
       ])
 
-      const { body: returnedBlogs } = await api.get(baseEndpoint)
+      const { body: returnedBlogs } = await api
+        .get(baseEndpoint)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -39,7 +37,8 @@ describe('Blog API', () => {
     test('blogs have id property instead of _id', async () => {
       await helper.createBlog()
 
-      const { body: blogs } = await api.get(baseEndpoint)
+      const { body: blogs } = await api
+        .get(baseEndpoint)
         .expect(200)
         .expect('Content-Type', /application\/json/)
 
@@ -48,11 +47,9 @@ describe('Blog API', () => {
       assert(Object.hasOwn(blog, 'id'))
       assert(!Object.hasOwn(blog, '_id'))
     })
-
   })
 
   describe('GET /api/blogs/:id', () => {
-
     test('succeeds with status 200 on valid id', async () => {
       const initialBlog = (await helper.createBlog()).toJSON()
       initialBlog.user = initialBlog.user.toString()
@@ -65,44 +62,42 @@ describe('Blog API', () => {
     })
 
     test('fails with status 404 on non-existing id', async () => {
-      await api
-        .get(baseEndpoint + '/' + helper.nonExistingId())
-        .expect(404)
+      await api.get(baseEndpoint + '/' + helper.nonExistingId()).expect(404)
     })
 
     test('fails with with status 400 on invalid id', async () => {
-      const response = await api
-        .get(baseEndpoint + '/' + '123')
-        .expect(400)
+      const response = await api.get(baseEndpoint + '/' + '123').expect(400)
 
       const error = response.body.error
       assert(error === 'malformatted id')
     })
-
   })
 
   describe('POST /api/blogs', () => {
-
     test('fails with 401 if no authentication header', async () => {
-
       const blog = helper.getRandomBlog()
 
-      const response = await api.post(baseEndpoint)
-        .send(blog)
-        .expect(401)
+      const response = await api.post(baseEndpoint).send(blog).expect(401)
 
-      const requiredKeywords = ['jwt', 'token', 'access token', 'required', 'bearer scheme']
+      const requiredKeywords = [
+        'jwt',
+        'token',
+        'access token',
+        'required',
+        'bearer scheme',
+      ]
 
       const error = response.body.error.toLowerCase()
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test(`fails with status 401 if token doesn't has expected data`, async () => {
       const blog = helper.getRandomBlog()
       const tokenWithInvalidPayload = helper.generateValidToken()
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send(blog)
         .auth(tokenWithInvalidPayload, { type: 'bearer' })
         .expect(401)
@@ -110,14 +105,15 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['token', 'invalid']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 401 if jwt token itself is invalid', async () => {
       const blog = helper.getRandomBlog()
       const invalidToken = helper.generateInvalidToken()
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send(blog)
         .auth(invalidToken, { type: 'bearer' })
         .expect(401)
@@ -125,7 +121,7 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['token', 'missing', 'invalid']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with 401 if token is expired', async () => {
@@ -136,7 +132,8 @@ describe('Blog API', () => {
       // Use very small time. 1 second doesn't works
       const expiredToken = helper.generateValidToken(user, '1ms')
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send(blog)
         .auth(expiredToken, { type: 'bearer' })
         .expect(401)
@@ -150,7 +147,8 @@ describe('Blog API', () => {
 
       const token = helper.generateValidToken(user)
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .set('Content-Type', 'text/html')
         .send('<p>Hello</p>')
         .auth(token, { type: 'bearer' })
@@ -159,7 +157,7 @@ describe('Blog API', () => {
       const requiredKeywords = ['content-type', 'application/json']
 
       const error = response.body.error.toLowerCase()
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 400 if no body is sent', async () => {
@@ -167,7 +165,8 @@ describe('Blog API', () => {
 
       const token = helper.generateValidToken(user)
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .auth(token, { type: 'bearer' })
         .set('Content-Type', 'application/json')
         .expect(400)
@@ -175,7 +174,7 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['title', 'author', 'url', 'string']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 400 if data is sent with wrong data type', async () => {
@@ -188,7 +187,8 @@ describe('Blog API', () => {
 
       const token = helper.generateValidToken(user)
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send(invalidData)
         .auth(token, { type: 'bearer' })
         .expect(400)
@@ -196,7 +196,7 @@ describe('Blog API', () => {
       const error = response.body.error
       const requiredKeywords = ['title', 'author', 'url', 'string']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('succeeds with status 201 on valid data and token', async () => {
@@ -205,7 +205,8 @@ describe('Blog API', () => {
 
       const token = helper.generateValidToken(user)
 
-      await api.post(baseEndpoint)
+      await api
+        .post(baseEndpoint)
         .send(blog)
         .auth(token, { type: 'bearer' })
         .expect(201)
@@ -215,38 +216,42 @@ describe('Blog API', () => {
       // DB is cleared before every test so there will be only 1 blog
       assert.strictEqual(blogsInDB.length, 1)
     })
-
   })
 
   describe('DELETE /api/blogs/:id', () => {
-
     test('fails with status 401 if no authentication header', async () => {
-
       const blog = await helper.createBlog()
 
       const response = await api
         .delete(baseEndpoint + '/' + blog._id.toString())
         .expect(401)
 
-      const requiredKeywords = ['jwt', 'token', 'access token', 'required', 'bearer scheme']
+      const requiredKeywords = [
+        'jwt',
+        'token',
+        'access token',
+        'required',
+        'bearer scheme',
+      ]
 
       const error = response.body.error.toLowerCase()
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test(`fails with status 401 if token doesn't has expected data`, async () => {
       const blog = await helper.createBlog()
       const tokenWithInvalidPayload = helper.generateValidToken()
 
-      const response = await api.delete(baseEndpoint + '/' + blog._id.toString())
+      const response = await api
+        .delete(baseEndpoint + '/' + blog._id.toString())
         .auth(tokenWithInvalidPayload, { type: 'bearer' })
         .expect(401)
 
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['token', 'invalid']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 401 if jwt token itself is invalid', async () => {
@@ -261,7 +266,7 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['token', 'missing', 'invalid']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 401 if token is expired', async () => {
@@ -286,7 +291,8 @@ describe('Blog API', () => {
 
       const token = helper.generateValidToken(user)
 
-      await api.delete(baseEndpoint + '/' + blog._id.toString())
+      await api
+        .delete(baseEndpoint + '/' + blog._id.toString())
         .auth(token, { type: 'bearer' })
         .expect(204)
 
@@ -295,13 +301,10 @@ describe('Blog API', () => {
       // DB is cleared before every test. So there will be no other blog.
       assert.strictEqual(blogsInDB.length, 0)
     })
-
   })
 
   describe('PUT /api/blogs/:id', () => {
-
     test('fails with 401 if no authentication header', async () => {
-
       const blog = await helper.createBlog()
       const contentToUpdate = helper.getRandomBlog()
 
@@ -310,11 +313,17 @@ describe('Blog API', () => {
         .send(contentToUpdate)
         .expect(401)
 
-      const requiredKeywords = ['jwt', 'token', 'access token', 'required', 'bearer scheme']
+      const requiredKeywords = [
+        'jwt',
+        'token',
+        'access token',
+        'required',
+        'bearer scheme',
+      ]
 
       const error = response.body.error.toLowerCase()
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test(`fails with status 401 if token doesn't has expected data`, async () => {
@@ -331,7 +340,7 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['token', 'invalid']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 401 if jwt token itself is invalid', async () => {
@@ -348,7 +357,7 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['token', 'missing', 'invalid']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 401 if token is expired', async () => {
@@ -385,7 +394,7 @@ describe('Blog API', () => {
       const requiredKeywords = ['content-type', 'application/json']
 
       const error = response.body.error.toLowerCase()
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 400 if no body is sent', async () => {
@@ -403,11 +412,10 @@ describe('Blog API', () => {
       const error = response.body.error.toLowerCase()
       const requiredKeywords = ['field', 'required']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('fails with status 400 if data is sent with wrong data type', async () => {
-
       const user = await helper.createUser()
       const blog = await helper.createBlog({}, user)
 
@@ -428,7 +436,7 @@ describe('Blog API', () => {
       const error = response.body.error
       const requiredKeywords = ['title', 'author', 'url', 'string']
 
-      assert(requiredKeywords.every(k => error.includes(k)))
+      assert(requiredKeywords.every((k) => error.includes(k)))
     })
 
     test('succeeds with status 200 on valid data and token', async () => {
@@ -450,14 +458,11 @@ describe('Blog API', () => {
       helper.removeProperty(returnedBlog, 'id')
       helper.removeProperty(returnedBlog, 'user')
 
-
       assert.deepStrictEqual(returnedBlog, contentToUpdate)
     })
-
   })
 
   // TODO: Add tests for PATCH /api/blogs/like/:id
-
 })
 
 // After everything is done we have to close the mongoDB collection

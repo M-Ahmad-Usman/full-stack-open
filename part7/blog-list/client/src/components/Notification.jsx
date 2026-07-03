@@ -1,8 +1,6 @@
-
 import { Alert } from '@mui/material'
 
 const Notification = (props) => {
-
   const { message, type } = props
 
   if (message === null) {

@@ -1,4 +1,3 @@
-
 const express = require('express')
 const mongoose = require('mongoose')
 const config = require('./utils/config')
@@ -18,9 +17,10 @@ app.use(morgan(logger.morganFormatFunction))
 
 logger.info('Trying to connect to MongoDB...')
 
-mongoose.connect(config.MONGODB_URI, { family: 4 })
+mongoose
+  .connect(config.MONGODB_URI, { family: 4 })
   .then(() => logger.info('Connected to MongoDB'))
-  .catch(e => logger.error(`Error Connecting to MongoDB: ${e}`))
+  .catch((e) => logger.error(`Error Connecting to MongoDB: ${e}`))
 
 app.use('/api/blogs', blogRouter)
 app.use('/api/users', userRouter)

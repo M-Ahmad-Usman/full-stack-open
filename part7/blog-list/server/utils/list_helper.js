@@ -1,13 +1,10 @@
-
 const dummy = (blogs) => {
-  if (Array.isArray(blogs))
-    return 1
+  if (Array.isArray(blogs)) return 1
   return 0
 }
 
 const totalLikes = (blogs) => {
-  if (!Array.isArray(blogs))
-    throw new Error('An array of blogs is expected.')
+  if (!Array.isArray(blogs)) throw new Error('An array of blogs is expected.')
 
   const reducer = (total, blog) => total + blog.likes
 
@@ -15,15 +12,13 @@ const totalLikes = (blogs) => {
 }
 
 const favoriteBlog = (blogs) => {
-  if (!Array.isArray(blogs))
-    throw new Error('An array of blogs is expected.')
+  if (!Array.isArray(blogs)) throw new Error('An array of blogs is expected.')
 
-  if (blogs.length === 0)
-    return null
-  else if (blogs.length === 1)
-    return blogs[0]
+  if (blogs.length === 0) return null
+  else if (blogs.length === 1) return blogs[0]
 
-  const reducer = (favorite, current) => current.likes > favorite.likes ? current : favorite
+  const reducer = (favorite, current) =>
+    current.likes > favorite.likes ? current : favorite
 
   return blogs.reduce(reducer)
 }
@@ -32,10 +27,8 @@ const favoriteBlog = (blogs) => {
 // author: The author having most blogs
 // blogs: Number of blogs
 const mostBlogs = (blogs) => {
-  if (!Array.isArray(blogs))
-    throw new Error('An array of blogs is expected.')
-  if (blogs.length === 0)
-    return null
+  if (!Array.isArray(blogs)) throw new Error('An array of blogs is expected.')
+  if (blogs.length === 0) return null
 
   const counts = {}
   let maxAuthor = null
@@ -56,17 +49,14 @@ const mostBlogs = (blogs) => {
 // author: The author having most likse
 // likes: Number of likes
 const mostLikes = (blogs) => {
-  if (!Array.isArray(blogs))
-    throw new Error('An array of blogs is expected.')
-  if (blogs.length === 0)
-    return null
+  if (!Array.isArray(blogs)) throw new Error('An array of blogs is expected.')
+  if (blogs.length === 0) return null
 
   const likes = {}
   let maxAuthor = null
   let maxLikes = 0
 
   for (const blog of blogs) {
-
     likes[blog.author] = (likes[blog.author] || 0) + blog.likes
 
     if (likes[blog.author] > maxLikes) {
@@ -83,7 +73,7 @@ const helperFunctions = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
-  mostLikes
+  mostLikes,
 }
 
 module.exports = helperFunctions

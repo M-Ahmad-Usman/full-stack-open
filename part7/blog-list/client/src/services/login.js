@@ -9,7 +9,7 @@ const login = async (user) => {
 }
 
 const loginService = {
-  login
+  login,
 }
 
 export default loginService

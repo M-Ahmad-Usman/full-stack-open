@@ -15,92 +15,97 @@ const app = require('../app')
 const api = supertest(app)
 
 describe('Login API', () => {
-
   beforeEach(async () => await helper.clearDB())
 
   const baseEndpoint = '/api/login'
 
   describe('POST /api/login', () => {
-
     test('fails with status 400 if no body is sent', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .set('Content-Type', 'application/json')
         .expect(400)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['username', 'password', 'required', 'missing']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
 
     test('fails with status 400 if username is missing', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({ password: 'SomePassword' })
         .expect(400)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['username', 'required', 'missing']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
 
     test('fails with status 400 if password is missing', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({ username: 'testuser' })
         .expect(400)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['password', 'required', 'missing']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
 
     test('fails with status 400 if password is not a string', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: 'testuser',
-          password: 12345
+          password: 12345,
         })
         .expect(400)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['password', 'string']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
 
     test('fails with status 401 if username does not exist', async () => {
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: 'nonexistentuser',
-          password: 'SomePassword123'
+          password: 'SomePassword123',
         })
         .expect(401)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['invalid', 'username']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
 
     test('fails with status 401 if password is incorrect', async () => {
       const user = await helper.createUser({ password: 'CorrectPassword' })
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password: 'WrongPassword'
+          password: 'WrongPassword',
         })
         .expect(401)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['invalid', 'password']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
 
     test('succeeds with status 201 on valid credentials', async () => {
       const password = 'CorrectPassword123'
       const user = await helper.createUser({ password })
 
-      const { body: response } = await api.post(baseEndpoint)
+      const { body: response } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password
+          password,
         })
         .expect(201)
 
@@ -113,10 +118,11 @@ describe('Login API', () => {
       const password = 'TestPassword123'
       const user = await helper.createUser({ password })
 
-      const { body: loginResponse } = await api.post(baseEndpoint)
+      const { body: loginResponse } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password
+          password,
         })
         .expect(201)
 
@@ -132,10 +138,11 @@ describe('Login API', () => {
       const password = 'TestPassword456'
       const user = await helper.createUser({ password })
 
-      const { body: loginResponse } = await api.post(baseEndpoint)
+      const { body: loginResponse } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password
+          password,
         })
         .expect(201)
 
@@ -145,10 +152,11 @@ describe('Login API', () => {
       const blog = {
         title: 'Test Blog',
         author: 'Test Author',
-        url: 'https://example.com'
+        url: 'https://example.com',
       }
 
-      await api.post('/api/blogs')
+      await api
+        .post('/api/blogs')
         .send(blog)
         .auth(token, { type: 'bearer' })
         .expect(201)
@@ -159,10 +167,11 @@ describe('Login API', () => {
       const userData = { username: 'uniqueuser123', password }
       const user = await helper.createUser(userData)
 
-      const { body: loginResponse } = await api.post(baseEndpoint)
+      const { body: loginResponse } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password
+          password,
         })
         .expect(201)
 
@@ -177,20 +186,22 @@ describe('Login API', () => {
       const password = 'ConsecutiveLoginTest'
       const user = await helper.createUser({ password })
 
-      const { body: response1 } = await api.post(baseEndpoint)
+      const { body: response1 } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password
+          password,
         })
         .expect(201)
 
       // Small delay to ensure different iat claim
-      await new Promise(resolve => setTimeout(resolve, 1100))
+      await new Promise((resolve) => setTimeout(resolve, 1100))
 
-      const { body: response2 } = await api.post(baseEndpoint)
+      const { body: response2 } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password
+          password,
         })
         .expect(201)
 
@@ -209,14 +220,15 @@ describe('Login API', () => {
       const userData = {
         name: 'John Doe',
         username: 'johndoe',
-        password: 'Password123'
+        password: 'Password123',
       }
       const user = await helper.createUser(userData)
 
-      const { body: response } = await api.post(baseEndpoint)
+      const { body: response } = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password: userData.password
+          password: userData.password,
         })
         .expect(201)
 
@@ -229,20 +241,19 @@ describe('Login API', () => {
     test('fails with status 400 when password is empty string', async () => {
       const user = await helper.createUser({ password: 'ValidPassword' })
 
-      const response = await api.post(baseEndpoint)
+      const response = await api
+        .post(baseEndpoint)
         .send({
           username: user.username,
-          password: ''
+          password: '',
         })
         .expect(400)
 
       const error = response.body.error.toLowerCase()
       const expectedKeywords = ['invalid', 'password']
-      assert(expectedKeywords.some(k => error.includes(k)))
+      assert(expectedKeywords.some((k) => error.includes(k)))
     })
-
   })
-
 })
 
 // After everything is done we have to close the mongoDB collection

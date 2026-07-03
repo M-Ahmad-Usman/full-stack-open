@@ -10,17 +10,17 @@ const userSchema = new mongoose.Schema({
     // and instead of ValidationError they return an error of type MongoServerError.
     // This error is handled by the the error handling middleware.
     unique: true, // this ensures the uniquness of username
-    minLength: 3
+    minLength: 3,
   },
   passwordHash: {
     type: String,
-    required: true
+    required: true,
   },
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Blog'
-    }
+      ref: 'Blog',
+    },
   ],
 })
 
@@ -32,7 +32,7 @@ userSchema.set('toJSON', {
     delete returnedObject.__v
     // the passwordHash should not be revealed
     delete returnedObject.passwordHash
-  }
+  },
 })
 
 const User = mongoose.model('User', userSchema)

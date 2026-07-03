@@ -1,9 +1,7 @@
-
 import { useState } from 'react'
 import { TextField, Button } from '@mui/material'
 
 const BlogForm = (props) => {
-
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -17,7 +15,6 @@ const BlogForm = (props) => {
   }
 
   const handleBlogSubmit = async (event) => {
-
     const form = event.target
 
     form.reportValidity()
@@ -35,8 +32,7 @@ const BlogForm = (props) => {
       const createdBlog = await createBlog(newBlog)
       resetForm()
       onSuccess(createdBlog)
-    }
-    catch (error) {
+    } catch (error) {
       console.error({ type: 'Blog Creation', message: error.message })
       showNotification('Something went wrong. Please try again', 'error', 2500)
     }
@@ -45,34 +41,35 @@ const BlogForm = (props) => {
   const margin = { margin: '12px 4px' }
 
   return (
-
     <div style={margin}>
       <form onSubmit={handleBlogSubmit}>
         <div>
           <TextField
-            label='Title'
+            label="Title"
             value={title}
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div>
           <TextField
-            label='Author'
+            label="Author"
             required
             value={author}
-            onChange={e => setAuthor(e.target.value)}
+            onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
         <div>
           <TextField
-            label='URL'
+            label="URL"
             required
             value={url}
-            onChange={e => setUrl(e.target.value)}
+            onChange={(e) => setUrl(e.target.value)}
           />
         </div>
         <div>
-          <Button type='submit' variant='contained'>Add Blog</Button>
+          <Button type="submit" variant="contained">
+            Add Blog
+          </Button>
         </div>
       </form>
     </div>

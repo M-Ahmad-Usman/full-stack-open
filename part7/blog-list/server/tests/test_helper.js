@@ -1,4 +1,3 @@
-
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
@@ -18,23 +17,22 @@ const nonExistingId = () => '6922f4397e0fe27d8c421713'
 
 const getBlogsInDB = async () => {
   const blogs = await Blog.find({})
-  return blogs.map(blog => blog.toJSON())
+  return blogs.map((blog) => blog.toJSON())
 }
 
 const getUsersInDB = async () => {
   const users = await User.find({})
-  return users.map(user => user.toJSON())
+  return users.map((user) => user.toJSON())
 }
 
 const createUser = async (user = {}) => {
-
   const password = user.password || 'Test password'
   const passwordHash = await bcrypt.hash(password, 10)
 
   const newUser = new User({
     name: user.name || 'Test name',
     username: user.username || `testuser_${Date.now()}`,
-    passwordHash
+    passwordHash,
   })
 
   await newUser.save()
@@ -42,16 +40,14 @@ const createUser = async (user = {}) => {
 }
 
 const createBlog = async (blog = {}, user = null) => {
-
-  if (!user)
-    user = await createUser()
+  if (!user) user = await createUser()
 
   const newBlog = new Blog({
     title: blog.title || 'Test blog title',
     author: blog.author || 'Test blog author',
     url: blog.url || 'Test blog url',
     likes: blog.likes || 0,
-    user: user._id
+    user: user._id,
   })
 
   await newBlog.save()
@@ -66,32 +62,25 @@ const createBlog = async (blog = {}, user = null) => {
 // If no user is given generates token with empty payload
 // expireTime is optional
 const generateValidToken = (user, expireTime) => {
-
   let payload
 
-  if (!user)
-    payload = {}
+  if (!user) payload = {}
   else
     // Same payload structure as in controllers/login.js
     payload = {
       username: user.username,
-      userId: user._id
+      userId: user._id,
     }
 
-  return jwt.sign(
-    payload,
-    process.env.SECRET,
-    { expiresIn: expireTime ?? 60 * 60 }
-  )
+  return jwt.sign(payload, process.env.SECRET, {
+    expiresIn: expireTime ?? 60 * 60,
+  })
 }
 
 const generateInvalidToken = () => '123'
 
 const clearDB = async () => {
-  await Promise.allSettled([
-    User.deleteMany(),
-    Blog.deleteMany()
-  ])
+  await Promise.allSettled([User.deleteMany(), Blog.deleteMany()])
 }
 
 const getRandomBlog = () => {
@@ -126,7 +115,7 @@ const helper = {
   generateValidToken,
   generateInvalidToken,
   clearDB,
-  decodeToken
+  decodeToken,
 }
 
 module.exports = helper
