@@ -1,9 +1,10 @@
 import globals from 'globals'
 import js from '@eslint/js'
-import stylistic from '@stylistic/eslint-plugin'
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
 
 export default [
   js.configs.recommended,
+  eslintConfigPrettier,
   {
     files: ['**/*.js'],
     languageOptions: {
@@ -11,14 +12,7 @@ export default [
       globals: { ...globals.node },
       ecmaVersion: 'latest',
     },
-    plugins: {
-      '@stylistic': stylistic,
-    },
     rules: {
-      '@stylistic/indent': ['error', 2],
-      '@stylistic/linebreak-style': ['error', 'unix'],
-      '@stylistic/quotes': ['error', 'single', { "avoidEscape": true, "allowTemplateLiterals": "avoidEscape" }],
-      '@stylistic/semi': ['error', 'never'],
       eqeqeq: 'error',
       'no-trailing-spaces': 'error',
       'object-curly-spacing': ['error', 'always'],
