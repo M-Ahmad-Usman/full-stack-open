@@ -162,6 +162,9 @@ const App = () => {
               showNotification={showNotification}
             />}
           />
+          <Route path="*" element={
+            <p style={{ fontWeight: 'bold', fontSize: '2rem' }}>404 - Page not found</p>
+          } />
 
         </Routes>
       </ErrorBoundary>
