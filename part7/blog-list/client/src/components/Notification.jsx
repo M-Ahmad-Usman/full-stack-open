@@ -1,13 +1,13 @@
 import { Alert } from '@mui/material'
+import { useSelector } from 'react-redux'
 
-const Notification = (props) => {
-  const { message, type } = props
+const Notification = () => {
 
-  if (message === null) {
+  const { message, type } = useSelector(state => state.notification)
+
+  if (message === '') {
     return null
   }
-
-  console.log(props)
 
   return (
     <Alert style={{ margin: '12px 4px' }} severity={type}>

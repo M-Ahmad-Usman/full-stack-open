@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { TextField, Button } from '@mui/material'
 
-const BlogForm = (props) => {
+const 
+
+
+BlogForm = (props) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -22,7 +25,11 @@ const BlogForm = (props) => {
     event.preventDefault()
 
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
-      showNotification('title, author and url are required', 'info', 3000)
+      showNotification({
+        message: 'title, author and url are required',
+        type: 'info',
+      })
+
       return
     }
 
@@ -34,7 +41,10 @@ const BlogForm = (props) => {
       onSuccess(createdBlog)
     } catch (error) {
       console.error({ type: 'Blog Creation', message: error.message })
-      showNotification('Something went wrong. Please try again', 'error', 2500)
+      showNotification({
+        message: 'Something went wrong. Please try again',
+        type: 'error',
+      })
     }
   }
 
