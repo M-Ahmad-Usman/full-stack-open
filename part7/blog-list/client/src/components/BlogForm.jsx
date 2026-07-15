@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { TextField, Button } from '@mui/material'
+import { useDispatch } from 'react-redux'
 
-const 
+import { renderNotification } from '../reducers/notificationReducer'
 
-
-BlogForm = (props) => {
+const BlogForm = (props) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-
-  const { createBlog, onSuccess, showNotification } = props
+  
+  const dispatch = useDispatch()
+  
+  const { createBlog, onSuccess } = props
 
   const resetForm = () => {
     setTitle('')
@@ -25,10 +27,10 @@ BlogForm = (props) => {
     event.preventDefault()
 
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
-      showNotification({
+      dispatch(renderNotification({
         message: 'title, author and url are required',
         type: 'info',
-      })
+      }))
 
       return
     }
@@ -41,10 +43,10 @@ BlogForm = (props) => {
       onSuccess(createdBlog)
     } catch (error) {
       console.error({ type: 'Blog Creation', message: error.message })
-      showNotification({
+      dispatch(renderNotification({
         message: 'Something went wrong. Please try again',
         type: 'error',
-      })
+      }))
     }
   }
 

@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { TextField, Button, Stack } from '@mui/material'
+import { useDispatch } from 'react-redux'
+import { renderNotification } from '../reducers/notificationReducer'
 
 const LoginForm = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const { login, onSuccess, showNotification } = props
+  const dispatch = useDispatch()
+
+  const { login, onSuccess } = props
 
   const resetForm = () => {
     setUsername('')
@@ -25,10 +29,10 @@ const LoginForm = (props) => {
       username.length < 3 ||
       password.length < 3
     ) {
-      showNotification({
+      dispatch(renderNotification({
         message:'username & password cannot be less than 3 characters',
         type: 'info'
-      }, 4000)
+      }, 4000))
 
       return
     }
@@ -38,7 +42,7 @@ const LoginForm = (props) => {
       resetForm()
       onSuccess(user)
     } catch {
-      showNotification({ message: 'Invalid Credentials', type: 'error' }, 4000)
+      dispatch(renderNotification({ message: 'Invalid Credentials', type: 'error' }, 4000))
     }
   }
 

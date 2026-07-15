@@ -40,11 +40,6 @@ const App = () => {
 
   const dispatch = useDispatch()
 
-  const showNotification = (notification, timeout) => {
-    console.log(timeout)
-    dispatch(renderNotification(notification, timeout))
-  }
-
   const blog = match
     ? blogs.find((blog) => blog.id === match.params.id)
     : undefined
@@ -77,7 +72,7 @@ const App = () => {
         // 3. Revert back on failure
         console.error(error.message)
         setBlogs(previousBlogs)
-        showNotification({ message: 'Could not like blog', type: 'error' })
+        dispatch(renderNotification({ message: 'Could not like blog', type: 'error' }))
       }
     },
     deleteBlog: async function (blogToDelete) {
@@ -90,26 +85,26 @@ const App = () => {
       try {
         await blogService.deleteBlog(blogToDelete)
         setBlogs(blogs.filter((b) => b.id !== blogToDelete.id))
-        showNotification({ message: 'Blog deleted successfully', type: 'success' })
+        dispatch(renderNotification({ message: 'Blog deleted successfully', type: 'success' }))
         navigate('/')
       } catch (error) {
         const respondedErrorMessage = error.response.data.error
         const statusCode = error.response.status
 
         if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
-          showNotification({ 
+          dispatch(renderNotification({ 
             message: "You can only delete notes which you've created.",
             type: 'error' 
-          }, 3000)
+          }, 3000))
 
           return
         }
 
         console.error(error)
-        showNotification({ 
+        dispatch(renderNotification({ 
           message: 'Something went wrong. Cannot delete blog.',
           type: 'error' 
-        })
+        }))
         navigate('/')
       }
     },
@@ -117,9 +112,9 @@ const App = () => {
 
   const onSuccessfullBlogCreation = (createdBlog) => {
     setBlogs(blogs.concat(createdBlog))
-    showNotification({
+    dispatch(renderNotification({
       message: `${createdBlog.title} by ${createdBlog.author} has been added.`,
-      type: 'success'}, 2500)
+      type: 'success'}, 2500))
     navigate('/')
   }
 
@@ -184,7 +179,6 @@ const App = () => {
               <BlogForm
                 createBlog={blogService.create}
                 onSuccess={onSuccessfullBlogCreation}
-                showNotification={showNotification}
               />
             }
           />
@@ -194,7 +188,6 @@ const App = () => {
               <LoginForm
                 login={loginService.login}
                 onSuccess={onSuccessfullLogin}
-                showNotification={showNotification}
               />
             }
           />
