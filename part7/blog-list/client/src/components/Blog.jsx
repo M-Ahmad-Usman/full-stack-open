@@ -7,8 +7,14 @@ import {
   Card,
   Typography,
 } from '@mui/material'
+import { useMatch } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
-const Blog = ({ blog, blogHandlers, loggedInUser }) => {
+const Blog = ({ blogHandlers, loggedInUser }) => {
+
+  const match = useMatch('/blogs/:id')
+  const blog = useSelector(state => state.blogs.find(blog => blog.id === match.params.id))
+
   if (!blog) return <div>Blog not found</div>
 
   return (

@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Button, Container, AppBar } from '@mui/material'
 import { useDispatch } from 'react-redux'
@@ -27,11 +27,6 @@ const App = () => {
   const dispatch = useDispatch()
 
   const navigate = useNavigate()
-
-  const match = useMatch('/blogs/:id')
-  const blog = match
-    ? blogs.find((blog) => blog.id === match.params.id)
-    : undefined
 
   useEffect(() => { dispatch(initializeBlogs()) }, [dispatch])
 
@@ -187,7 +182,6 @@ const App = () => {
             path="/blogs/:id"
             element={
               <Blog
-                blog={blog}
                 // blogHandlers={blogHandlers}
                 loggedInUser={loggedInUser}
               />
