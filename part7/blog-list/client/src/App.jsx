@@ -21,14 +21,15 @@ import { renderNotification } from './reducers/notificationReducer'
 import { initializeBlogs, addBlog } from './reducers/blogReducer'
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([])
   const [loggedInUser, setloggedInUser] = useState(undefined)
 
   const dispatch = useDispatch()
 
   const navigate = useNavigate()
 
-  useEffect(() => { dispatch(initializeBlogs()) }, [dispatch])
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const storedUserData = localStorage.getItem('loggedInUser')
@@ -50,88 +51,6 @@ const App = () => {
     blogService.setToken(loggedInUser.accessToken)
     navigate('/')
   }
-
-  // handlers
-  // const blogHandlers = {
-  //   likeBlog: async function (blog) {
-  //     // 1. Update UI immediately
-  //     const previousBlogs = blogs
-  //     setBlogs(
-  //       blogs.map((b) => (b.id === blog.id ? { ...b, likes: b.likes + 1 } : b)),
-  //     )
-
-  //     // 2. Sync with server
-  //     try {
-  //       await blogService.like(blog)
-  //     } catch (error) {
-  //       // 3. Revert back on failure
-  //       console.error(error.message)
-  //       setBlogs(previousBlogs)
-  //       dispatch(
-  //         renderNotification({ message: 'Could not like blog', type: 'error' }),
-  //       )
-  //     }
-  //   },
-  //   deleteBlog: async function (blogToDelete) {
-  //     const confirmDelete = confirm(
-  //       `Remove blog ${blogToDelete.title} by ${blogToDelete.author}`,
-  //     )
-
-  //     if (!confirmDelete) return
-
-  //     try {
-  //       await blogService.deleteBlog(blogToDelete)
-  //       setBlogs(blogs.filter((b) => b.id !== blogToDelete.id))
-  //       dispatch(
-  //         renderNotification({
-  //           message: 'Blog deleted successfully',
-  //           type: 'success',
-  //         }),
-  //       )
-  //       navigate('/')
-  //     } catch (error) {
-  //       const respondedErrorMessage = error.response.data.error
-  //       const statusCode = error.response.status
-
-  //       if (statusCode === 403 && respondedErrorMessage.includes('authorize')) {
-  //         dispatch(
-  //           renderNotification(
-  //             {
-  //               message: "You can only delete notes which you've created.",
-  //               type: 'error',
-  //             },
-  //             3000,
-  //           ),
-  //         )
-
-  //         return
-  //       }
-
-  //       console.error(error)
-  //       dispatch(
-  //         renderNotification({
-  //           message: 'Something went wrong. Cannot delete blog.',
-  //           type: 'error',
-  //         }),
-  //       )
-  //       navigate('/')
-  //     }
-  //   },
-  // }
-
-  // const onSuccessfullBlogCreation = (createdBlog) => {
-  //   setBlogs(blogs.concat(createdBlog))
-  //   dispatch(
-  //     renderNotification(
-  //       {
-  //         message: `${createdBlog.title} by ${createdBlog.author} has been added.`,
-  //         type: 'success',
-  //       },
-  //       2500,
-  //     ),
-  //   )
-  //   navigate('/')
-  // }
 
   const isUserLoggedIn = loggedInUser === undefined
   const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
@@ -180,21 +99,11 @@ const App = () => {
           <Route path="/" element={<BlogList />} />
           <Route
             path="/blogs/:id"
-            element={
-              <Blog
-                // blogHandlers={blogHandlers}
-                loggedInUser={loggedInUser}
-              />
-            }
+            element={<Blog loggedInUser={loggedInUser} />}
           ></Route>
           <Route
             path="/create"
-            element={
-              <BlogForm
-                createBlog={blogService.create}
-                // onSuccess={onSuccessfullBlogCreation}
-              />
-            }
+            element={<BlogForm createBlog={blogService.create} />}
           />
           <Route
             path="/login"

@@ -7,13 +7,32 @@ import {
   Card,
   Typography,
 } from '@mui/material'
-import { useMatch } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useMatch, useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+
+import { likeBlog, removeBlog } from '../reducers/blogReducer'
 
 const Blog = ({ blogHandlers, loggedInUser }) => {
 
+  const dispatch = useDispatch()
+  
+  const navigate = useNavigate()
+
   const match = useMatch('/blogs/:id')
-  const blog = useSelector(state => state.blogs.find(blog => blog.id === match.params.id))
+  const blog = useSelector((state) =>
+    state.blogs.find((blog) => blog.id === match.params.id),
+  )
+
+  function removeBlogHandler (blogToDelete) {
+    const confirmDelete = confirm(
+      `Remove blog ${blogToDelete.title} by ${blogToDelete.author}`,
+    )
+
+    if (!confirmDelete) return
+
+    dispatch(removeBlog(blogToDelete.id))
+    navigate('/')
+  }
 
   if (!blog) return <div>Blog not found</div>
 
@@ -43,7 +62,7 @@ const Blog = ({ blogHandlers, loggedInUser }) => {
           {loggedInUser && (
             <Button
               variant="outlined"
-              // onClick={() => blogHandlers.likeBlog(blog)}
+              onClick={() => dispatch(likeBlog(blog.id))}
             >
               Like
             </Button>
@@ -53,7 +72,7 @@ const Blog = ({ blogHandlers, loggedInUser }) => {
             <Button
               variant="outlined"
               color="error"
-              // onClick={() => blogHandlers.deleteBlog(blog)}
+              onClick={() => removeBlogHandler(blog)}
             >
               Remove
             </Button>

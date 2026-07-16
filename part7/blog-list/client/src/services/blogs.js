@@ -21,19 +21,19 @@ const create = async (blog) => {
   return createdBlog
 }
 
-const like = async (blog) => {
+const likeBlog = async (likeBlogId) => {
   const { data: blogWithUpdatedLikes } = await axios.patch(
-    `${baseUrl}/like/${blog.id}`,
+    `${baseUrl}/like/${likeBlogId}`,
   )
   return blogWithUpdatedLikes
 }
 
-const deleteBlog = async (blog) => {
+const removeBlog = async (removeBlogId) => {
   const config = {
     headers: { Authorization: token },
   }
   const { data: deletedBlog } = await axios.delete(
-    `${baseUrl}/${blog.id}`,
+    `${baseUrl}/${removeBlogId}`,
     config,
   )
   return deletedBlog
@@ -43,6 +43,6 @@ export default {
   getAll,
   setToken,
   create,
-  deleteBlog,
-  like,
+  removeBlog,
+  likeBlog,
 }
