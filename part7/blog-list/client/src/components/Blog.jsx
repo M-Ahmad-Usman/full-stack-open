@@ -37,7 +37,7 @@ const Blog = ({ blog, blogHandlers, loggedInUser }) => {
           {loggedInUser && (
             <Button
               variant="outlined"
-              onClick={() => blogHandlers.likeBlog(blog)}
+              // onClick={() => blogHandlers.likeBlog(blog)}
             >
               Like
             </Button>
@@ -47,7 +47,7 @@ const Blog = ({ blog, blogHandlers, loggedInUser }) => {
             <Button
               variant="outlined"
               color="error"
-              onClick={() => blogHandlers.deleteBlog(blog)}
+              // onClick={() => blogHandlers.deleteBlog(blog)}
             >
               Remove
             </Button>

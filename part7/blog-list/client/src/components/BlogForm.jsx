@@ -2,15 +2,19 @@ import { useState } from 'react'
 import { TextField, Button } from '@mui/material'
 import { useDispatch } from 'react-redux'
 
+// Thunks
+import { addBlog } from '../reducers/blogReducer'
 import { renderNotification } from '../reducers/notificationReducer'
+import { useNavigate } from 'react-router-dom'
 
 const BlogForm = (props) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  
+
   const dispatch = useDispatch()
-  
+  const navigate = useNavigate()
+
   const { createBlog, onSuccess } = props
 
   const resetForm = () => {
@@ -19,7 +23,7 @@ const BlogForm = (props) => {
     setUrl('')
   }
 
-  const handleBlogSubmit = async (event) => {
+  const handleBlogSubmit = (event) => {
     const form = event.target
 
     form.reportValidity()
@@ -27,27 +31,26 @@ const BlogForm = (props) => {
     event.preventDefault()
 
     if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
-      dispatch(renderNotification({
-        message: 'title, author and url are required',
-        type: 'info',
-      }))
+      dispatch(
+        renderNotification({
+          message: 'title, author and url are required',
+          type: 'info',
+        }),
+      )
 
       return
     }
 
     const newBlog = { title, author, url }
-
-    try {
-      const createdBlog = await createBlog(newBlog)
-      resetForm()
-      onSuccess(createdBlog)
-    } catch (error) {
-      console.error({ type: 'Blog Creation', message: error.message })
-      dispatch(renderNotification({
-        message: 'Something went wrong. Please try again',
-        type: 'error',
-      }))
-    }
+    dispatch(addBlog(newBlog))
+    resetForm()
+    dispatch(
+      renderNotification({
+        message: `${createdBlog.title} by ${createdBlog.author} has been added.`,
+        type: 'success',
+      }),
+    )
+    navigate('/')
   }
 
   const margin = { margin: '12px 4px' }
