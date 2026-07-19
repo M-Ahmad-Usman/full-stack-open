@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { TextField, Button, Stack } from '@mui/material'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { renderNotification } from '../reducers/notificationReducer'
+import { loginUser } from '../reducers/loggedInUserReducer'
 
-const LoginForm = (props) => {
+const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const dispatch = useDispatch()
-
-  const { login, onSuccess } = props
+  
+  const navigate = useNavigate()
 
   const resetForm = () => {
     setUsername('')
@@ -29,21 +31,21 @@ const LoginForm = (props) => {
       username.length < 3 ||
       password.length < 3
     ) {
-      dispatch(renderNotification({
-        message:'username & password cannot be less than 3 characters',
-        type: 'info'
-      }, 4000))
+      dispatch(
+        renderNotification(
+          {
+            message: 'username & password cannot be less than 3 characters',
+            type: 'info',
+          },
+          4000,
+        ),
+      )
 
       return
     }
 
-    try {
-      const user = await login({ username, password })
-      resetForm()
-      onSuccess(user)
-    } catch {
-      dispatch(renderNotification({ message: 'Invalid Credentials', type: 'error' }, 4000))
-    }
+    dispatch(loginUser({ username, password }, navigate))
+    resetForm()
   }
 
   return (

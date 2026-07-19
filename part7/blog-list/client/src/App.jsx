@@ -1,7 +1,7 @@
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Button, Container, AppBar } from '@mui/material'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Toolbar from '@mui/material/Toolbar'
 
 // Components
@@ -16,13 +16,18 @@ import ErrorBoundary from './components/ErrorBoundary'
 import loginService from './services/login'
 import blogService from './services/blogs'
 
+// Actions
+import {
+  setLoggedInUser,
+  removeLoggedInUser,
+} from './reducers/loggedInUserReducer'
+
 // Thunks
 import { renderNotification } from './reducers/notificationReducer'
 import { initializeBlogs, addBlog } from './reducers/blogReducer'
+import { logoutUser } from './reducers/loggedInUserReducer'
 
 const App = () => {
-  const [loggedInUser, setloggedInUser] = useState(undefined)
-
   const dispatch = useDispatch()
 
   const navigate = useNavigate()
@@ -34,25 +39,14 @@ const App = () => {
   useEffect(() => {
     const storedUserData = localStorage.getItem('loggedInUser')
     if (storedUserData) {
-      const user = JSON.parse(storedUserData)
-      setloggedInUser(user)
-      blogService.setToken(user.accessToken)
+      const loggedInUser = JSON.parse(storedUserData)
+      dispatch(setLoggedInUser({ loggedInUser }))
+      blogService.setToken(loggedInUser.accessToken)
     }
   }, [])
 
-  const logOutUser = () => {
-    localStorage.removeItem('loggedInUser')
-    setloggedInUser(undefined)
-  }
-
-  const onSuccessfullLogin = (loggedInUser) => {
-    setloggedInUser(loggedInUser)
-    localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
-    blogService.setToken(loggedInUser.accessToken)
-    navigate('/')
-  }
-
-  const isUserLoggedIn = loggedInUser === undefined
+  const loggedInUser = useSelector((state) => state.loggedInUser)
+  const isUserLoggedIn = loggedInUser.username ? true : false
   const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
   return (
@@ -70,23 +64,23 @@ const App = () => {
           >
             blogs
           </Button>
-          {isUserLoggedIn || (
+          {isUserLoggedIn && (
             <Button color="inherit" component={Link} to="/create" sx={style}>
               new blog
             </Button>
           )}
           {isUserLoggedIn ? (
-            <Button color="inherit" component={Link} to="/login" sx={style}>
-              login
+            <Button color="inherit" onClick={() => dispatch(logoutUser())}>
+              logout
             </Button>
           ) : (
-            <Button color="inherit" onClick={logOutUser}>
-              logout
+            <Button color="inherit" component={Link} to="/login" sx={style}>
+              login
             </Button>
           )}
         </Toolbar>
       </AppBar>
-      {isUserLoggedIn || (
+      {isUserLoggedIn && (
         <div style={{ margin: '8px 0px' }}>
           {loggedInUser.username} logged in
         </div>
@@ -97,23 +91,12 @@ const App = () => {
       <ErrorBoundary>
         <Routes>
           <Route path="/" element={<BlogList />} />
-          <Route
-            path="/blogs/:id"
-            element={<Blog loggedInUser={loggedInUser} />}
-          ></Route>
+          <Route path="/blogs/:id" element={<Blog />} />
           <Route
             path="/create"
             element={<BlogForm createBlog={blogService.create} />}
           />
-          <Route
-            path="/login"
-            element={
-              <LoginForm
-                login={loginService.login}
-                onSuccess={onSuccessfullLogin}
-              />
-            }
-          />
+          <Route path="/login" element={<LoginForm />} />
           <Route
             path="*"
             element={

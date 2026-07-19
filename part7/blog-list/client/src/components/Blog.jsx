@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { likeBlog, removeBlog } from '../reducers/blogReducer'
 
-const Blog = ({ blogHandlers, loggedInUser }) => {
+const Blog = () => {
 
   const dispatch = useDispatch()
   
@@ -22,6 +22,8 @@ const Blog = ({ blogHandlers, loggedInUser }) => {
   const blog = useSelector((state) =>
     state.blogs.find((blog) => blog.id === match.params.id),
   )
+
+  const loggedInUser = useSelector(state => state.loggedInUser)
 
   function removeBlogHandler (blogToDelete) {
     const confirmDelete = confirm(
@@ -35,6 +37,8 @@ const Blog = ({ blogHandlers, loggedInUser }) => {
   }
 
   if (!blog) return <div>Blog not found</div>
+
+  const isUserLoggedIn = loggedInUser.username ? true : false
 
   return (
     <Card variant="elevation" sx={{ maxWidth: '300px', margin: '16px 0px' }}>
@@ -59,7 +63,7 @@ const Blog = ({ blogHandlers, loggedInUser }) => {
         >
           <Typography>{blog.likes} likes</Typography>
           {/* Show like button to authenticated users */}
-          {loggedInUser && (
+          {isUserLoggedIn && (
             <Button
               variant="outlined"
               onClick={() => dispatch(likeBlog(blog.id))}
@@ -68,7 +72,7 @@ const Blog = ({ blogHandlers, loggedInUser }) => {
             </Button>
           )}
           {/* Show remove button to blog owners */}
-          {loggedInUser && loggedInUser.username === blog.user.username && (
+          {isUserLoggedIn && loggedInUser.username === blog.user.username && (
             <Button
               variant="outlined"
               color="error"

@@ -7,15 +7,13 @@ import { addBlog } from '../reducers/blogReducer'
 import { renderNotification } from '../reducers/notificationReducer'
 import { useNavigate } from 'react-router-dom'
 
-const BlogForm = (props) => {
+const BlogForm = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
-  const { createBlog, onSuccess } = props
 
   const resetForm = () => {
     setTitle('')
@@ -46,7 +44,7 @@ const BlogForm = (props) => {
     resetForm()
     dispatch(
       renderNotification({
-        message: `${createdBlog.title} by ${createdBlog.author} has been added.`,
+        message: `${title} by ${author} has been added.`,
         type: 'success',
       }),
     )
