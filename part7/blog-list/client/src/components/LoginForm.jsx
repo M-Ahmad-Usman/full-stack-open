@@ -5,17 +5,20 @@ import { useNavigate } from 'react-router-dom'
 import { renderNotification } from '../reducers/notificationReducer'
 import { loginUser } from '../reducers/loggedInUserReducer'
 
+import useField from '../hooks/useField'
+import { getInputFields } from '../hooks/useField'
+
 const LoginForm = () => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const usernameField = useField('Username')
+  const passwordField = useField('Password')
 
   const dispatch = useDispatch()
-  
+
   const navigate = useNavigate()
 
   const resetForm = () => {
-    setUsername('')
-    setPassword('')
+    usernameField.reset()
+    passwordField.reset()
   }
 
   const handleLogin = async (event) => {
@@ -26,10 +29,10 @@ const LoginForm = () => {
 
     // validations
     if (
-      username.trim() === '' ||
-      password.trim() === '' ||
-      username.length < 3 ||
-      password.length < 3
+      usernameField.value.trim() === '' ||
+      passwordField.value.trim() === '' ||
+      usernameField.value.length < 3 ||
+      passwordField.value.length < 3
     ) {
       dispatch(
         renderNotification(
@@ -44,25 +47,20 @@ const LoginForm = () => {
       return
     }
 
-    dispatch(loginUser({ username, password }, navigate))
+    dispatch(
+      loginUser(
+        { username: usernameField.value, password: passwordField.value },
+        navigate,
+      ),
+    )
     resetForm()
   }
 
   return (
     <form id="login-form" style={{ margin: '12px 4px' }} onSubmit={handleLogin}>
       <Stack spacing={1} sx={{ maxWidth: '320px', padding: '4px' }}>
-        <TextField
-          label="Username"
-          required
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <TextField required {...getInputFields(usernameField)} />
+        <TextField required {...getInputFields(passwordField)} />
         <Button type="submit" variant="contained">
           Login
         </Button>

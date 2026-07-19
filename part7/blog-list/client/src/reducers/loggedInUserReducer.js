@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
+import persistentUserService from '../services/persistentUser'
 
 const loggedInUserSlice = createSlice({
   name: 'loggedInUser',
@@ -23,7 +24,7 @@ export const loginUser = (user, navigate) => async (dispatch) => {
   try {
     const loggedInUser = await loginService.login(user)
     dispatch(loggedInUserSlice.actions.setLoggedInUser({ loggedInUser }))
-    localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser))
+    persistentUserService.saveUser(loggedInUser)
     blogService.setToken(loggedInUser.accessToken)
   } catch (e) {
     dispatch(
@@ -38,10 +39,10 @@ export const loginUser = (user, navigate) => async (dispatch) => {
 
 export const logoutUser = () => async (dispatch) => {
   dispatch(loggedInUserSlice.actions.removeLoggedInUser())
-  localStorage.removeItem('loggedInUser')
+  persistentUserService.removeUser()
   blogService.setToken('')
 }
 
-export const { setLoggedInUser, removeLoggedInUser } = loggedInUserSlice.actions
+export const { setLoggedInUser } = loggedInUserSlice.actions
 
 export default loggedInUserSlice.reducer

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TextField, Button } from '@mui/material'
+import { TextField, Button, Stack } from '@mui/material'
 import { useDispatch } from 'react-redux'
 
 // Thunks
@@ -7,18 +7,22 @@ import { addBlog } from '../reducers/blogReducer'
 import { renderNotification } from '../reducers/notificationReducer'
 import { useNavigate } from 'react-router-dom'
 
+// Hooks
+import useField from '../hooks/useField'
+import { getInputFields } from '../hooks/useField'
+
 const BlogForm = () => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const titleField = useField('Title')
+  const authorField = useField('Author')
+  const urlField = useField('URL')
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
   const resetForm = () => {
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    titleField.reset()
+    authorField.reset()
+    urlField.reset()
   }
 
   const handleBlogSubmit = (event) => {
@@ -28,7 +32,11 @@ const BlogForm = () => {
 
     event.preventDefault()
 
-    if (title.trim() === '' || author.trim() === '' || url.trim() === '') {
+    if (
+      titleField.value.trim() === '' ||
+      authorField.value.trim() === '' ||
+      urlField.value.trim() === ''
+    ) {
       dispatch(
         renderNotification({
           message: 'title, author and url are required',
@@ -39,12 +47,17 @@ const BlogForm = () => {
       return
     }
 
-    const newBlog = { title, author, url }
+    const newBlog = {
+      title: titleField.value,
+      author: authorField.value,
+      url: urlField.value,
+    }
+
     dispatch(addBlog(newBlog))
     resetForm()
     dispatch(
       renderNotification({
-        message: `${title} by ${author} has been added.`,
+        message: `${titleField.value} by ${authorField.value} has been added.`,
         type: 'success',
       }),
     )
@@ -56,34 +69,15 @@ const BlogForm = () => {
   return (
     <div style={margin}>
       <form onSubmit={handleBlogSubmit}>
-        <div>
-          <TextField
-            label="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div>
-          <TextField
-            label="Author"
-            required
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </div>
-        <div>
-          <TextField
-            label="URL"
-            required
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </div>
-        <div>
+        <Stack spacing={1} sx={{ maxWidth: '320px', padding: '4px' }}>
+          <TextField required {...getInputFields(titleField)} />
+          <TextField required {...getInputFields(authorField)} />
+          <TextField required {...getInputFields(urlField)} />
+
           <Button type="submit" variant="contained">
             Add Blog
           </Button>
-        </div>
+        </Stack>
       </form>
     </div>
   )

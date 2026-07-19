@@ -15,12 +15,10 @@ import ErrorBoundary from './components/ErrorBoundary'
 // Services
 import loginService from './services/login'
 import blogService from './services/blogs'
+import persistentUserService from './services/persistentUser'
 
 // Actions
-import {
-  setLoggedInUser,
-  removeLoggedInUser,
-} from './reducers/loggedInUserReducer'
+import { setLoggedInUser } from './reducers/loggedInUserReducer'
 
 // Thunks
 import { renderNotification } from './reducers/notificationReducer'
@@ -37,9 +35,8 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    const storedUserData = localStorage.getItem('loggedInUser')
-    if (storedUserData) {
-      const loggedInUser = JSON.parse(storedUserData)
+    const user = persistentUserService.getUser()
+    if (user.username !== undefined) {
       dispatch(setLoggedInUser({ loggedInUser }))
       blogService.setToken(loggedInUser.accessToken)
     }
