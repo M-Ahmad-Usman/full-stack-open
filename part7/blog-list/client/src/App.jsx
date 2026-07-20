@@ -7,6 +7,7 @@ import Toolbar from '@mui/material/Toolbar'
 // Components
 import Blog from './components/Blog'
 import BlogList from './components/BlogList'
+import UserList from './components/UserList'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
@@ -61,6 +62,9 @@ const App = () => {
           >
             blogs
           </Button>
+          <Button color="inherit" component={Link} to="/users" sx={style}>
+            users
+          </Button>
           {isUserLoggedIn && (
             <Button color="inherit" component={Link} to="/create" sx={style}>
               new blog
@@ -93,6 +97,7 @@ const App = () => {
             path="/create"
             element={<BlogForm createBlog={blogService.create} />}
           />
+          <Route path='/users' element={<UserList />} />
           <Route path="/login" element={<LoginForm />} />
           <Route
             path="*"
