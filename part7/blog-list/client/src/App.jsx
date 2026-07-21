@@ -7,6 +7,7 @@ import Toolbar from '@mui/material/Toolbar'
 // Components
 import Blog from './components/Blog'
 import BlogList from './components/BlogList'
+import User from './components/User'
 import UserList from './components/UserList'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
@@ -98,6 +99,7 @@ const App = () => {
             element={<BlogForm createBlog={blogService.create} />}
           />
           <Route path='/users' element={<UserList />} />
+          <Route path='/users/:name' element={<User />} />
           <Route path="/login" element={<LoginForm />} />
           <Route
             path="*"
